@@ -1,0 +1,24 @@
+﻿<Window x:Class="TwitchAlert.UserNameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TwitchAlert"
+        mc:Ignorable="d"
+        Title="UserNameWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SizeToContent="WidthAndHeight" Background="{x:Null}" Closing="Window_Closing" Topmost="True">
+    <Border Width="auto" Height="auto" BorderThickness="1" Background="#FF6441A5" CornerRadius="3" BorderBrush="#FFD1D1D1">
+        <Grid Height="auto" Width="auto" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="Enter Twitch Username" HorizontalAlignment="Center" Foreground="Red" Margin="12,0" Grid.ColumnSpan="1" Grid.Column="2" FontSize="13"/>
+            <TextBox x:Name="txtUserName" Grid.Row="1" Height="auto" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="0" Grid.ColumnSpan="2" Margin="1" Background="#FF3D2577" Foreground="White" KeyUp="txtUserName_KeyUp"/>
+            <Image x:Name="image" Grid.ColumnSpan="1" Height="16" Grid.RowSpan="1" Width="16" Source="pack://siteoforigin:,,,/Resources/32_twitch.ico"/>
+        </Grid>
+    </Border>
+</Window>
