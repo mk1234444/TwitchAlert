@@ -26,6 +26,8 @@ Notes:
   The Who's Online menu option cycles through your followed Twitch users and shows all those who are currently
   streaming.
   
+  Clicking on a streamers name will take you to their stream.
+  
   If a streamers Status information can't all fit into the popup then a Tooltip will fire up if you mouse
   over the Status section (the bit under the game name) and display the full status text. Be quick though
   as the popups don't stay open for long :-)
@@ -35,6 +37,10 @@ Notes:
   followed 20 seconds later by an Online popup as it corrects itself. I've put in a bit of a kludge
   for this whereby the stream has to be 'Offline' twice in succession before I throw up the Offline popup.
   This seems to have reduced the rogue on/off popups to (up till now, zero). Although more testing needed.
+  
+  The 'Started' time at the bottom of the popup is simply the time string that Twitch sends. It takes no
+  account of daylight saving so for here (UK) it gives GMT time rather than BST time. This means the time
+  displayed is an hour earlier than it should be. I imagine this will be the case for people in other locations.
   
   Erm...thats it I think.
   
