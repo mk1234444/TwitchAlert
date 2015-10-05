@@ -1,5 +1,7 @@
 ﻿// 0.4
 // Change the layout to include Username and Status information
+// Added Tooltip for when the Status information doesn't fit in the popup
+// Fixed: If the username entry window was open when the user closed the app then it (the username window) remained open
 
 using System;
 using System.ComponentModel;
@@ -211,6 +213,7 @@ namespace TwitchAlert
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
+            if (userNameWindow != null) userNameWindow.Close();
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
                 Properties.Settings.Default.settingsUserName = USER_NAME;

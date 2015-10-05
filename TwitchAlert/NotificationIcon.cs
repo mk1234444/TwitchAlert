@@ -13,6 +13,7 @@ namespace TwitchAlert
         MenuItem miNIQuit;
         MenuItem miNIUserName;
         NotifyIcon notifyIcon;
+        UserNameWindow userNameWindow;
 
         public void SetupNotificationIcon()
         {
@@ -57,7 +58,7 @@ namespace TwitchAlert
         /// <returns>bool indicating whether the MKTwitch use name was actually changed</returns>
         private void GetUserName()
         {
-            var userNameWindow = new UserNameWindow();
+            userNameWindow = new UserNameWindow();
             Action<string> checkHandler = null;
             
             checkHandler = async (newUserName) =>
@@ -73,6 +74,7 @@ namespace TwitchAlert
                     }
                 }
                 userNameWindow.Check -= checkHandler;
+                userNameWindow = null;
             };
             userNameWindow.Check += checkHandler;
             userNameWindow.ShowDialog();
