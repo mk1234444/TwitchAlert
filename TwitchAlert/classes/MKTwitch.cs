@@ -134,14 +134,20 @@ namespace TwitchAlert.classes
                     Console.WriteLine($"\n{u.Name} is {(isLive ? "Live " : "Not Live")}{(isLive ? "with " + u.Game : "")}");
 
                     // IsLive status has changed so update our copy
-                    u.IsStreaming = isLive;            
+                    u.IsStreaming = isLive;
 
                     // Trigger either Online or the Offline event to alert any subscribers of the change
                     if (isLive)
+                    {
                         OnOnline(u);
+                        await Task.Delay(6000);
+                    }
                     else
                         OnOffline(u);
                 }
+
+               
+
                 Console.Write(".");
                 OnUpdating(IsUpdating = false);
             };
