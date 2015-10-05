@@ -24,7 +24,7 @@ Notes:
   silently swallowed although if you run it through the debugger they will appear in the console output.
   
   The Who's Online menu option cycles through your followed Twitch users and shows all those who are currently
-  streaming.
+  streaming. (Double-clicking the Notify icon does the same job)
   
   Clicking on a streamers name will take you to their stream.
   
