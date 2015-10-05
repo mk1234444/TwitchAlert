@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Linq;
 using TwitchAlert.classes;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace TwitchAlert
 {
@@ -294,6 +295,54 @@ namespace TwitchAlert
             //var top = this.Top;
             Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
             toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height +15);
+        }
+
+
+
+
+        /// <summary>
+        /// Returns bool indicating if the text in the multiline TextBlock has been trimmed
+        /// </summary>
+        /// <param name="textBlock"></param>
+        /// <returns>bool</returns>
+        public bool CalculateIsTextTrimmedMultiline(TextBlock textBlock)
+        {
+            Typeface typeface = new Typeface(
+                textBlock.FontFamily,
+                textBlock.FontStyle,
+                textBlock.FontWeight,
+                textBlock.FontStretch);
+
+            // FormattedText is used to measure the whole width of the text held up by TextBlock container
+            FormattedText formattedText = new FormattedText(
+                textBlock.Text,
+                System.Threading.Thread.CurrentThread.CurrentCulture,
+                textBlock.FlowDirection,
+                typeface,
+                textBlock.FontSize,
+                textBlock.Foreground);
+            formattedText.MaxTextWidth = textBlock.ActualWidth;
+
+            // When the maximum text width of the FormattedText instance is set to the actual
+            // width of the textBlock, if the textBlock is being trimmed to fit then the formatted
+            // text will report a larger height than the textBlock. Should work whether the
+            // textBlock is single or multi-line.
+            return (formattedText.Height > textBlock.ActualHeight);
+        }
+
+        private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
+            if(trimmed)
+            {
+                var tt = Resources["StatusTooltip"] as ToolTip;
+                // Find the TextBlock from within the Tooltip Template that will display our Status text
+                var ttTextBlock = ((tt.Content as Border).Child as StackPanel).Children[1] as TextBlock;
+                // Then give it the full Status text to display
+                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
+            }
+            // Set Handled if the text wasnt trimmed so no empty Tooltip appears
+            e.Handled = !trimmed;
         }
     }
 }

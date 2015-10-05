@@ -8,6 +8,27 @@
         mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded">
     <Window.Resources>
         <classes:BoolToIsLiveConverter x:Key="BoolToIsLiveConverter"/>
+        <ToolTip x:Key="StatusTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
+            <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000">
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="Black" Offset="0"/>
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="#FF050611" Offset="0.463"/>
+                        <GradientStop Color="#FF050611" Offset="0.618"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel Orientation="Vertical" >
+                    <TextBlock Text="Status" HorizontalAlignment="Center" Foreground="Yellow" >
+                        <TextBlock.TextDecorations>
+                            <TextDecoration/>
+                        </TextBlock.TextDecorations>
+                    </TextBlock>
+                    <TextBlock FontSize="10" Height="auto" FontWeight="Normal" TextWrapping="Wrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center" MaxWidth="150"/>
+                </StackPanel>
+            </Border>
+        </ToolTip>
+        
         <Storyboard x:Key="SlideUp" >
             <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding TopPosition}" Duration="0:0:0.8" Storyboard.TargetName="window" >
                 <DoubleAnimation.EasingFunction>
@@ -102,7 +123,7 @@
                     </TextBlock>
                     <Separator Style="{StaticResource SperatorStyle}" Margin="0" />
                     <TextBlock x:Name="txtGame" Text="{Binding Game}" Height="auto" Width="auto" Foreground="Red" FontSize="12" TextWrapping="NoWrap" MaxWidth="140" Padding="2,0" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" VerticalAlignment="Top"/>
-                    <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" />
+                    <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" ToolTip="{StaticResource StatusTooltip}" ToolTipOpening="txtStatus_ToolTipOpening" />
                     <Separator Style="{StaticResource SperatorStyle}"/>
                     <TextBlock x:Name="txtCreatedAt" Text="{Binding StreamCreatedAt}" FontSize="9" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Foreground="#FF16ADCF" Background="#FF040029" Margin="2,0,0,0" TextAlignment="Center" />
                 </StackPanel>
