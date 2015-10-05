@@ -1,4 +1,4 @@
-﻿// 0.4
+﻿// 0.4.1
 // Change the layout to include Username and Status information
 // Added Tooltip for when the Status information doesn't fit in the popup
 // Fixed: If the username entry window was open when the user closed the app then it (the username window) remained open
@@ -175,17 +175,7 @@ namespace TwitchAlert
             MKTwitch.Start(USER_NAME);
         }
 
-        private void FillInToast(User user)
-        {
-            toast.DisplayName = user.Name;
-            toast.Game = user.Game;
-            toast.Viewers = user.NumViewers;
-            toast.StreamCreatedAt = user.StreamCreatedAt;
-            toast.IsLive = user.IsStreaming;
-            toast.Thumbnail = user.Thumbnail;
-            toast.Link = user.Link;
-            toast.Status = user.Status;
-        }
+     
 
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
@@ -226,6 +216,49 @@ namespace TwitchAlert
             DragMove();
         }
         #endregion
+
+        #region Event Handlers
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(e.Uri.AbsoluteUri);
+        }
+
+        private void toastBorder_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //var top = this.Top;
+            Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
+            toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height + 15);
+        }
+
+        private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
+            if (trimmed)
+            {
+                var tt = Resources["StatusTooltip"] as ToolTip;
+                // Find the TextBlock from within the Tooltip Template that will display our Status text
+                var ttTextBlock = ((tt.Content as Border).Child as StackPanel).Children[1] as TextBlock;
+                // Then give it the full Status text to display
+                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
+            }
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        } 
+        #endregion
+
+
+
+        private void FillInToast(User user)
+        {
+            toast.DisplayName = user.Name;
+            toast.Game = user.Game;
+            toast.Viewers = user.NumViewers;
+            toast.StreamCreatedAt = user.StreamCreatedAt;
+            toast.IsLive = user.IsStreaming;
+            toast.Thumbnail = user.Thumbnail;
+            toast.Link = user.Link;
+            toast.Status = user.Status;
+        }
 
         /// <summary>
         /// Displays the popup showing info of the Streamer. If AllOffline==true then 
@@ -288,21 +321,6 @@ namespace TwitchAlert
             }
         }
 
-        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            Process.Start(e.Uri.AbsoluteUri);
-        }
-
-        private void toastBorder_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //var top = this.Top;
-            Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
-            toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height +15);
-        }
-
-
-
-
         /// <summary>
         /// Returns bool indicating if the text in the multiline TextBlock has been trimmed
         /// </summary>
@@ -331,21 +349,6 @@ namespace TwitchAlert
             // text will report a larger height than the textBlock. Should work whether the
             // textBlock is single or multi-line.
             return (formattedText.Height > textBlock.ActualHeight);
-        }
-
-        private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
-            if(trimmed)
-            {
-                var tt = Resources["StatusTooltip"] as ToolTip;
-                // Find the TextBlock from within the Tooltip Template that will display our Status text
-                var ttTextBlock = ((tt.Content as Border).Child as StackPanel).Children[1] as TextBlock;
-                // Then give it the full Status text to display
-                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
-            }
-            // Set Handled if the text wasnt trimmed so no empty Tooltip appears
-            e.Handled = !trimmed;
-        }
+        } 
     }
 }

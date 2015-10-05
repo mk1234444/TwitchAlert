@@ -15,6 +15,9 @@ namespace TwitchAlert
         NotifyIcon notifyIcon;
         UserNameWindow userNameWindow;
 
+        /// <summary>
+        ///  WPF doesn't have a NotifyIcon so use the WinForms version
+        /// </summary>
         public void SetupNotificationIcon()
         {
             // Create ContextMenu
@@ -32,15 +35,13 @@ namespace TwitchAlert
             miNIUserName.Click += (s, e) =>
             {
                 GetUserName();
-
             };
 
-            miNIOnline.Click +=  (s,e) =>
+            miNIOnline.Click +=  (s, e) =>
             {
                 ShowOnlineUsers();
             };
  
-
             contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => {

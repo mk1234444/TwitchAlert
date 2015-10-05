@@ -8,6 +8,7 @@
         mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded">
     <Window.Resources>
         <classes:BoolToIsLiveConverter x:Key="BoolToIsLiveConverter"/>
+      
         <ToolTip x:Key="StatusTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
             <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000">
                 <Border.Background>
