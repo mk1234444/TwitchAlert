@@ -35,5 +35,10 @@ namespace TwitchAlert
         {
             if (e.Key == Key.Enter) this.Close();
         }
+
+        private void Window_ContentRendered(object sender, EventArgs e)
+        {
+            txtUserName.Focus();
+        }
     }
 }

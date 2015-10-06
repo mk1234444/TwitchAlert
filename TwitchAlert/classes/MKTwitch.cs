@@ -40,6 +40,7 @@ namespace TwitchAlert.classes
         public static event EventHandler<MKTwitchEventArgs> Online;
         public static event EventHandler<MKTwitchEventArgs> OffLine;
         public static event EventHandler<MKTwitchUpdatingEventArgs> Updating;
+       // public static event 
         #endregion
 
         #region Event Trigger Methods
@@ -137,16 +138,21 @@ namespace TwitchAlert.classes
                     u.IsStreaming = isLive;
 
                     // Trigger either Online or the Offline event to alert any subscribers of the change
+                    // NOTE: There could be a (rare) problem here if many users start/stop streaming within one
+                    //       tick, as all of their popups will not have finished showing by the time the next
+                    //       tick event occurs. A fix would be to turn the timer off at the start of its event
+                    //       and turn it back on again at the end.
                     if (isLive)
                     {
                         OnOnline(u);
                         await Task.Delay(6000);
                     }
                     else
+                    {
                         OnOffline(u);
+                        await Task.Delay(6000);
+                    }
                 }
-
-               
 
                 Console.Write(".");
                 OnUpdating(IsUpdating = false);

@@ -2,6 +2,10 @@
 // Change the layout to include Username and Status information
 // Added Tooltip for when the Status information doesn't fit in the popup
 // Fixed: If the username entry window was open when the user closed the app then it (the username window) remained open
+// TODO:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
+// TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
+// TODO:  Add an event to MKTwitch to indicate when the followedUsers collections changes
+// TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
 
 using System;
 using System.ComponentModel;
@@ -122,7 +126,8 @@ namespace TwitchAlert
         }
 
         Toast toast = new Toast();
-        string USER_NAME = Properties.Settings.Default.settingsUserName;
+       // string USER_NAME = Properties.Settings.Default.settingsUserName;
+        string USER_NAME = "";
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
@@ -165,17 +170,24 @@ namespace TwitchAlert
                 DisplayToast();
             };
 
+            // Subscribe to the MKTwitch Updating event so we hear about
+            // it is in the middle of updating its Twitch info
             MKTwitch.Updating += (s, e) => {
                 txtUpdating.Visibility = e.IsUpdating ? Visibility.Visible : Visibility.Collapsed;
             };
 
-            while (string.IsNullOrEmpty(USER_NAME))
-                GetUserName();
 
+            while (string.IsNullOrEmpty(USER_NAME))
+            {
+                GetUserName();
+                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+            }
             MKTwitch.Start(USER_NAME);
+            notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+
         }
 
-     
+
 
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
