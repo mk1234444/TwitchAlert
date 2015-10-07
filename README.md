@@ -14,7 +14,7 @@ Notes:
   and how many of them are online.
   
   The first run of this will be slow depending on whether you follow a lot of people or not. This is
-  because currently the app retrieves all of the thumbnails of your followers. It caches these
+  because currently the app retrieves the thumbnails of all the people you follow. It caches these
   thumbnails to disk so subsequent runs won't have this delay (unless you change the username).
   
   The App polls Twitch every 20 seconds.
