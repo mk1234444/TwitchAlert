@@ -66,6 +66,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="classes\TwitchStreamers.cs" />
     <Compile Include="UserNameWindow.xaml.cs">
       <DependentUpon>UserNameWindow.xaml</DependentUpon>
     </Compile>

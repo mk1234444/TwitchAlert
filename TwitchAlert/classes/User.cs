@@ -18,6 +18,10 @@ namespace TwitchAlert.classes
         public BitmapImage Thumbnail { get; set; }
         public string Link { get; set; }
         public string Status { get; set; }
+        /// <summary>
+        /// Used to store consecutive 'Offline' reports. A count of 2 means user is *actually* offline.
+        /// Used to compensate for Twitch misreporting Offline state
+        /// </summary>
         public int OfflineCount { get; set; }
         public override string ToString() => Name;
         

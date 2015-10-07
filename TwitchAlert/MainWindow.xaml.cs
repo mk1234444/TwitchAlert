@@ -1,10 +1,10 @@
-﻿// 0.4.1
+﻿// 0.4.2
 // Change the layout to include Username and Status information
 // Added Tooltip for when the Status information doesn't fit in the popup
 // Fixed: If the username entry window was open when the user closed the app then it (the username window) remained open
 // TODO:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
-// TODO:  Add an event to MKTwitch to indicate when the followedUsers collections changes
+// Done  Add an event to MKTwitch to indicate when the followedUsers collections changes
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
 
 using System;
@@ -126,15 +126,14 @@ namespace TwitchAlert
         }
 
         Toast toast = new Toast();
-       // string USER_NAME = Properties.Settings.Default.settingsUserName;
-        string USER_NAME = "";
+        //string USER_NAME = Properties.Settings.Default.settingsUserName;
+        string USER_NAME = "mk1234444";
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
         public MainWindow()
         {
             InitializeComponent();
-  
             this.DataContext = toast;
             SetupNotificationIcon();
 
@@ -171,20 +170,25 @@ namespace TwitchAlert
             };
 
             // Subscribe to the MKTwitch Updating event so we hear about
-            // it is in the middle of updating its Twitch info
+            // when it is in the middle of updating its Twitch info
             MKTwitch.Updating += (s, e) => {
                 txtUpdating.Visibility = e.IsUpdating ? Visibility.Visible : Visibility.Collapsed;
             };
 
+            // Subscribe to the MKTwitch FollowedUsersChanged event so we hear about
+            // when its collection of FollowedUsers has changed
+            MKTwitch.FollowedUsersChanged += (s, e) => {
+                Console.WriteLine("followedUsers Changed");
+                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+            };
 
+            // If we dont have a username then keep asking till we get one
             while (string.IsNullOrEmpty(USER_NAME))
             {
                 GetUserName();
-                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                //notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             }
             MKTwitch.Start(USER_NAME);
-            notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
-
         }
 
 
@@ -292,6 +296,7 @@ namespace TwitchAlert
             await StartAnimationAsync(SlideUpStoryboard);
             await Task.Delay(4000);
             await StartAnimationAsync(SlideDownStoryboard);
+
             txtNobodyOnline.Visibility = Visibility.Collapsed;
             brdIsOnline.Visibility = Visibility.Visible;
         }
@@ -354,11 +359,12 @@ namespace TwitchAlert
                 typeface,
                 textBlock.FontSize,
                 textBlock.Foreground);
+
             formattedText.MaxTextWidth = textBlock.ActualWidth;
 
             // When the maximum text width of the FormattedText instance is set to the actual
-            // width of the textBlock, if the textBlock is being trimmed to fit then the formatted
-            // text will report a larger height than the textBlock. Should work whether the
+            // width of the textBlock, if the textBlock is being trimmed to fit then the FormattedText           
+            // will report a larger height than the textBlock. Should work whether the
             // textBlock is single or multi-line.
             return (formattedText.Height > textBlock.ActualHeight);
         } 
