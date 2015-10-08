@@ -1,11 +1,13 @@
 ﻿// 0.4.2
-// Change the layout to include Username and Status information
-// Added Tooltip for when the Status information doesn't fit in the popup
-// Fixed: If the username entry window was open when the user closed the app then it (the username window) remained open
 // TODO:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // Done  Add an event to MKTwitch to indicate when the followedUsers collections changes
-// TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
+// TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this
+// TODO: Make sure we always start at a valid onscreen position. For example, under some odd circumstance the Left position has ended
+//       up being equal to the width of the screen which means the popup appears offscreen. This broken Left position will then be saved when we close. (Check
+ //      for this at startup and recalculate the Left position to something valid.)
+
+
 
 using System;
 using System.ComponentModel;
@@ -126,8 +128,8 @@ namespace TwitchAlert
         }
 
         Toast toast = new Toast();
-        //string USER_NAME = Properties.Settings.Default.settingsUserName;
-        string USER_NAME = "mk1234444";
+        string USER_NAME = Properties.Settings.Default.settingsUserName;
+        //string USER_NAME = "mk1234444";
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
@@ -191,21 +193,26 @@ namespace TwitchAlert
             MKTwitch.Start(USER_NAME);
         }
 
-
-
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
-           // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.ActualHeight);
+            // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.ActualHeight);
             //------------------
+            //Console.WriteLine("Window_Loaded event:");
+            //Console.WriteLine($"\tsettings.Left = {Properties.Settings.Default.settingsLeft}");
+            //Console.WriteLine($"\tsettings.UserName = {Properties.Settings.Default.settingsUserName}");
 
             // If this is the first time we've been run then calculate the Left position, else
             // use the Left position that we saved the last time we ran
             if (Properties.Settings.Default.settingsLeft == 0.1)
-                toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - txtNobodyOnline.Width;
+                toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+            else if (Properties.Settings.Default.settingsLeft > (SystemParameters.WorkArea.Width - this.Width))
+                toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+            else if (Properties.Settings.Default.settingsLeft < 0)
+                toast.LeftPosition = this.Left = -15;
             else
                 toast.LeftPosition = this.Left = Properties.Settings.Default.settingsLeft;
         }
@@ -219,11 +226,22 @@ namespace TwitchAlert
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
+            //Console.WriteLine($"Window_Closing");
+            //Console.WriteLine($"\tthis.Left {this.Left} this.Top {this.Top} toast.TopPosition {toast.TopPosition} toastLeftPosition {toast.LeftPosition}");
+            //Console.WriteLine($"\tUSER_NAME {USER_NAME}");
+
             if (userNameWindow != null) userNameWindow.Close();
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
                 Properties.Settings.Default.settingsUserName = USER_NAME;
             Properties.Settings.Default.Save();
+
+            //Console.WriteLine("Property settings after save");
+            //Console.WriteLine($"\tProperties.Settings.Default.settingsLeft {Properties.Settings.Default.settingsLeft}");
+            //Console.WriteLine($"\tProperties.Settings.Default.settingsUserName {Properties.Settings.Default.settingsUserName}");
+
+
+
             DisposeNotifyIcon();
         }
 
@@ -242,7 +260,7 @@ namespace TwitchAlert
         private void toastBorder_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             //var top = this.Top;
-            Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
+           // Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
             toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height + 15);
         }
 
@@ -261,8 +279,6 @@ namespace TwitchAlert
             e.Handled = !trimmed;
         } 
         #endregion
-
-
 
         private void FillInToast(User user)
         {
@@ -289,8 +305,10 @@ namespace TwitchAlert
             {
                 txtNobodyOnline.Visibility = Visibility.Visible;
                 brdIsOnline.Visibility = Visibility.Collapsed;
-                toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height);
-                Console.WriteLine($"TopPosition = {toast.TopPosition}");
+                // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height);
+                toast.TopPosition = SystemParameters.WorkArea.Height - (this.Height);
+
+                //Console.WriteLine($"TopPosition = {toast.TopPosition}");
                 this.Top = SystemParameters.WorkArea.Height;
             }
             await StartAnimationAsync(SlideUpStoryboard);

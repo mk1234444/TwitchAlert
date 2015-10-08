@@ -40,5 +40,10 @@ namespace TwitchAlert
         {
             txtUserName.Focus();
         }
+
+        private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            txtUserName.Text = "mk1234444";
+        }
     }
 }

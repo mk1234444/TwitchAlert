@@ -141,21 +141,22 @@ namespace TwitchAlert.classes
                     followed.IsStreaming = true;
                     // and throw up a popup
                     OnOnline(followed);
+                    Console.WriteLine($"\n{ followed.Name} is live with {followed.Game}");
                     await Task.Delay(6000);
-
-
-
-                    // Fking ell this is tough
                 }
 
                 // Do the non-streamers bit
                 foreach(var ns in nonStreamers)
                 {
+                    // If user is going from streaming to offline then throw up a popup
+                    // and set his isStreaming property to false
                     if(ns.IsStreaming)
                     {
-                        OnOffline(ns);
-                        await Task.Delay(6000);
                         ns.IsStreaming = false;
+                        OnOffline(ns);
+                        Console.WriteLine($"\n{ ns.Name} has gone Offline");
+                        await Task.Delay(6000);
+                
                     }
                 }
 
@@ -476,8 +477,6 @@ namespace TwitchAlert.classes
             }
             return iuld;
         }
-
-
         /// <summary>
         /// Returns all of the people in the followed collection who are currently streaming
         /// </summary>
@@ -492,11 +491,6 @@ namespace TwitchAlert.classes
 
             return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
         }
-
-
-
-
-
 
         /// <summary>
         /// Gets JSON response as a string
