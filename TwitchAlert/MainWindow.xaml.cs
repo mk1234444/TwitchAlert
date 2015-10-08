@@ -3,7 +3,7 @@
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // Done  Add an event to MKTwitch to indicate when the followedUsers collections changes
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this
-// TODO: Make sure we always start at a valid onscreen position. For example, under some odd circumstance the Left position has ended
+// Fixed: Make sure we always start at a valid onscreen position. For example, under some odd circumstance the Left position has ended
 //       up being equal to the width of the screen which means the popup appears offscreen. This broken Left position will then be saved when we close. (Check
  //      for this at startup and recalculate the Left position to something valid.)
 
@@ -209,10 +209,12 @@ namespace TwitchAlert
             // use the Left position that we saved the last time we ran
             if (Properties.Settings.Default.settingsLeft == 0.1)
                 toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+            // If Left was saved previously off the right hand side of the screen then reset it so that the full popup will be displayed at the right
             else if (Properties.Settings.Default.settingsLeft > (SystemParameters.WorkArea.Width - this.Width))
                 toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+            // If the Left was saved previously off the left side of the screen then reset is so the full popup will be displayed at the left
             else if (Properties.Settings.Default.settingsLeft < 0)
-                toast.LeftPosition = this.Left = -15;
+                toast.LeftPosition = this.Left = -15;       // The 15 takes into account the offset of the rootBorder to the main window
             else
                 toast.LeftPosition = this.Left = Properties.Settings.Default.settingsLeft;
         }
