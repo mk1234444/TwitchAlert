@@ -113,11 +113,24 @@ namespace TwitchAlert.classes
                 if (followedUsers.Count == 0) return;
                 OnUpdating(IsUpdating = true);
 
+                await Update();
+
+                Console.Write(".");
+                OnUpdating(IsUpdating = false);
+                return;
+
+
+
+
+
+
+
+
+
                 var streamers = await GetStreamers();
                 if (streamers == null) return;
 
                 var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
-
 
                 // Do the streamers bit first
                 foreach(var streamer in streamers.streams)
@@ -165,6 +178,7 @@ namespace TwitchAlert.classes
                     }
                 }
 
+                #region Old
                 //foreach (var u in followedUsers)
                 //{              
                 //    var iuld = await IsUserLiveAsync(u.Name);
@@ -217,7 +231,8 @@ namespace TwitchAlert.classes
                 //        OnOffline(u);
                 //        await Task.Delay(6000);
                 //    }
-                //}
+                //} 
+                #endregion
 
                 Console.Write(".");
                 OnUpdating(IsUpdating = false);
@@ -225,6 +240,63 @@ namespace TwitchAlert.classes
             timer.Start();
             IsStarted = true;
         }
+
+
+        private static async Task Update()
+        {
+            var streamers = await GetStreamers();
+            if (streamers == null) return;
+
+            var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
+
+            // Do the streamers bit first
+            foreach (var streamer in streamers.streams)
+            {
+                // Get the followed user who is now streaming
+                var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
+                // Update his info
+                followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
+                followed.NumViewers = streamer.viewers;
+                followed.Game = streamer.game;
+
+                // if user was already streaming then just continue
+                if (followed.IsStreaming)
+                {
+                    followed.OfflineCount = 0;
+                    continue;
+                }
+
+                // user has started streaming so...
+                // set his isStreaming property to true
+                followed.IsStreaming = true;
+                // and throw up a popup
+                OnOnline(followed);
+                Console.WriteLine($"\n{ followed.Name} is live with {followed.Game}");
+                await Task.Delay(6000);
+            }
+
+            // Do the non-streamers bit
+            foreach (var ns in nonStreamers)
+            {
+                // If user is going from streaming to offline then throw up a popup
+                // and set his isStreaming property to false
+                if (ns.IsStreaming)
+                {
+                    // Kludge to compensate for the fact that Twitch sometimes says a streamer has gone
+                    // offline when in fact they are still online
+                    ns.OfflineCount++;
+                    if (ns.OfflineCount < 2)
+                        continue;
+                    Console.WriteLine($"{ns.Name}'s offlineCount is {ns.OfflineCount}");
+                    ns.IsStreaming = false;
+                    OnOffline(ns);
+                    Console.WriteLine($"\n{ ns.Name} has gone Offline");
+                    await Task.Delay(6000);
+                }
+            }
+        }
+
+
 
         private static void FollowedUsersToConsole()
         {
@@ -289,25 +361,42 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         private async static Task SetupStreamTracker( string userName)
         {
-           // await Task.Delay(500);
             var users = GetUsersFollowedChannels(userName);
             if (users == null) return;
+
+            var streamers = await GetStreamers(users);
+            if (streamers == null) return;
+
+
 
             followedUsers.Clear();
             foreach (var f in users.follows)
             {
-                bool isUserLive = false; 
-                IsUserLiveData isUserLiveData=default(IsUserLiveData);
+                bool isUserLive = false;
+                string createdAt = "";
+                int numViewers=0;
+
+                if (streamers.streams.Count > 0)
+                {
+                    var streamer = followedUsers.FirstOrDefault(i => streamers.streams.Any(x => x.channel.display_name == i.Name));
+                    if (streamer != null)
+                    {
+                        isUserLive = true;
+                        createdAt = streamer.StreamCreatedAt.Split('T')[1].Replace("Z", "");
+                        numViewers = streamer.NumViewers;
+                    }
+                }
+                //IsUserLiveData isUserLiveData=default(IsUserLiveData);
          
-                isUserLiveData = await IsUserLiveAsync(f.channel.display_name);
-                isUserLive = isUserLiveData.IsLive;
+                //isUserLiveData = await IsUserLiveAsync(f.channel.display_name);
+                //isUserLive = isUserLiveData.IsLive;
            
                 // Remove the date and the trailing Z from the createdAt string
-                if (isUserLiveData.CreatedAt != "")
-                {
-                    var arr = isUserLiveData.CreatedAt.Split('T');
-                    isUserLiveData.CreatedAt = arr[1].Remove(arr[1].Length - 1);
-                }
+                //if (isUserLiveData.CreatedAt != "")
+                //{
+                //    var arr = isUserLiveData.CreatedAt.Split('T');
+                //    isUserLiveData.CreatedAt = arr[1].Remove(arr[1].Length - 1);
+                //}
 
                 BitmapImage bm = null;
                 // If user does not have a logo then use the Twitch default
@@ -323,7 +412,8 @@ namespace TwitchAlert.classes
                     bm = (!string.IsNullOrEmpty(cachedFilename) && File.Exists(cachedFilename)) ? new BitmapImage(new Uri(cachedFilename)) : DownloadImage(f.channel.logo);
                 }
 
-                followedUsers.Add(new User { Name = f.channel.display_name, IsStreaming = isUserLive, NumViewers = isUserLiveData.NumViewers, Game = f.channel.game,StreamCreatedAt = isUserLiveData.CreatedAt, ThumbnailPath = f.channel.logo, Thumbnail = bm ,Link = f.channel.url, Status = f.channel.status});
+                // followedUsers.Add(new User { Name = f.channel.display_name, IsStreaming = isUserLive, NumViewers = isUserLiveData.NumViewers, Game = f.channel.game,StreamCreatedAt = isUserLiveData.CreatedAt, ThumbnailPath = f.channel.logo, Thumbnail = bm ,Link = f.channel.url, Status = f.channel.status});
+                 followedUsers.Add(new User { Name = f.channel.display_name, IsStreaming = isUserLive, NumViewers = numViewers, Game = f.channel.game,StreamCreatedAt = createdAt, ThumbnailPath = f.channel.logo, Thumbnail = bm ,Link = f.channel.url, Status = f.channel.status});
 
                 if (isUserLive) Console.WriteLine($"\n{f.channel.display_name} is {(isUserLive ? "Live " : "Not Live")}{(isUserLive ? "with " + f.channel.game : "")}");
             }
@@ -401,16 +491,23 @@ namespace TwitchAlert.classes
             OnOnline(user);
         }
 
-        static Twitch.Root GetFollowers(string user, int limit = 25, string sortDirection = "DESC")
+        static Twitch.Root GetFollowers(string userName, int limit = 25, string sortDirection = "DESC")
         {
-            string url = $"{twitchUrl}channels/{user}/follows?direction={sortDirection}&limit={limit}&offset=0";
+            string url = $"{twitchUrl}channels/{userName}/follows?direction={sortDirection}&limit={limit}&offset=0";
             return JsonConvert.DeserializeObject<Twitch.Root>(Get(url));
         }
 
-        static Twitch.Root GetUsersFollowedChannels(string user, int limit = 25, string sortDirection = "DESC")
+        /// <summary>
+        /// Returns all the people that userName follows
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="limit"></param>
+        /// <param name="sortDirection"></param>
+        /// <returns>Twitch.Root</returns>
+        static Twitch.Root GetUsersFollowedChannels(string userName, int limit = 25, string sortDirection = "DESC")
         {
             //GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
-            string url = $"{twitchUrl}users/{user}/follows/channels?direction={sortDirection}&limit={limit}&offset=0";
+            string url = $"{twitchUrl}users/{userName}/follows/channels?direction={sortDirection}&limit={limit}&offset=0";
 
             return JsonConvert.DeserializeObject<Twitch.Root>(Get(url));
         }
@@ -488,6 +585,15 @@ namespace TwitchAlert.classes
 
             return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
         }
+
+        private static async Task<TwitchStreamers.RootObject> GetStreamers(Twitch.Root users)
+        {
+            string url = "https://api.twitch.tv/kraken/streams?channel=";
+            string userNames = users.follows.Aggregate("", (current, u) => current + u.channel.display_name + ",");
+            url += userNames.Remove(userNames.Length - 1);
+            return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
+        }
+
 
         /// <summary>
         /// Gets JSON response as a string
