@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace TwitchAlert.classes
 {
     class TwitchStreamers
     {
-
-
         public class Links
         {
             public string self { get; set; }
@@ -61,7 +55,6 @@ namespace TwitchAlert.classes
             public string profile_banner_background_color { get; set; }
             public int views { get; set; }
             public string language { get; set; }
-
         }
 
         public class Stream
@@ -95,8 +88,5 @@ namespace TwitchAlert.classes
             public int _total { get; set; }
             public Links3 _links { get; set; }
         }
-
-
-      
     }
 }

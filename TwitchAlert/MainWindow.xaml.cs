@@ -1,11 +1,11 @@
 ﻿// 0.4.2
 // TODO:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
-// Done  Add an event to MKTwitch to indicate when the followedUsers collections changes
+// Done   Add an event to MKTwitch to indicate when the followedUsers collections changes
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this
 // Fixed: Make sure we always start at a valid onscreen position. For example, under some odd circumstance the Left position has ended
-//       up being equal to the width of the screen which means the popup appears offscreen. This broken Left position will then be saved when we close. (Check
- //      for this at startup and recalculate the Left position to something valid.)
+//        up being equal to the width of the screen which means the popup appears offscreen. This broken Left position will then be saved when we close. (Check
+//        for this at startup and recalculate the Left position to something valid.)
 
 
 

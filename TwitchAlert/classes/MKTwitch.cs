@@ -152,17 +152,18 @@ namespace TwitchAlert.classes
                     // and set his isStreaming property to false
                     if(ns.IsStreaming)
                     {
+                        // Kludge to compensate for the fact that Twitch sometimes says a streamer has gone
+                        // offline when in fact they are still online
+                        ns.OfflineCount++;
+                        if (ns.OfflineCount < 2)
+                            continue;
+                        Console.WriteLine($"{ns.Name}'s offlineCount is {ns.OfflineCount}");
                         ns.IsStreaming = false;
                         OnOffline(ns);
                         Console.WriteLine($"\n{ ns.Name} has gone Offline");
                         await Task.Delay(6000);
-                
                     }
                 }
-
-
-
-
 
                 //foreach (var u in followedUsers)
                 //{              
@@ -292,9 +293,6 @@ namespace TwitchAlert.classes
             var users = GetUsersFollowedChannels(userName);
             if (users == null) return;
 
-
-             //OnFollowedUsersChanged();
-
             followedUsers.Clear();
             foreach (var f in users.follows)
             {
@@ -413,6 +411,7 @@ namespace TwitchAlert.classes
         {
             //GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
             string url = $"{twitchUrl}users/{user}/follows/channels?direction={sortDirection}&limit={limit}&offset=0";
+
             return JsonConvert.DeserializeObject<Twitch.Root>(Get(url));
         }
 
@@ -448,7 +447,6 @@ namespace TwitchAlert.classes
            public string Game;
            public int NumViewers;
            public string CreatedAt;
-
         }
 
         /// <summary>
@@ -458,7 +456,6 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         static async Task<IsUserLiveData>IsUserLiveAsync(string userName)
         {
-            
             var iuld = new IsUserLiveData();
             string url = "https://api.twitch.tv/kraken/streams/" + userName;
             try
@@ -484,8 +481,8 @@ namespace TwitchAlert.classes
         private static async Task<TwitchStreamers.RootObject> GetStreamers()
         {
             //  https://api.twitch.tv/kraken/streams?channel=chan1,monstercat,chan3
-            string url = "https://api.twitch.tv/kraken/streams?channel=";
 
+            string url = "https://api.twitch.tv/kraken/streams?channel=";
             string users= followedUsers.Aggregate("", (current, u) => current + (u.Name + ","));
             url += users.Remove(users.Length - 1);
 
