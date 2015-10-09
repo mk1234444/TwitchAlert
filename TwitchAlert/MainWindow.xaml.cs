@@ -1,5 +1,5 @@
 ﻿// 0.4.2
-// TODO:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
+// TEST:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // Done   Add an event to MKTwitch to indicate when the followedUsers collections changes
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this

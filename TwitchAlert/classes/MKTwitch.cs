@@ -127,56 +127,56 @@ namespace TwitchAlert.classes
 
 
 
-                var streamers = await GetStreamers();
-                if (streamers == null) return;
+                //var streamers = await GetStreamers();
+                //if (streamers == null) return;
 
-                var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
+                //var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
 
-                // Do the streamers bit first
-                foreach(var streamer in streamers.streams)
-                {
-                    // Get the followed user who is now streaming
-                    var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
-                    // Update his info
-                    followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
-                    followed.NumViewers = streamer.viewers;
-                    followed.Game = streamer.game;
+                //// Do the streamers bit first
+                //foreach(var streamer in streamers.streams)
+                //{
+                //    // Get the followed user who is now streaming
+                //    var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
+                //    // Update his info
+                //    followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
+                //    followed.NumViewers = streamer.viewers;
+                //    followed.Game = streamer.game;
 
-                    // if user was already streaming then just continue
-                    if (followed.IsStreaming)
-                    {
-                        followed.OfflineCount = 0;
-                        continue;
-                    }
+                //    // if user was already streaming then just continue
+                //    if (followed.IsStreaming)
+                //    {
+                //        followed.OfflineCount = 0;
+                //        continue;
+                //    }
 
-                    // user has started streaming so...
-                    // set his isStreaming property to true
-                    followed.IsStreaming = true;
-                    // and throw up a popup
-                    OnOnline(followed);
-                    Console.WriteLine($"\n{ followed.Name} is live with {followed.Game}");
-                    await Task.Delay(6000);
-                }
+                //    // user has started streaming so...
+                //    // set his isStreaming property to true
+                //    followed.IsStreaming = true;
+                //    // and throw up a popup
+                //    OnOnline(followed);
+                //    Console.WriteLine($"\n{ followed.Name} is live with {followed.Game}");
+                //    await Task.Delay(6000);
+                //}
 
-                // Do the non-streamers bit
-                foreach(var ns in nonStreamers)
-                {
-                    // If user is going from streaming to offline then throw up a popup
-                    // and set his isStreaming property to false
-                    if(ns.IsStreaming)
-                    {
-                        // Kludge to compensate for the fact that Twitch sometimes says a streamer has gone
-                        // offline when in fact they are still online
-                        ns.OfflineCount++;
-                        if (ns.OfflineCount < 2)
-                            continue;
-                        Console.WriteLine($"{ns.Name}'s offlineCount is {ns.OfflineCount}");
-                        ns.IsStreaming = false;
-                        OnOffline(ns);
-                        Console.WriteLine($"\n{ ns.Name} has gone Offline");
-                        await Task.Delay(6000);
-                    }
-                }
+                //// Do the non-streamers bit
+                //foreach(var ns in nonStreamers)
+                //{
+                //    // If user is going from streaming to offline then throw up a popup
+                //    // and set his isStreaming property to false
+                //    if(ns.IsStreaming)
+                //    {
+                //        // Kludge to compensate for the fact that Twitch sometimes says a streamer has gone
+                //        // offline when in fact they are still online
+                //        ns.OfflineCount++;
+                //        if (ns.OfflineCount < 2)
+                //            continue;
+                //        Console.WriteLine($"{ns.Name}'s offlineCount is {ns.OfflineCount}");
+                //        ns.IsStreaming = false;
+                //        OnOffline(ns);
+                //        Console.WriteLine($"\n{ ns.Name} has gone Offline");
+                //        await Task.Delay(6000);
+                //    }
+                //}
 
                 #region Old
                 //foreach (var u in followedUsers)
@@ -234,8 +234,8 @@ namespace TwitchAlert.classes
                 //} 
                 #endregion
 
-                Console.Write(".");
-                OnUpdating(IsUpdating = false);
+                //Console.Write(".");
+                //OnUpdating(IsUpdating = false);
             };
             timer.Start();
             IsStarted = true;
@@ -378,12 +378,13 @@ namespace TwitchAlert.classes
 
                 if (streamers.streams.Count > 0)
                 {
-                    var streamer = followedUsers.FirstOrDefault(i => streamers.streams.Any(x => x.channel.display_name == i.Name));
+                    var streamer = streamers.streams.FirstOrDefault(i => i.channel.display_name == f.channel.display_name);
+                 
                     if (streamer != null)
                     {
                         isUserLive = true;
-                        createdAt = streamer.StreamCreatedAt.Split('T')[1].Replace("Z", "");
-                        numViewers = streamer.NumViewers;
+                        createdAt = streamer.channel.created_at.Split('T')[1].Replace("Z", "");
+                        numViewers = streamer.viewers;
                     }
                 }
                 //IsUserLiveData isUserLiveData=default(IsUserLiveData);
