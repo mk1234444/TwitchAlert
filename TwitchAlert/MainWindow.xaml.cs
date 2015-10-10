@@ -1,12 +1,8 @@
-﻿// 0.4.2
+﻿// 0.4.3
 // TEST:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
-// Done   Add an event to MKTwitch to indicate when the followedUsers collections changes
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
-// Fixed: Make sure we always start at a valid onscreen position. For example, under some odd circumstance the Left position has ended
-//        up being equal to the width of the screen which means the popup appears offscreen. This broken Left position will then be saved when we close. (Check
-//        for this at startup and recalculate the Left position to something valid.)
-
+// DONE:  Add a Tooltip for when the Game name wont fit
 
 
 using System;
@@ -95,8 +91,6 @@ namespace TwitchAlert
                 set { SetValue(LinkProperty, value); }
             }
 
-
-
             public string Status
             {
                 get { return (string)GetValue(StatusProperty); }
@@ -129,7 +123,6 @@ namespace TwitchAlert
 
         Toast toast = new Toast();
         string USER_NAME = Properties.Settings.Default.settingsUserName;
-        //string USER_NAME = "mk1234444";
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
@@ -241,9 +234,6 @@ namespace TwitchAlert
             //Console.WriteLine("Property settings after save");
             //Console.WriteLine($"\tProperties.Settings.Default.settingsLeft {Properties.Settings.Default.settingsLeft}");
             //Console.WriteLine($"\tProperties.Settings.Default.settingsUserName {Properties.Settings.Default.settingsUserName}");
-
-
-
             DisposeNotifyIcon();
         }
 
@@ -279,7 +269,22 @@ namespace TwitchAlert
             }
             // Set Handled if we dont need the Tooltip so no empty Tooltip appears
             e.Handled = !trimmed;
-        } 
+        }
+
+        private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
+            if (trimmed)
+            {
+                var tt = Resources["GameTooltip"] as ToolTip;
+                // Find the TextBlock from within the Tooltip Template that will display our Status text
+                var ttTextBlock = ((tt.Content as Border).Child as StackPanel).Children[1] as TextBlock;
+                // Then give it the full Status text to display
+                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
+            }
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        }
         #endregion
 
         private void FillInToast(User user)
@@ -387,6 +392,8 @@ namespace TwitchAlert
             // will report a larger height than the textBlock. Should work whether the
             // textBlock is single or multi-line.
             return (formattedText.Height > textBlock.ActualHeight);
-        } 
+        }
+
+  
     }
 }
