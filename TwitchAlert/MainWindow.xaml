@@ -41,7 +41,7 @@
             </Border>
         </ToolTip>
 
-        <Storyboard x:Key="SlideUp" >
+        <Storyboard x:Key="SlideUp" Name="SlideUp">
             <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding TopPosition}" Duration="0:0:0.8" Storyboard.TargetName="window" >
                 <DoubleAnimation.EasingFunction>
                     <CircleEase EasingMode="EaseOut"/>
@@ -53,7 +53,7 @@
                 <DiscreteObjectKeyFrame KeyTime="0:0:0.8" Value="{x:Static Visibility.Visible}"/>
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
-        <Storyboard x:Key="SlideDown" >
+        <Storyboard x:Key="SlideDown" Name="SlideDown" >
             <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding BottomPosition}" Duration="0:0:0.8" Storyboard.TargetName="window" >
                 <DoubleAnimation.EasingFunction>
                     <BounceEase EasingMode="EaseOut" Bounces="3" Bounciness="2"/>
@@ -156,8 +156,8 @@
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Style.Resources>
-                                <Storyboard x:Key="FlashIsLive" RepeatBehavior="Forever">
-                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="{x:Null}">
+                                <Storyboard x:Key="FlashIsLive">
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="{x:Null}" RepeatBehavior="Forever">
                                         <EasingColorKeyFrame KeyTime="0:0:0.5" Value="#FFB9FF00"/>
                                         <EasingColorKeyFrame KeyTime="0:0:1" Value="#FF004BB8"/>
                                     </ColorAnimationUsingKeyFrames>

@@ -4,6 +4,7 @@
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
 // DONE:  Add a Tooltip for when the Game name wont fit
 // DONE:  Add ContextMenu option to turn sounds off
+// FIX:   Removed slight but constant CPU hogging caused by the 'Is Live' animation running even when the popup is no longer visible
 
 
 using System;
@@ -263,6 +264,25 @@ namespace TwitchAlert
 
         private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
+            bool trimmed = TextBlockTooltipOpening(sender);
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        }
+
+        private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = TextBlockTooltipOpening(sender);
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        }
+
+        /// <summary>
+        /// Helper method for the TooltipOpening Event handlers
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <returns></returns>
+        private bool TextBlockTooltipOpening(object sender)
+        {
             var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
             if (trimmed)
             {
@@ -272,24 +292,11 @@ namespace TwitchAlert
                 // Then give it the full Status text to display
                 ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
             }
-            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
-            e.Handled = !trimmed;
+
+            return trimmed;
         }
 
-        private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
-            if (trimmed)
-            {
-                var tt = Resources["GameTooltip"] as ToolTip;
-                // Find the TextBlock from within the Tooltip Template that will display our Status text
-                var ttTextBlock = ((tt.Content as Border).Child as StackPanel).Children[1] as TextBlock;
-                // Then give it the full Status text to display
-                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
-            }
-            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
-            e.Handled = !trimmed;
-        }
+   
         #endregion
 
         private void FillInToast(User user)
@@ -343,7 +350,10 @@ namespace TwitchAlert
                 handler = (s, e) =>
                 {
                     sb.Completed -= handler;
-                    Console.WriteLine("Animation Completed");
+                    // Turn off the 'Is Live' animation whenever the popup is no longer visible.
+                    // Removes small but constant CPU hog
+                    if (sb.Name == "SlideDown") txtIsOnline.Text = "Is Offline";
+                    Console.WriteLine($"{sb.Name} Animation Completed");
                     tcs.SetResult(null);
                 };
                 sb.Completed += handler;
