@@ -3,6 +3,7 @@
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
 // DONE:  Add a Tooltip for when the Game name wont fit
+// DONE:  Add ContextMenu option to turn sounds off
 
 
 using System;
@@ -210,6 +211,8 @@ namespace TwitchAlert
                 toast.LeftPosition = this.Left = -15;       // The 15 takes into account the offset of the rootBorder to the main window
             else
                 toast.LeftPosition = this.Left = Properties.Settings.Default.settingsLeft;
+
+            miNITurnSoundOff.Checked = Properties.Settings.Default.settingsSoundOff;
         }
 
         private void window_ContentRendered(object sender, EventArgs e)
@@ -229,6 +232,8 @@ namespace TwitchAlert
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
                 Properties.Settings.Default.settingsUserName = USER_NAME;
+            Properties.Settings.Default.settingsSoundOff = miNITurnSoundOff.Checked;
+
             Properties.Settings.Default.Save();
 
             //Console.WriteLine("Property settings after save");
@@ -349,6 +354,7 @@ namespace TwitchAlert
 
         private void PlayOnlineSound()
         {
+            if (miNITurnSoundOff.Checked) return;
             using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav"))
             {
                 player.Play();
@@ -357,6 +363,7 @@ namespace TwitchAlert
 
         private void PlayOfflineSound()
         {
+            if (miNITurnSoundOff.Checked) return;
             using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav"))
             {
                 player.Play();

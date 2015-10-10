@@ -12,6 +12,7 @@ namespace TwitchAlert
         MenuItem miNIOnline;
         MenuItem miNIQuit;
         MenuItem miNIUserName;
+        MenuItem miNITurnSoundOff;
         NotifyIcon notifyIcon;
         UserNameWindow userNameWindow;
 
@@ -25,6 +26,7 @@ namespace TwitchAlert
             //Create MenuItems
             miNIOnline = new MenuItem { Text = "Who's Online?", Name="miNIOnline"};
             miNIUserName = new MenuItem { Text = "Change Username", Name = nameof(miNIUserName) };
+            miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
 
             // Attach events to MenuItems
@@ -41,8 +43,11 @@ namespace TwitchAlert
             {
                 ShowOnlineUsers();
             };
- 
-            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNIQuit });
+
+            miNITurnSoundOff.Click += (s, e) => {
+                miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
+            };
+            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => {
                 ShowOnlineUsers();
