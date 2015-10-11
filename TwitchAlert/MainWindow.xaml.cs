@@ -2,6 +2,7 @@
 // TEST:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
+// DONE:  Add key shortcut (Ctrl+ Alt+ C) to center the popup
 // DONE:  Add a Tooltip for when the Game name wont fit
 // DONE:  Add ContextMenu option to turn sounds off
 // FIX:   Removed slight but constant CPU hogging caused by the 'Is Live' animation running even when the popup is no longer visible
@@ -264,7 +265,7 @@ namespace TwitchAlert
 
         private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
-            bool trimmed = TextBlockTooltipOpening(sender);
+            bool trimmed = TextBlockTooltipOpening(sender,true);
             // Set Handled if we dont need the Tooltip so no empty Tooltip appears
             e.Handled = !trimmed;
         }
@@ -281,9 +282,9 @@ namespace TwitchAlert
         /// </summary>
         /// <param name="sender"></param>
         /// <returns></returns>
-        private bool TextBlockTooltipOpening(object sender)
+        private bool TextBlockTooltipOpening(object sender,bool multiLine=false)
         {
-            var trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
+            var trimmed = multiLine ? CalculateIsTextTrimmedMultiline(sender as TextBlock) : CalculateIsTextTrimmed(sender as TextBlock);
             if (trimmed)
             {
                 var tt = Resources["StatusTooltip"] as ToolTip;
@@ -411,6 +412,35 @@ namespace TwitchAlert
             return (formattedText.Height > textBlock.ActualHeight);
         }
 
-  
+        public static bool CalculateIsTextTrimmed(TextBlock textBlock)
+        {
+            Typeface typeface = new Typeface(
+                textBlock.FontFamily,
+                textBlock.FontStyle,
+                textBlock.FontWeight,
+                textBlock.FontStretch);
+
+            // FormattedText is used to measure the whole width of the text held up by TextBlock container
+            FormattedText formattedText = new FormattedText(
+                textBlock.Text,
+                System.Threading.Thread.CurrentThread.CurrentCulture,
+                textBlock.FlowDirection,
+                typeface,
+                textBlock.FontSize,
+                textBlock.Foreground);
+
+            // When the maximum text width of the FormattedText instance is set to the actual
+            // width of the textBlock, if the textBlock is being trimmed to fit then the formatted
+            // text will report a larger height than the textBlock. Should work whether the
+            // textBlock is single or multi-line.
+            return formattedText.Width > textBlock.ActualWidth;
+        }
+
+        private void window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl+ Shift+ C centers the popup
+            if ((Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl)) && e.Key == Key.C)
+                toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
+        }
     }
 }

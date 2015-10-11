@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
         xmlns:classes="clr-namespace:TwitchAlert.classes" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Name="window" x:Class="TwitchAlert.MainWindow"
-        mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded">
+        mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded" KeyDown="window_KeyDown">
     <Window.Resources>
         <classes:BoolToIsLiveConverter x:Key="BoolToIsLiveConverter"/>
 
