@@ -352,7 +352,7 @@ namespace TwitchAlert
                     sb.Completed -= handler;
                     // Turn off the 'Is Live' animation whenever the popup is no longer visible.
                     // Removes small but constant CPU hog
-                    if (sb.Name == "SlideDown") txtIsOnline.Text = "Is Offline";
+                    if (sb.Name == "SlideDown") toast.IsLive=false;
                     Console.WriteLine($"{sb.Name} Animation Completed");
                     tcs.SetResult(null);
                 };
