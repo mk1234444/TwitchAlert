@@ -11,5 +11,8 @@
     <Setting Name="settingsSoundOff" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="settingsMe" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mk1234444</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

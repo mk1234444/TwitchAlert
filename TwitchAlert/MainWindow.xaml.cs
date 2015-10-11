@@ -126,6 +126,7 @@ namespace TwitchAlert
 
         Toast toast = new Toast();
         string USER_NAME = Properties.Settings.Default.settingsUserName;
+        
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
@@ -263,6 +264,7 @@ namespace TwitchAlert
             toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height + 15);
         }
 
+        #region Tooltip Event Handlers
         private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
             bool trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
@@ -282,21 +284,20 @@ namespace TwitchAlert
         private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
             var trimmed = CalculateIsTextTrimmed(sender as TextBlock);
-            if(trimmed)
+            if (trimmed)
             {
                 var tt = Resources["GameTooltip"] as ToolTip;
-                // Find the TextBlock from within the Tooltip Template that will display our Status text
+                // Find the TextBlock from within the Tooltip Template that will display our Game text
                 var ttTextBlock = (tt.Content as Border).Child as TextBlock;
-                // Then give it the full Status text to display
+                // Then give it the full Game text to display
                 ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Game;
             }
             // Set Handled if we dont need the Tooltip so no empty Tooltip appears
             e.Handled = !trimmed;
-        }
+        } 
+        #endregion
 
-  
 
-   
         #endregion
 
         private void FillInToast(User user)

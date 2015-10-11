@@ -58,5 +58,17 @@ namespace TwitchAlert.Properties {
                 this["settingsSoundOff"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("mk1234444")]
+        public string settingsMe {
+            get {
+                return ((string)(this["settingsMe"]));
+            }
+            set {
+                this["settingsMe"] = value;
+            }
+        }
     }
 }

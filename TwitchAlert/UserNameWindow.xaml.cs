@@ -43,7 +43,7 @@ namespace TwitchAlert
 
         private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            txtUserName.Text = "mk1234444";
+            txtUserName.Text = Properties.Settings.Default.settingsMe;
         }
     }
 }
