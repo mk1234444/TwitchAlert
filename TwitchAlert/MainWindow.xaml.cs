@@ -265,26 +265,7 @@ namespace TwitchAlert
 
         private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
-            bool trimmed = TextBlockTooltipOpening(sender,true);
-            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
-            e.Handled = !trimmed;
-        }
-
-        private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
-        {
-            var trimmed = TextBlockTooltipOpening(sender);
-            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
-            e.Handled = !trimmed;
-        }
-
-        /// <summary>
-        /// Helper method for the TooltipOpening Event handlers
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <returns></returns>
-        private bool TextBlockTooltipOpening(object sender,bool multiLine=false)
-        {
-            var trimmed = multiLine ? CalculateIsTextTrimmedMultiline(sender as TextBlock) : CalculateIsTextTrimmed(sender as TextBlock);
+            bool trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
             if (trimmed)
             {
                 var tt = Resources["StatusTooltip"] as ToolTip;
@@ -294,8 +275,26 @@ namespace TwitchAlert
                 ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Status;
             }
 
-            return trimmed;
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
         }
+
+        private void txtGame_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = CalculateIsTextTrimmed(sender as TextBlock);
+            if(trimmed)
+            {
+                var tt = Resources["GameTooltip"] as ToolTip;
+                // Find the TextBlock from within the Tooltip Template that will display our Status text
+                var ttTextBlock = (tt.Content as Border).Child as TextBlock;
+                // Then give it the full Status text to display
+                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).Game;
+            }
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        }
+
+  
 
    
         #endregion

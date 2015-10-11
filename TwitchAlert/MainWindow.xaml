@@ -25,19 +25,19 @@
         <ToolTip x:Key="StatusTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
             <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000" Style="{StaticResource TooltipBorderStyle}">
                 <StackPanel Orientation="Vertical" >
-                    <TextBlock Text="Status" HorizontalAlignment="Center" Foreground="Yellow" >
+                    <TextBlock Text="Status" HorizontalAlignment="Center" Foreground="Yellow" Margin="0,1,0,2" >
                         <TextBlock.TextDecorations>
                             <TextDecoration/>
                         </TextBlock.TextDecorations>
                     </TextBlock>
-                    <TextBlock FontSize="10" Height="auto" FontWeight="Normal" TextWrapping="Wrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center" MaxWidth="150"/>
+                    <TextBlock FontSize="11" Height="auto" FontWeight="Normal" TextWrapping="Wrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center" MaxWidth="150"/>
                 </StackPanel>
             </Border>
         </ToolTip>
 
         <ToolTip x:Key="GameTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
             <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000" Style="{StaticResource TooltipBorderStyle}">
-                <TextBlock FontSize="10" Height="auto" Width="auto" FontWeight="Normal" TextWrapping="NoWrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center"/>
+                <TextBlock FontSize="11" Height="auto" Width="auto" FontWeight="Normal" TextWrapping="NoWrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center"/>
             </Border>
         </ToolTip>
 
@@ -134,7 +134,7 @@
                     </Hyperlink>
                     </TextBlock>
                     <Separator Style="{StaticResource SperatorStyle}" Margin="0" />
-                    <TextBlock x:Name="txtGame" Text="{Binding Game}" Height="auto" Width="auto" Foreground="Red" FontSize="12" TextWrapping="NoWrap" MaxWidth="140" Padding="2,0" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" ToolTipOpening="txtGame_ToolTipOpening"/>
+                    <TextBlock x:Name="txtGame" Text="{Binding Game}" Height="auto" Width="auto" Foreground="Red" FontSize="12" TextWrapping="NoWrap" MaxWidth="140" Padding="2,0" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" ToolTip="{StaticResource GameTooltip}" ToolTipOpening="txtGame_ToolTipOpening"/>
                     <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" ToolTip="{StaticResource StatusTooltip}" ToolTipOpening="txtStatus_ToolTipOpening" />
                     <Separator Style="{StaticResource SperatorStyle}"/>
                     <TextBlock x:Name="txtCreatedAt" Text="{Binding StreamCreatedAt}" FontSize="9" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Foreground="#FF16ADCF" Background="#FF040029" Margin="2,0,0,0" TextAlignment="Center" />

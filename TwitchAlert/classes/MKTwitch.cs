@@ -194,6 +194,12 @@ namespace TwitchAlert.classes
                 var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
                 // Update his info
                 followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
+
+             
+
+
+
+
                 followed.NumViewers = streamer.viewers;
                 followed.Game = streamer.game;
 
@@ -322,6 +328,7 @@ namespace TwitchAlert.classes
                     {
                         isUserLive = true;
                         createdAt = streamer.channel.created_at.Split('T')[1].Replace("Z", "");
+
                         numViewers = streamer.viewers;
                     }
                 }
