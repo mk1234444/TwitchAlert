@@ -13,6 +13,7 @@ namespace TwitchAlert
         MenuItem miNIQuit;
         MenuItem miNIUserName;
         MenuItem miNITurnSoundOff;
+        MenuItem miNISkipPopupsAtStart;
         NotifyIcon notifyIcon;
         UserNameWindow userNameWindow;
 
@@ -27,31 +28,23 @@ namespace TwitchAlert
             miNIOnline = new MenuItem { Text = "Who's Online?", Name="miNIOnline"};
             miNIUserName = new MenuItem { Text = "Change Username", Name = nameof(miNIUserName) };
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
+            miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
 
             // Attach events to MenuItems
-            miNIQuit.Click += (s, e) => {
-                this.Close();
-            };
+            miNIQuit.Click += (s, e) => this.Close();
 
-            miNIUserName.Click += (s, e) =>
-            {
-                GetUserName();
-            };
+            miNIUserName.Click += (s, e) => GetUserName();
 
-            miNIOnline.Click +=  (s, e) =>
-            {
-                ShowOnlineUsers();
-            };
+            miNIOnline.Click +=  (s, e) => ShowOnlineUsers();
 
-            miNITurnSoundOff.Click += (s, e) => {
-                miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
-            };
-            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNIQuit });
+            miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
+
+            miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
+
+            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
-            notifyIcon.DoubleClick += (s, e) => {
-                ShowOnlineUsers();
-            };
+            notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.ContextMenu = contextMenu;
         }
 

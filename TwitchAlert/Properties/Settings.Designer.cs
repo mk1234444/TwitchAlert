@@ -70,5 +70,17 @@ namespace TwitchAlert.Properties {
                 this["settingsMe"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool settingsSkipPopups {
+            get {
+                return ((bool)(this["settingsSkipPopups"]));
+            }
+            set {
+                this["settingsSkipPopups"] = value;
+            }
+        }
     }
 }

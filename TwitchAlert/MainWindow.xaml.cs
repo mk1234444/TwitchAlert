@@ -1,12 +1,13 @@
-﻿// 0.4.3
+﻿// 0.4.4
 // TEST:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
 // TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
-// DONE:  Add key shortcut (Ctrl+ Alt+ C) to center the popup
-// DONE:  Add a Tooltip for when the Game name wont fit
-// DONE:  Add ContextMenu option to turn sounds off
-// FIX:   Removed slight but constant CPU hogging caused by the 'Is Live' animation running even when the popup is no longer visible
-
+// TODO:  Add options in the ContextMenu to recieve popups whenever a streamer changes their Game and/or Status message
+// DONE:  Add option in the ContextMenu to skip popups when the app firsts starts. If a user follows 100s of
+//        streamers then there is the potential for dozens of those streamers to already be streaming at startup triggering
+//        popups for them all.
+// FIXED: Removed the 25 limit on the get followed users call
+// DONE:  Added 'Retrieving information...' to the NotifyIcon Tooltip during first pull
 
 using System;
 using System.ComponentModel;
@@ -187,7 +188,8 @@ namespace TwitchAlert
                 GetUserName();
                 //notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             }
-            MKTwitch.Start(USER_NAME);
+            notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
+            MKTwitch.Start(USER_NAME, Properties.Settings.Default.settingsSkipPopups);
         }
 
         #region Windows Events
@@ -216,6 +218,7 @@ namespace TwitchAlert
                 toast.LeftPosition = this.Left = Properties.Settings.Default.settingsLeft;
 
             miNITurnSoundOff.Checked = Properties.Settings.Default.settingsSoundOff;
+            miNISkipPopupsAtStart.Checked = Properties.Settings.Default.settingsSkipPopups;
         }
 
         private void window_ContentRendered(object sender, EventArgs e)
@@ -236,6 +239,7 @@ namespace TwitchAlert
             if(!string.IsNullOrEmpty(USER_NAME))
                 Properties.Settings.Default.settingsUserName = USER_NAME;
             Properties.Settings.Default.settingsSoundOff = miNITurnSoundOff.Checked;
+            Properties.Settings.Default.settingsSkipPopups = miNISkipPopupsAtStart.Checked;
 
             Properties.Settings.Default.Save();
 
@@ -354,7 +358,7 @@ namespace TwitchAlert
                     // Turn off the 'Is Live' animation whenever the popup is no longer visible.
                     // Removes small but constant CPU hog
                     if (sb.Name == "SlideDown") toast.IsLive=false;
-                    Console.WriteLine($"{sb.Name} Animation Completed");
+                  //  Console.WriteLine($"{sb.Name} Animation Completed");
                     tcs.SetResult(null);
                 };
                 sb.Completed += handler;

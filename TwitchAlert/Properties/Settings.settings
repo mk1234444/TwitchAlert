@@ -14,5 +14,8 @@
     <Setting Name="settingsMe" Type="System.String" Scope="User">
       <Value Profile="(Default)">mk1234444</Value>
     </Setting>
+    <Setting Name="settingsSkipPopups" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
