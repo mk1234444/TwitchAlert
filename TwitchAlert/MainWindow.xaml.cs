@@ -8,6 +8,8 @@
 //        popups for them all.
 // FIXED: Removed the 25 limit on the get followed users call
 // DONE:  Added 'Retrieving information...' to the NotifyIcon Tooltip during first pull
+// DONE:  Pressing Esc during a popup cycle will stop that cycle (This does not turn off future popups)
+// TODO:  Disables the Change Username MenuItem at startup until MKTwitch.Start() has completed
 
 using System;
 using System.ComponentModel;
@@ -182,6 +184,9 @@ namespace TwitchAlert
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             };
 
+            MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true; };
+
+
             // If we dont have a username then keep asking till we get one
             while (string.IsNullOrEmpty(USER_NAME))
             {
@@ -252,6 +257,15 @@ namespace TwitchAlert
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl+ Shift+ C centers the popup
+            if ((Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl)) && e.Key == Key.C)
+                toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
+            else if (e.Key == Key.Escape)
+                MKTwitch.CancelPopupCycle = true;
         }
         #endregion
 
@@ -440,11 +454,6 @@ namespace TwitchAlert
             return formattedText.Width > textBlock.ActualWidth;
         }
 
-        private void window_KeyDown(object sender, KeyEventArgs e)
-        {
-            // Ctrl+ Shift+ C centers the popup
-            if ((Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl)) && e.Key == Key.C)
-                toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
-        }
+      
     }
 }

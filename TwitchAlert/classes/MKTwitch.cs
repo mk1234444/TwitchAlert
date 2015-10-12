@@ -14,10 +14,11 @@ namespace TwitchAlert.classes
 {
     public static class MKTwitch
     {
+        public static bool CancelPopupCycle = false;
         static bool skipPopupsAtStart = false;
         /// <summary>
         /// Indicates that the Start() Method has been run. Start() has to
-        /// be run once tosetup the Timer and stuff
+        /// be run once to setup the Timer and stuff
         /// </summary>
         public static bool IsStarted;
         private static bool IsUpdating;
@@ -47,6 +48,7 @@ namespace TwitchAlert.classes
         public static event EventHandler<MKTwitchEventArgs> OffLine;
         public static event EventHandler<MKTwitchUpdatingEventArgs> Updating;
         public static event EventHandler<MKTwitchFollowedUsersEventArgs> FollowedUsersChanged;
+        public static event EventHandler StartCompleted;
         #endregion
 
         #region Event Trigger Methods
@@ -85,6 +87,18 @@ namespace TwitchAlert.classes
                 handler.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedUsers });
             }
         }
+
+        private static void OnStartCompleted()
+        {
+            EventHandler handler = StartCompleted;
+            if(handler !=null)
+            {
+                handler.Invoke(null, EventArgs.Empty);
+            }
+        }
+
+
+
         #endregion
 
         public static List<User> followedUsers = new List<User>();
@@ -179,6 +193,7 @@ namespace TwitchAlert.classes
             };
             timer.Start();
             IsStarted = true;
+            OnStartCompleted();
         }
 
 
@@ -210,7 +225,7 @@ namespace TwitchAlert.classes
                 // set his isStreaming property to true
                 followed.IsStreaming = true;
                 // and throw up a popup
-                OnOnline(followed);
+                if(!CancelPopupCycle) OnOnline(followed);
                 Console.WriteLine($"\n{ followed.Name} is live with {followed.Game}");
                 await Task.Delay(6000);
             }
@@ -229,7 +244,7 @@ namespace TwitchAlert.classes
                         continue;
                     Console.WriteLine($"{ns.Name}'s offlineCount is {ns.OfflineCount}");
                     ns.IsStreaming = false;
-                    OnOffline(ns);
+                    if(!CancelPopupCycle) OnOffline(ns);
                     Console.WriteLine($"\n{ ns.Name} has gone Offline");
                     await Task.Delay(6000);
                 }
@@ -299,24 +314,10 @@ namespace TwitchAlert.classes
         private async static Task SetupStreamTracker( string userName)
         {
             int numUsers = 0;
-            var users1 = new List<Twitch.Root>();
-            var streamers1 = new List<TwitchStreamers.RootObject>();
             var users = GetUsersFollowedChannels(userName);
             numUsers = users._total;
             TwitchStreamers.RootObject streamers = await GetStreamers(users);
-            // users1.Add(users);
-
-
-            //foreach(var u in users.follows)
-            //{
-            //    Console.WriteLine(u.channel.display_name);
-            //}
-
-            //Console.WriteLine();
-
-
-
-
+     
             for (int offset = 100; offset < numUsers; offset += 100)
             {
                 // users1.Add(GetUsersFollowedChannels(userName, 100, offset));
@@ -328,51 +329,9 @@ namespace TwitchAlert.classes
                 {
                     var stre = (await GetStreamers(u));
                     streamers.streams.AddRange(stre.streams);
-
-                    //streamers.streams.ForEach(i => {
-                    //    Console.WriteLine(i.channel.display_name + " streaming");
-                    //    });
-
-                
-            
                 }
                 streamers._total = streamers.streams.Count;
             }
-
-
-            Console.WriteLine("FOLLOWED");
-            foreach (var u in users.follows)
-            {
-                Console.WriteLine(u.channel.display_name);
-            }
-
-            Console.WriteLine();
-
-            Console.WriteLine("STREAMING");
-            streamers.streams.ForEach(i => {
-                Console.WriteLine(i.channel.display_name + " streaming");
-            });
-            Console.WriteLine();
-
-
-
-
-
-
-            // = new TwitchStreamers.RootObject();
-
-            //foreach (var user1 in users1)
-            //{
-            //    if (streamers == null)
-            //        streamers = await GetStreamers(user1);
-            //    else
-            //        streamers.streams.AddRange((await GetStreamers(user1)).streams);
-            //    streamers._total = streamers.streams.Count;
-            //}
-
-
-
-
 
             if (users == null) return;
 
@@ -423,6 +382,7 @@ namespace TwitchAlert.classes
             {
                 foreach (var user in followedUsers.Where(i => i.IsStreaming))
                 {
+                    if (CancelPopupCycle) break;
                     OnOnline(user);
                     await Task.Delay(6000);
                 }

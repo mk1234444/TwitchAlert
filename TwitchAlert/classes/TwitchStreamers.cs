@@ -55,6 +55,8 @@ namespace TwitchAlert.classes
             public string profile_banner_background_color { get; set; }
             public int views { get; set; }
             public string language { get; set; }
+
+            public override string ToString() => display_name;
         }
 
         public class Stream

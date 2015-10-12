@@ -26,7 +26,7 @@ namespace TwitchAlert
             contextMenu = new ContextMenu();
             //Create MenuItems
             miNIOnline = new MenuItem { Text = "Who's Online?", Name="miNIOnline"};
-            miNIUserName = new MenuItem { Text = "Change Username", Name = nameof(miNIUserName) };
+            miNIUserName = new MenuItem { Text = "Change Username", Name = nameof(miNIUserName), Enabled = false };
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
@@ -58,24 +58,25 @@ namespace TwitchAlert
         private void GetUserName()
         {
             userNameWindow = new UserNameWindow();
-            Action<string> checkHandler = null;
+            Action<string> newUserHandler = null;
             
-            checkHandler = async (newUserName) =>
+            newUserHandler = async (newUserName) =>
             {
                 if (!string.IsNullOrEmpty(newUserName))
                 {
-                    if (!MKTwitch.UserExists(newUserName)) return;
+                    if (newUserName == USER_NAME || !MKTwitch.UserExists(newUserName)) return;
                     USER_NAME = newUserName;
                     if (MKTwitch.IsStarted)
                     {
+                        MKTwitch.CancelPopupCycle = true;
                         await MKTwitch.ChangeUser(USER_NAME);
                         notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
                     }
                 }
-                userNameWindow.Check -= checkHandler;
+                userNameWindow.Check -= newUserHandler;
                 userNameWindow = null;
             };
-            userNameWindow.Check += checkHandler;
+            userNameWindow.Check += newUserHandler;
             userNameWindow.ShowDialog();
         }
 
