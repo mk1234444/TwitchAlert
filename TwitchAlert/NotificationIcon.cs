@@ -82,21 +82,20 @@ namespace TwitchAlert
 
         private async Task ShowOnlineUsers()
         {
-            //MKTwitch.ShowingOnlineUsers = true;
             int count = 0;
             foreach (var user in MKTwitch.followedUsers.Where(i => i.IsStreaming))
             {
                 count++;
-                // MKTwitch.TriggerOnline(user);
-                PlayOnlineSound();
-                FillInToast(user);
-                await DisplayToast();
-                //await Task.Delay(6000);
+                if (!MKTwitch.CancelPopupCycle)
+                {
+                    PlayOnlineSound();
+                    FillInToast(user);
+                    await DisplayToast();
+                }
             }
-
+            MKTwitch.CancelPopupCycle = false;
             if (count == 0)
                 DisplayToast(true);
-            //MKTwitch.ShowingOnlineUsers = false;
         }
 
         public void DisposeNotifyIcon()

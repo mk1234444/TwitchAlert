@@ -402,6 +402,7 @@ namespace TwitchAlert.classes
                     OnOnline(user);
                     await Task.Delay(6000);
                 }
+                CancelPopupCycle = false;
             }
         }
 

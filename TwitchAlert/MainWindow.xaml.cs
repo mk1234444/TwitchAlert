@@ -221,10 +221,11 @@ namespace TwitchAlert
                 toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
             // If the Left was saved previously off the left side of the screen then reset is so the full popup will be displayed at the left
             else if (Properties.Settings.Default.settingsLeft < 0)
-                toast.LeftPosition = this.Left = -15;       // The 15 takes into account the offset of the rootBorder to the main window
+                toast.LeftPosition = this.Left;
+            //toast.LeftPosition = this.Left = -15;       // The 15 takes into account the offset of the rootBorder to the main window
             else
                 toast.LeftPosition = this.Left = Properties.Settings.Default.settingsLeft;
-
+     
             miNITurnSoundOff.Checked = Properties.Settings.Default.settingsSoundOff;
             miNISkipPopupsAtStart.Checked = Properties.Settings.Default.settingsSkipPopups;
         }
