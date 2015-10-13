@@ -171,11 +171,14 @@ namespace TwitchAlert
                 DisplayToast();
             };
 
-            // Subscribe to the MKTwitch Updating event so we hear about
-            // when it is in the middle of updating its Twitch info
-            MKTwitch.Updating += (s, e) => {
-                txtUpdating.Visibility = e.IsUpdating ? Visibility.Visible : Visibility.Collapsed;
-            };
+            // Subscribe to the MKTwitch UpdateStarted event so we hear about
+            // when we've started updating our Twitch info
+            MKTwitch.UpdateStarted += (s, e) => txtUpdating.Visibility = Visibility.Visible;
+
+            // Subscribe to the MKTwitch UpdateStarted event so we hear about
+            // when we've completed updating our Twitch info
+            MKTwitch.UpdateCompleted += (s, e) => txtUpdating.Visibility = Visibility.Collapsed;
+
 
             // Subscribe to the MKTwitch FollowedUsersChanged event so we hear about
             // when its collection of FollowedUsers has changed

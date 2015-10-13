@@ -44,9 +44,16 @@ namespace TwitchAlert.classes
         #endregion
 
         #region Events
+        /// <summary>
+        /// Invoked when a streamer goes from Offline to Online
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> Online;
+        /// <summary>
+        /// Invoked when a streamer goes from Online to Offline
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> OffLine;
-        public static event EventHandler<MKTwitchUpdatingEventArgs> Updating;
+        public static event EventHandler<MKTwitchUpdatingEventArgs> UpdateStarted;
+        public static event EventHandler<MKTwitchUpdatingEventArgs> UpdateCompleted;
         public static event EventHandler<MKTwitchFollowedUsersEventArgs> FollowedUsersChanged;
         public static event EventHandler StartCompleted;
         #endregion
@@ -70,9 +77,18 @@ namespace TwitchAlert.classes
             }
         }
 
-        private static void OnUpdating(bool isUpdating)
+        private static void OnUpdateStarted(bool isUpdating)
         {
-            EventHandler<MKTwitchUpdatingEventArgs> handler = Updating;
+            EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateStarted;
+            if (handler != null)
+            {
+                handler.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = isUpdating });
+            }
+        }
+
+        private static void OnUpdateCompleted(bool isUpdating)
+        {
+            EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateCompleted;
             if (handler != null)
             {
                 handler.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = isUpdating });
@@ -127,12 +143,12 @@ namespace TwitchAlert.classes
             timer.Tick+= async(s,e) => 
             {
                 if (followedUsers.Count == 0) return;
-                OnUpdating(IsUpdating = true);
+                OnUpdateStarted(IsUpdating = true);
                 timer.Stop();
                 await Update();
 
                 Console.Write(".");
-                OnUpdating(IsUpdating = false);
+                OnUpdateCompleted(IsUpdating = false);
 
                 #region Old
                 //foreach (var u in followedUsers)
