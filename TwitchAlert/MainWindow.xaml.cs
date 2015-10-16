@@ -9,7 +9,8 @@
 // FIXED: Removed the 25 limit on the get followed users call
 // DONE:  Added 'Retrieving information...' to the NotifyIcon Tooltip during first pull
 // DONE:  Pressing Esc during a popup cycle will stop that cycle (This does not turn off future popups)
-// TODO:  Disables the Change Username MenuItem at startup until MKTwitch.Start() has completed
+// DONE:  Disables the Change Username MenuItem at startup until MKTwitch.Start() has completed
+
 
 using System;
 using System.ComponentModel;
@@ -88,7 +89,7 @@ namespace TwitchAlert
             public string StreamCreatedAt
             {
                 get { return (string)GetValue(StreamCreatedAtProperty); }
-                set { SetValue(StreamCreatedAtProperty, $"Started: {value}   ({Viewers} Viewers)"); }
+                set { SetValue(StreamCreatedAtProperty, $"Started: {value} ({Viewers} Viewers)"); }
             }
 
             public string Link
@@ -142,14 +143,12 @@ namespace TwitchAlert
             SlideUpStoryboard = FindResource("SlideUp") as Storyboard;
             SlideDownStoryboard = FindResource("SlideDown") as Storyboard;
 
-
             //DispatcherTimer debugTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1)};
             //debugTimer.Tick += (s, e) => {
             //    txtTopPostion.Text = $"TopPosition {toast.TopPosition.ToString()} this.Top {this.Top}";
             //   // Console.WriteLine(toast.TopPosition);
             //};
             //debugTimer.Start();
-
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live
@@ -318,8 +317,6 @@ namespace TwitchAlert
             e.Handled = !trimmed;
         } 
         #endregion
-
-
         #endregion
 
         private void FillInToast(User user)
@@ -457,7 +454,5 @@ namespace TwitchAlert
             // textBlock is single or multi-line.
             return formattedText.Width > textBlock.ActualWidth;
         }
-
-      
     }
 }

@@ -30,18 +30,12 @@ namespace TwitchAlert
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
-
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
-
             miNIUserName.Click += (s, e) => GetUserName();
-
             miNIOnline.Click +=  (s, e) => ShowOnlineUsers();
-
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
-
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
-
             contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
@@ -73,10 +67,10 @@ namespace TwitchAlert
                         notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
                     }
                 }
-                userNameWindow.Check -= newUserHandler;
+                userNameWindow.NewUser -= newUserHandler;
                 userNameWindow = null;
             };
-            userNameWindow.Check += newUserHandler;
+            userNameWindow.NewUser += newUserHandler;
             userNameWindow.ShowDialog();
         }
 

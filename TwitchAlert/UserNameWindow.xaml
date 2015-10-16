@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
         mc:Ignorable="d"
-        Title="UserNameWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SizeToContent="WidthAndHeight" Background="{x:Null}" Closing="Window_Closing" Topmost="True" ContentRendered="Window_ContentRendered" MouseDoubleClick="Window_MouseDoubleClick">
+        Title="UserNameWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SizeToContent="WidthAndHeight" Background="{x:Null}" Closing="Window_Closing" Topmost="True" ContentRendered="Window_ContentRendered" MouseDoubleClick="Window_MouseDoubleClick" KeyUp="Window_KeyUp">
     <Border Width="auto" Height="auto" BorderThickness="1" Background="#FF6441A5" CornerRadius="3" BorderBrush="#FFD1D1D1">
         <Grid Height="auto" Width="auto" VerticalAlignment="Top" HorizontalAlignment="Left">
             <Grid.ColumnDefinitions>

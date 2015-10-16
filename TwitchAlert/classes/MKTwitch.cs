@@ -62,59 +62,38 @@ namespace TwitchAlert.classes
         private static void OnOnline(User user)
         {
             EventHandler<MKTwitchEventArgs> handler = Online;
-            if (handler != null)
-            {
-                handler.Invoke(null, new MKTwitchEventArgs { User = user });
-            }
+            handler?.Invoke(null, new MKTwitchEventArgs { User = user });
         }
 
         private static void OnOffline(User user)
         {
             EventHandler<MKTwitchEventArgs> handler = OffLine;
-            if (handler != null)
-            {
-                handler.Invoke(null, new MKTwitchEventArgs { User = user });
-            }
+            handler?.Invoke(null, new MKTwitchEventArgs{ User = user});
         }
 
         private static void OnUpdateStarted(bool isUpdating)
         {
             EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateStarted;
-            if (handler != null)
-            {
-                handler.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = isUpdating });
-            }
+            handler?.Invoke(null, new MKTwitchUpdatingEventArgs{ IsUpdating = isUpdating});
         }
 
         private static void OnUpdateCompleted(bool isUpdating)
         {
             EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateCompleted;
-            if (handler != null)
-            {
-                handler.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = isUpdating });
-            }
+            handler?.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = IsUpdating });
         }
 
         private static void OnFollowedUsersChanged()
         {
             EventHandler<MKTwitchFollowedUsersEventArgs> handler = FollowedUsersChanged;
-            if (handler != null)
-            {
-                handler.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedUsers });
-            }
+            handler?.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedUsers });
         }
 
         private static void OnStartCompleted()
         {
             EventHandler handler = StartCompleted;
-            if(handler !=null)
-            {
-                handler.Invoke(null, EventArgs.Empty);
-            }
+            handler?.Invoke(null, EventArgs.Empty);
         }
-
-
-
         #endregion
 
         public static List<User> followedUsers = new List<User>();
@@ -130,8 +109,8 @@ namespace TwitchAlert.classes
             }
             await SetupStreamTracker(userName);
             timer.Start();
-
         }
+
         public async static void Start(string userName, bool skipToastAtStart=false)
         {
             skipPopupsAtStart = skipToastAtStart;
@@ -143,12 +122,11 @@ namespace TwitchAlert.classes
             timer.Tick+= async(s,e) => 
             {
                 if (followedUsers.Count == 0) return;
-                OnUpdateStarted(IsUpdating = true);
+              //  OnUpdateStarted(IsUpdating = true);
                 timer.Stop();
                 await Update();
-
                 Console.Write(".");
-                OnUpdateCompleted(IsUpdating = false);
+              //  OnUpdateCompleted(IsUpdating = false);
 
                 #region Old
                 //foreach (var u in followedUsers)
@@ -215,7 +193,10 @@ namespace TwitchAlert.classes
 
         private static async Task Update()
         {
+            OnUpdateStarted(true);
             var streamers = await GetStreamers();
+            OnUpdateCompleted(false);
+
             if (streamers == null) return;
 
             var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
@@ -236,7 +217,6 @@ namespace TwitchAlert.classes
                     followed.OfflineCount = 0;
                     continue;
                 }
-
                 // user has started streaming so...
                 // set his isStreaming property to true
                 followed.IsStreaming = true;
@@ -329,8 +309,11 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         private async static Task SetupStreamTracker( string userName)
         {
+            CancelPopupCycle = false;
             int numUsers = 0;
             var users = GetUsersFollowedChannels(userName);
+            if (users == null) return;
+
             numUsers = users._total;
             TwitchStreamers.RootObject streamers = await GetStreamers(users);
      
@@ -348,9 +331,6 @@ namespace TwitchAlert.classes
                 }
                 streamers._total = streamers.streams.Count;
             }
-
-            if (users == null) return;
-
 
             followedUsers.Clear();
             foreach (var followedUser in users.follows)
@@ -437,8 +417,6 @@ namespace TwitchAlert.classes
             //return JsonConvert.DeserializeObject<Twitch.Root>(Get(url));
         }
 
-        
-
         public static bool UserExists(string userName)
         {
             //GET https://api.twitch.tv/kraken/user
@@ -520,7 +498,6 @@ namespace TwitchAlert.classes
             url += userNames.Remove(userNames.Length - 1);
             return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
         }
-
 
         /// <summary>
         /// Gets JSON response as a string

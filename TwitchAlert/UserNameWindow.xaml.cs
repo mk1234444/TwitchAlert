@@ -9,7 +9,7 @@ namespace TwitchAlert
     /// </summary>
     public partial class UserNameWindow : Window
     {
-        public event Action<string>Check;
+        public event Action<string>NewUser;
         public UserNameWindow()
         {
             InitializeComponent();
@@ -17,8 +17,8 @@ namespace TwitchAlert
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Check != null)
-                Check(txtUserName.Text);
+            if (NewUser != null)
+                NewUser(txtUserName.Text);
         }
 
         private void txtUserName_KeyUp(object sender, KeyEventArgs e)
@@ -34,6 +34,11 @@ namespace TwitchAlert
         private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             txtUserName.Text = Properties.Settings.Default.settingsMe;
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape) this.Close();
         }
     }
 }
