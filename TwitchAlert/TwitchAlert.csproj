@@ -67,6 +67,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="classes\TwitchStreamers.cs" />
+    <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">
+      <DependentUpon>SampleDataSource.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserNameWindow.xaml.cs">
       <DependentUpon>UserNameWindow.xaml</DependentUpon>
     </Compile>
@@ -89,6 +92,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SampleData\SampleDataSource\SampleDataSource.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UserNameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,11 +126,13 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="SampleData\SampleDataSource\SampleDataSource.xsd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="static-cdn.jtvnw.net_jtv_user_pictures_2mgovercsquared-profile_image-5329ba7f8158dba8-300x300.png" />
     <None Include="Resources\64_twitch.ico" />
     <None Include="Resources\48_twitch.ico" />
     <None Include="Resources\32_twitch.ico">
@@ -132,6 +141,9 @@
     <None Include="Resources\1442938010_twitch-2048-black.ico" />
     <Resource Include="images\404_user_150x150.png" />
     <Content Include="sounds\165316__ani-music__synthesizer-echo-plinks-2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sounds\Balloon_Popping_SoundBible.com_1247261379.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="sounds\Door_Bell-SoundBible.wav">

@@ -35,6 +35,8 @@ namespace TwitchAlert.classes
         public class MKTwitchEventArgs : EventArgs
         {
             public User User { get; set; }
+            public string NewGame { get; set; }
+            public string NewStatus { get; set; }
         }
 
         public class MKTwitchFollowedUsersEventArgs:EventArgs
@@ -52,10 +54,24 @@ namespace TwitchAlert.classes
         /// Invoked when a streamer goes from Online to Offline
         /// </summary>
         public static event EventHandler<MKTwitchEventArgs> OffLine;
+        /// <summary>
+        /// Invoked when a streamer update check has started
+        /// </summary>
         public static event EventHandler<MKTwitchUpdatingEventArgs> UpdateStarted;
+        /// <summary>
+        /// Invoked when a streamer update check has completed
+        /// </summary>
         public static event EventHandler<MKTwitchUpdatingEventArgs> UpdateCompleted;
+        /// <summary>
+        /// Invoked whenever the followedUsers collection has changed
+        /// </summary>
         public static event EventHandler<MKTwitchFollowedUsersEventArgs> FollowedUsersChanged;
+        /// <summary>
+        /// Invoked when the MKTwitch.Start() method has completed
+        /// </summary>
         public static event EventHandler StartCompleted;
+        public static event EventHandler<MKTwitchEventArgs> GameChanged;
+        public static event EventHandler<MKTwitchEventArgs> StatusChanged;
         #endregion
 
         #region Event Trigger Methods
@@ -94,7 +110,24 @@ namespace TwitchAlert.classes
             EventHandler handler = StartCompleted;
             handler?.Invoke(null, EventArgs.Empty);
         }
+        private static void OnGameChanged(User user, string newGame)
+        {
+            EventHandler<MKTwitchEventArgs> handler = GameChanged;
+            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewGame = newGame });
+        }
+
+        private static void OnStatusChanged(User user, string newStatus)
+        {
+            EventHandler<MKTwitchEventArgs> handler = StatusChanged;
+            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus });
+        }
+
         #endregion
+
+
+
+
+
 
         public static List<User> followedUsers = new List<User>();
         const string twitchUrl = "https://api.twitch.tv/kraken/";
@@ -206,17 +239,33 @@ namespace TwitchAlert.classes
             {
                 // Get the followed user who is now streaming
                 var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
+
                 // Update his info
                 followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
                 followed.NumViewers = streamer.viewers;
-                followed.Game = streamer.game;
+                //followed.Game = streamer.game;
 
-                // if user was already streaming then just continue
+                // if user was already streaming then check if Game or Status have changed. If they 
+                // have then throw popup else just continue
                 if (followed.IsStreaming)
                 {
+                    if (followed.Game != streamer.game)
+                    {
+                        Console.WriteLine($"\n{followed.Name} followed.Game = {followed.Game} streamer.channel.game = {streamer.channel.game} streamer.game = {streamer.game}");
+                        followed.Game = streamer.game;
+     
+                        OnGameChanged(followed, streamer.game);
+                    }
+                    if (followed.Status != streamer.channel.status)
+                    {
+                        followed.Status = streamer.channel.status;
+                        OnStatusChanged(followed, streamer.channel.status);
+                    }
                     followed.OfflineCount = 0;
                     continue;
                 }
+
+
                 // user has started streaming so...
                 // set his isStreaming property to true
                 followed.IsStreaming = true;

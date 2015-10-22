@@ -14,6 +14,9 @@ namespace TwitchAlert
         MenuItem miNIUserName;
         MenuItem miNITurnSoundOff;
         MenuItem miNISkipPopupsAtStart;
+        MenuItem miNIGameStatusPopups;
+
+
         NotifyIcon notifyIcon;
         UserNameWindow userNameWindow;
 
@@ -29,6 +32,7 @@ namespace TwitchAlert
             miNIUserName = new MenuItem { Text = "Change Username", Name = nameof(miNIUserName), Enabled = false };
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
+            miNIGameStatusPopups = new MenuItem { Text = "Game and Status Changes", Name = nameof(miNIGameStatusPopups),Checked=true};
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -36,9 +40,10 @@ namespace TwitchAlert
             miNIOnline.Click +=  (s, e) => ShowOnlineUsers();
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
-            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIQuit });
+            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
+            notifyIcon.Click += (s, e) => this.Focus();
             notifyIcon.ContextMenu = contextMenu;
         }
 
@@ -58,6 +63,9 @@ namespace TwitchAlert
             {
                 if (!string.IsNullOrEmpty(newUserName))
                 {
+                    // If the entered username is already the current one or doesn't exist then do nothing.
+                    // NOTE: If username is invalid then maybe a MessageBox saying so or the UserNameWindow
+                    //       should be re-opened?
                     if (newUserName == USER_NAME || !MKTwitch.UserExists(newUserName)) return;
                     USER_NAME = newUserName;
                     if (MKTwitch.IsStarted)

@@ -1,15 +1,9 @@
-﻿// 0.4.4
-// TEST:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
-// TODO:  Also there's no delay between Online and Offline popups if thay happen on the same tick
+﻿// 0.4.5
+// DONE:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
+// DONE:  Also there's no delay between Online and Offline popups if thay happen on the same tick
 // TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
-// TODO:  Add options in the ContextMenu to recieve popups whenever a streamer changes their Game and/or Status message
-// DONE:  Add option in the ContextMenu to skip popups when the app firsts starts. If a user follows 100s of
-//        streamers then there is the potential for dozens of those streamers to already be streaming at startup triggering
-//        popups for them all.
-// FIXED: Removed the 25 limit on the get followed users call
-// DONE:  Added 'Retrieving information...' to the NotifyIcon Tooltip during first pull
-// DONE:  Pressing Esc during a popup cycle will stop that cycle (This does not turn off future popups)
-// DONE:  Disables the Change Username MenuItem at startup until MKTwitch.Start() has completed
+// DONE:  Add options in the ContextMenu to recieve popups whenever a streamer changes their Game and/or Status message
+// TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
 
 
 using System;
@@ -189,6 +183,34 @@ namespace TwitchAlert
             MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true; };
 
 
+            MKTwitch.GameChanged += (s, e) => {
+                if (!miNIGameStatusPopups.Checked) return;
+                var user = e.User;
+                toast.DisplayName = user.Name;
+               // toast.Game = user.Game;
+                toast.Viewers = user.NumViewers;
+                toast.StreamCreatedAt = user.StreamCreatedAt;
+                toast.IsLive = user.IsStreaming;
+                toast.Thumbnail = user.Thumbnail;
+                toast.Link = user.Link;
+                toast.Status = user.Status;
+                DisplayGameChangeToast(e.NewGame);
+            };
+
+            MKTwitch.StatusChanged += (s, e) => {
+                if (!miNIGameStatusPopups.Checked) return;
+                var user = e.User;
+                toast.DisplayName = user.Name;
+                toast.Game = user.Game;
+                toast.Viewers = user.NumViewers;
+                toast.StreamCreatedAt = user.StreamCreatedAt;
+                toast.IsLive = user.IsStreaming;
+                toast.Thumbnail = user.Thumbnail;
+                toast.Link = user.Link;
+               // toast.Status = user.Status;
+                DisplayStatusChangeToast(e.NewStatus);
+            };
+
             // If we dont have a username then keep asking till we get one
             while (string.IsNullOrEmpty(USER_NAME))
             {
@@ -262,13 +284,23 @@ namespace TwitchAlert
             DragMove();
         }
 
-        private void window_KeyDown(object sender, KeyEventArgs e)
+        private async void window_KeyDown(object sender, KeyEventArgs e)
         {
             // Ctrl+ Shift+ C centers the popup
             if ((Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl)) && e.Key == Key.C)
                 toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
             else if (e.Key == Key.Escape)
                 MKTwitch.CancelPopupCycle = true;
+            else if (e.Key == Key.F1)
+            {
+                DisplayGameChangeToast("SomeNewGame");
+            }
+            else if (e.Key == Key.F2)
+            {
+                DisplayStatusChangeToast("SomeNewStatus");
+            }
+            else if (e.Key == Key.F3)
+                PlayNewGameSound();
         }
         #endregion
 
@@ -358,6 +390,32 @@ namespace TwitchAlert
             brdIsOnline.Visibility = Visibility.Visible;
         }
 
+        public async Task DisplayGameChangeToast(string newGame)
+        {
+            toastBorder.BorderBrush = Brushes.Yellow;
+            await StartAnimationAsync(SlideUpStoryboard);
+            await StartAnimationAsync(FindResource("GameOut") as Storyboard);
+            toast.Game = newGame;
+            await StartAnimationAsync(FindResource("GameIn2") as Storyboard);
+            PlayNewGameSound();
+            await Task.Delay(3000);
+            await StartAnimationAsync(SlideDownStoryboard);
+            toastBorder.BorderBrush = Brushes.Red;
+        }
+
+        public async Task DisplayStatusChangeToast(string newStatus)
+        {
+            toastBorder.BorderBrush = Brushes.Yellow;
+            await StartAnimationAsync(SlideUpStoryboard);
+            await StartAnimationAsync(FindResource("StatusOut") as Storyboard);
+            toast.Status = newStatus;
+            PlayNewGameSound();
+            await StartAnimationAsync(FindResource("StatusIn") as Storyboard);  
+            await Task.Delay(3000);
+            await StartAnimationAsync(SlideDownStoryboard);
+            toastBorder.BorderBrush = Brushes.Red;
+        }
+
         private Task StartAnimationAsync(Storyboard sb)
         {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
@@ -380,6 +438,19 @@ namespace TwitchAlert
                 sb.Begin();
             }
             return tcs.Task;
+        }
+
+        private void PlayNewGameSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            //var s = Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav";
+            //if (!File.Exists(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
+            //    MessageBox.Show("I'm Lost");
+
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
+            {
+                player.Play();
+            }
         }
 
         private void PlayOnlineSound()

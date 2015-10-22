@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -31,9 +32,11 @@ namespace TwitchAlert
             txtUserName.Focus();
         }
 
-        private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             txtUserName.Text = Properties.Settings.Default.settingsMe;
+            await Task.Delay(500);
+            this.Close();
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)

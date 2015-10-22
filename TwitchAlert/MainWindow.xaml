@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
         xmlns:classes="clr-namespace:TwitchAlert.classes" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Name="window" x:Class="TwitchAlert.MainWindow"
-        mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded" KeyDown="window_KeyDown">
+        mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded" KeyDown="window_KeyDown" d:DataContext="{d:DesignData /SampleData/SampleDataSource/SampleDataSource.xaml}">
     <Window.Resources>
         <classes:BoolToIsLiveConverter x:Key="BoolToIsLiveConverter"/>
 
@@ -21,7 +21,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <ToolTip x:Key="StatusTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
             <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000" Style="{StaticResource TooltipBorderStyle}">
                 <StackPanel Orientation="Vertical" >
@@ -40,6 +40,31 @@
                 <TextBlock FontSize="11" Height="auto" Width="auto" FontWeight="Normal" TextWrapping="NoWrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center"/>
             </Border>
         </ToolTip>
+
+
+
+        <Style x:Key="SperatorStyle" TargetType="{x:Type Separator}">
+            <Style.Resources>
+                <LinearGradientBrush x:Key="Seperator_LinearGradientBrush" EndPoint="1,1" MappingMode="RelativeToBoundingBox" StartPoint="0,0">
+                    <GradientStop Color="Yellow" Offset="0.757"/>
+                    <GradientStop Color="Yellow" Offset="0.276"/>
+                    <GradientStop Color="#33FFFF00" Offset="0.004"/>
+                    <GradientStop Color="#33FFFF00" Offset="1"/>
+                </LinearGradientBrush>
+            </Style.Resources>
+            <Setter Property="Background" Value="{StaticResource Seperator_LinearGradientBrush}"/>
+        </Style>
+        <DataTemplate x:Key="ItemTemplate">
+            <StackPanel>
+                <Image Source="{Binding Thumbnail}" HorizontalAlignment="Left" Height="64" Width="64"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="ItemTemplate1">
+            <StackPanel>
+                <TextBlock Text="{Binding DisplayName}"/>
+            </StackPanel>
+        </DataTemplate>
+
 
         <Storyboard x:Key="SlideUp" Name="SlideUp">
             <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding TopPosition}" Duration="0:0:0.8" Storyboard.TargetName="window" >
@@ -66,28 +91,99 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <Style x:Key="SperatorStyle" TargetType="{x:Type Separator}">
-            <Style.Resources>
-                <LinearGradientBrush x:Key="Seperator_LinearGradientBrush" EndPoint="1,1" MappingMode="RelativeToBoundingBox" StartPoint="0,0">
-                    <GradientStop Color="Yellow" Offset="0.757"/>
-                    <GradientStop Color="Yellow" Offset="0.276"/>
-                    <GradientStop Color="#33FFFF00" Offset="0.004"/>
-                    <GradientStop Color="#33FFFF00" Offset="1"/>
-                </LinearGradientBrush>
-            </Style.Resources>
-            <Setter Property="Background" Value="{StaticResource Seperator_LinearGradientBrush}"/>
-        </Style>
-        <DataTemplate x:Key="ItemTemplate">
-            <StackPanel>
-                <Image Source="{Binding Thumbnail}" HorizontalAlignment="Left" Height="64" Width="64"/>
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="ItemTemplate1">
-            <StackPanel>
-                <TextBlock Text="{Binding DisplayName}"/>
-            </StackPanel>
-        </DataTemplate>
+        <Storyboard x:Key="GameOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-55"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="GameIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0.2"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="67"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1.1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1.1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="GameIn2">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0.2"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="90"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1.15"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.15"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.8" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ElasticEase EasingMode="EaseOut" Oscillations="1" Springiness="1"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="txtGame">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1.35"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.35"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="StatusOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="txtStatus">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.133" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="txtStatus">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.133" Value="25"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="StatusIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="txtStatus">
+                <EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="txtStatus">
+                <EasingDoubleKeyFrame KeyTime="0" Value="-25"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.333" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ElasticEase EasingMode="EaseOut" Springiness="2" Oscillations="1"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource GameOut}"/>
+            <BeginStoryboard Storyboard="{StaticResource GameIn}"/>
+            <BeginStoryboard Storyboard="{StaticResource StatusOut}"/>
+            <BeginStoryboard Storyboard="{StaticResource StatusIn}"/>
+        </EventTrigger>
+    </Window.Triggers>
 
     <Border x:Name="toastBorder" Width="auto"  BorderThickness="1" BorderBrush="Red" Padding="1" CornerRadius="5" Height="85" SizeChanged="toastBorder_SizeChanged" SnapsToDevicePixels="True" Margin="15,15,0,0">
         <Grid x:Name="rootGrid" d:DesignVisibility="Visible"  UseLayoutRounding="True" Height="auto" Width="auto" MinWidth="210" MaxWidth="210"  Visibility="Visible">
@@ -100,6 +196,7 @@
             </Grid.Background>
             <DockPanel x:Name="dockPanel" LastChildFill="False" HorizontalAlignment="Left" >
                 <Image x:Name="image" DockPanel.Dock="Left" HorizontalAlignment="Left" Height="Auto" Grid.RowSpan="1"  Width="auto"  Opacity="{Binding Opacity, ElementName=rootGrid}" Source="{Binding Thumbnail}"/>
+                <!--Source="static-cdn.jtvnw.net_jtv_user_pictures_2mgovercsquared-profile_image-5329ba7f8158dba8-300x300.png"/>-->
                 <StackPanel DockPanel.Dock="Right" Width="128" VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <TextBlock x:Name="txtDisplayName" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FF15B5D8" RenderTransformOrigin="0.5,0.5">
                         <Hyperlink x:Name="hyperLink" NavigateUri="{Binding Link}" TextDecorations="None" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF00FFF3">
@@ -134,8 +231,28 @@
                     </Hyperlink>
                     </TextBlock>
                     <Separator Style="{StaticResource SperatorStyle}" Margin="0" />
-                    <TextBlock x:Name="txtGame" Text="{Binding Game}" Height="auto" Width="auto" Foreground="Red" FontSize="12" TextWrapping="NoWrap" MaxWidth="140" Padding="2,0" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" ToolTip="{StaticResource GameTooltip}" ToolTipOpening="txtGame_ToolTipOpening"/>
-                    <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" ToolTip="{StaticResource StatusTooltip}" ToolTipOpening="txtStatus_ToolTipOpening" />
+                    <TextBlock x:Name="txtGame" Text="{Binding Game}" Height="auto" Width="auto" Foreground="White" FontSize="12" TextWrapping="NoWrap" MaxWidth="140" Padding="2,0" HorizontalAlignment="Center" TextAlignment="Center" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" ToolTip="{StaticResource GameTooltip}" ToolTipOpening="txtGame_ToolTipOpening" RenderTransformOrigin="0.5,0.5">
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+
+
+                    <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" ToolTip="{StaticResource StatusTooltip}" ToolTipOpening="txtStatus_ToolTipOpening" RenderTransformOrigin="0.5,0.5" >
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
                     <Separator Style="{StaticResource SperatorStyle}"/>
                     <TextBlock x:Name="txtCreatedAt" Text="{Binding StreamCreatedAt}" FontSize="9" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Foreground="#FF16ADCF" Background="#FF040029" Margin="2,0,0,0" TextAlignment="Center" />
                 </StackPanel>
