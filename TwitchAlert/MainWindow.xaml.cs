@@ -1,8 +1,5 @@
-﻿// 0.4.5
-// DONE:  If there were 2 or more streamers who started/stopped streaming within any given timer tick then there would be no delay between their popups.
-// DONE:  Also there's no delay between Online and Offline popups if thay happen on the same tick
-// TODO:  Add code to detect if user has followed a new streamer (at the moment closing the reopening fixes this)
-// DONE:  Add options in the ContextMenu to recieve popups whenever a streamer changes their Game and/or Status message
+﻿// 0.4.6
+// DONE:  Detect if user has followed/unfollowed a streamer
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
 
 
@@ -210,6 +207,9 @@ namespace TwitchAlert
                // toast.Status = user.Status;
                 DisplayStatusChangeToast(e.NewStatus);
             };
+
+            MKTwitch.Followed += (s, e) => PlayFollowedSound();
+            MKTwitch.Unfollowed += (s, e) => PlayUnfollowedSound();
 
             // If we dont have a username then keep asking till we get one
             while (string.IsNullOrEmpty(USER_NAME))
@@ -466,6 +466,24 @@ namespace TwitchAlert
         {
             if (miNITurnSoundOff.Checked) return;
             using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav"))
+            {
+                player.Play();
+            }
+        }
+
+        private void PlayFollowedSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\266092__fantom57__el-harp-fis6.wav"))
+            {
+                player.Play();
+            }
+        }
+
+        private void PlayUnfollowedSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\lightclunk2.wav"))
             {
                 player.Play();
             }

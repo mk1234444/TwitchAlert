@@ -14,6 +14,9 @@ namespace TwitchAlert.classes
 {
     public static class MKTwitch
     {
+        /// <summary>
+        /// Used to break the popup cycle loop
+        /// </summary>
         public static bool CancelPopupCycle = false;
         static bool skipPopupsAtStart = false;
         /// <summary>
@@ -21,6 +24,10 @@ namespace TwitchAlert.classes
         /// be run once to setup the Timer and stuff
         /// </summary>
         public static bool IsStarted;
+
+        /// <summary>
+        /// Indicates that stream information is being updated
+        /// </summary>
         private static bool IsUpdating;
 
         static DispatcherTimer timer;
@@ -72,6 +79,8 @@ namespace TwitchAlert.classes
         public static event EventHandler StartCompleted;
         public static event EventHandler<MKTwitchEventArgs> GameChanged;
         public static event EventHandler<MKTwitchEventArgs> StatusChanged;
+        public static event EventHandler<MKTwitchEventArgs> Followed;
+        public static event EventHandler<MKTwitchEventArgs> Unfollowed;
         #endregion
 
         #region Event Trigger Methods
@@ -122,18 +131,32 @@ namespace TwitchAlert.classes
             handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus });
         }
 
+        private static void OnFollowed(User user)
+        {
+            EventHandler<MKTwitchEventArgs> handler = Followed;
+            handler?.Invoke(null, new MKTwitchEventArgs() { User = user });
+        }
+        private static void OnUnfollowed(User user)
+        {
+            EventHandler<MKTwitchEventArgs> handler = Unfollowed;
+            handler?.Invoke(null, new MKTwitchEventArgs() { User = user });
+        }
+
         #endregion
-
-
-
-
 
 
         public static List<User> followedUsers = new List<User>();
         const string twitchUrl = "https://api.twitch.tv/kraken/";
 
+        /// <summary>
+        /// Fills the followedUser collection with the people that 'userName' follows
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public static async Task ChangeUser(string userName)
         {
+            // if the new username is the same as the old one then do nothing
+            if (UserName == userName) return;
             UserName = userName;
             timer.Stop();
             while(IsUpdating)
@@ -144,6 +167,12 @@ namespace TwitchAlert.classes
             timer.Start();
         }
 
+        /// <summary>
+        /// Starts the MKTwitch engine , filling the followedUser collection and
+        /// starting up the Timer
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="skipToastAtStart"></param>
         public async static void Start(string userName, bool skipToastAtStart=false)
         {
             skipPopupsAtStart = skipToastAtStart;
@@ -223,9 +252,13 @@ namespace TwitchAlert.classes
             OnStartCompleted();
         }
 
-
+        /// <summary>
+        /// Updates the streaming info for followed users, triggering any Online/Offline events where needed
+        /// </summary>
+        /// <returns></returns>
         private static async Task Update()
         {
+            await UpdateFollowedUsers(UserName);
             OnUpdateStarted(true);
             var streamers = await GetStreamers();
             OnUpdateCompleted(false);
@@ -309,18 +342,46 @@ namespace TwitchAlert.classes
             });
         }
 
-        //private static async Task RefreshFollowedList(string userName)
-        //{
-        //    var user = GetUsersFollowedChannels(userName);
-        //    if (user == null) return;
-        //    // Check if we've followed another streamer and if so add them to our followed collection
-        //    foreach(var u in user.follows)
-        //    {
-        //        if(followedUsers.Any(i=>i.Name == u.channel.display_name) == false)
-        //            followedUsers.Add(await CreateUserFromTwitchFollow(u));
-        //    }
-        //    // TODO: Check for unfollows here
-        //}
+        public static async Task UpdateFollowedUsers(string userName)
+        {
+            var user = GetUsersFollowedChannels(userName);
+            if (user == null) return;
+            await UpdateFollowedUsers(user);
+        }
+
+        private static async Task UpdateFollowedUsers(Twitch.Root user)
+        {
+            if (user == null) return;
+            // Check if we've followed another streamer and if so add them to our followed collection
+            foreach (var u in user.follows)
+            {
+                if (followedUsers.Any(i => i.Name == u.channel.display_name) == false)
+                {
+                    var newUser = await CreateUserFromTwitchFollow(u);
+                    followedUsers.Add(newUser);
+                    OnFollowed(newUser);
+                }
+            }
+
+            var toRemove = new List<User>();
+            // Check for unfollows here
+            foreach (var u in followedUsers)
+            {
+                if (user.follows.Any(i => i.channel.display_name == u.Name) == false)
+                {
+                    toRemove.Add(u);
+                   
+                }
+            }
+            // Remove unfollows if any
+            foreach (var rem in toRemove)
+            {
+                followedUsers.Remove(rem);
+                OnUnfollowed(rem);
+            }
+            OnFollowedUsersChanged();
+        }
+
 
         private static async Task<User> CreateUserFromTwitchFollow(Twitch.Follow follow)
         {
@@ -362,6 +423,11 @@ namespace TwitchAlert.classes
             int numUsers = 0;
             var users = GetUsersFollowedChannels(userName);
             if (users == null) return;
+
+            // If this is the first run (MKTwitch.Start() hasnt completed) then skip
+            // any followed user update check this time.
+            if(MKTwitch.IsStarted)
+                await UpdateFollowedUsers(users);
 
             numUsers = users._total;
             TwitchStreamers.RootObject streamers = await GetStreamers(users);
@@ -434,6 +500,7 @@ namespace TwitchAlert.classes
                 CancelPopupCycle = false;
             }
         }
+
 
         public static void TriggerOnline(User user)
         {
