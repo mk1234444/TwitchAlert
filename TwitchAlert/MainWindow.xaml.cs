@@ -1,6 +1,7 @@
 ﻿// 0.4.6
 // DONE:  Detect if user has followed/unfollowed a streamer
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
+// DONE:  Add some logging to file
 
 
 using System;
@@ -101,13 +102,13 @@ namespace TwitchAlert
             public static readonly DependencyProperty LinkProperty = DependencyProperty.Register("Link", typeof(string), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for TopPosition.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty TopPositionProperty = DependencyProperty.Register("TopPosition", typeof(double), typeof(Toast), new PropertyMetadata(0.0));
-            // Using a DependencyProperty as the backing store for TopPosition.  This enables animation, styling, binding, etc...
+            // Using a DependencyProperty as the backing store for BottomPosition.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty BottomPositionProperty = DependencyProperty.Register("BottomPosition", typeof(double), typeof(Toast), new PropertyMetadata(0.0));
             // Using a DependencyProperty as the backing store for LeftPosition.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty LeftPositionProperty = DependencyProperty.Register("LeftPosition", typeof(double), typeof(Toast), new PropertyMetadata(0.0));
             // Using a DependencyProperty as the backing store for StreamCreatedAt.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty StreamCreatedAtProperty = DependencyProperty.Register("StreamCreatedAt", typeof(string), typeof(Toast), new PropertyMetadata(null));
-            // Using a DependencyProperty as the backing store for ThumbNail.  This enables animation, styling, binding, etc...
+            // Using a DependencyProperty as the backing store for Thumbnail.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty ThumbnailProperty = DependencyProperty.Register("Thumbnail", typeof(BitmapImage), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for Viewers.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty ViewersProperty = DependencyProperty.Register("Viewers", typeof(int), typeof(Toast), new PropertyMetadata(null));
@@ -143,22 +144,30 @@ namespace TwitchAlert
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live
-            MKTwitch.Online += (s, e)=>{
-                FillInToast(e.User);       
-                PlayOnlineSound();
-                DisplayToast();
+            MKTwitch.Online += async(s, e)=>{
+                if (e.DisplayToast)
+                {
+                    FillInToast(e.User);
+                    PlayOnlineSound();
+                    await DisplayToast();
+                }
                 // Display the Online followedUser count in the NotifyIcon Tooltip
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                Log.WriteLog($"{e.User.Name} went ONLINE at {e.User.StreamCreatedAt} playing {e.User.Game}");
             };
 
             // Subscribe to the MKTwitch Offline event so we hear about
             // any streamer who stops streaming
-            MKTwitch.OffLine += (s, e) => {
-                FillInToast(e.User);
-                // Display the Online followedUser count in the NotifyIcon Tooltip
+            MKTwitch.OffLine += async(s, e) => {
+                if (e.DisplayToast)
+                {
+                    FillInToast(e.User);
+                    // Display the Online followedUser count in the NotifyIcon Tooltip
+                    PlayOfflineSound();
+                    await DisplayToast();
+                }
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
-                PlayOfflineSound();
-                DisplayToast();
+                Log.WriteLog($"{e.User.Name} went OFFLINE at {DateTime.Now.ToShortTimeString()} playing {e.User.Game}");
             };
 
             // Subscribe to the MKTwitch UpdateStarted event so we hear about
@@ -173,11 +182,11 @@ namespace TwitchAlert
             // Subscribe to the MKTwitch FollowedUsersChanged event so we hear about
             // when its collection of FollowedUsers has changed
             MKTwitch.FollowedUsersChanged += (s, e) => {
-                Console.WriteLine("followedUsers Changed");
+                Console.WriteLine("\nfollowedUsers Changed");
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             };
 
-            MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true; };
+            MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true;  };
 
 
             MKTwitch.GameChanged += (s, e) => {
@@ -191,7 +200,9 @@ namespace TwitchAlert
                 toast.Thumbnail = user.Thumbnail;
                 toast.Link = user.Link;
                 toast.Status = user.Status;
+                Log.WriteLog($"{e.User.Name} changed GAME from {e.User.Game} to {e.NewGame}");
                 DisplayGameChangeToast(e.NewGame);
+                
             };
 
             MKTwitch.StatusChanged += (s, e) => {
@@ -204,12 +215,22 @@ namespace TwitchAlert
                 toast.IsLive = user.IsStreaming;
                 toast.Thumbnail = user.Thumbnail;
                 toast.Link = user.Link;
-               // toast.Status = user.Status;
+                Log.WriteLog($"{e.User.Name} changed STATUS from {e.User.Status} to {e.NewStatus}");
                 DisplayStatusChangeToast(e.NewStatus);
             };
 
-            MKTwitch.Followed += (s, e) => PlayFollowedSound();
-            MKTwitch.Unfollowed += (s, e) => PlayUnfollowedSound();
+            MKTwitch.Followed += (s, e) =>
+            {
+                if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
+                Console.WriteLine($"\nNow following {e.User.Name}");
+                PlayFollowedSound();
+            };
+            MKTwitch.Unfollowed += (s, e) =>
+            {
+                if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
+                Console.WriteLine($"\nUnfollowing {e.User.Name}");
+                PlayUnfollowedSound();
+            };
 
             // If we dont have a username then keep asking till we get one
             while (string.IsNullOrEmpty(USER_NAME))
@@ -224,6 +245,7 @@ namespace TwitchAlert
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
+            Log.WriteLog("**********************************************************************************************");
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
@@ -347,7 +369,23 @@ namespace TwitchAlert
             }
             // Set Handled if we dont need the Tooltip so no empty Tooltip appears
             e.Handled = !trimmed;
-        } 
+        }
+
+        private void txtDisplayName_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var trimmed = CalculateIsTextTrimmed(txtDisplayNameDummy);
+            //var trimmed = CalculateIsTextTrimmed(sender as TextBlock);
+            if (trimmed)
+            {
+                var tt = Resources["DisplayNameTooltip"] as ToolTip;
+                // Find the TextBlock from within the Tooltip Template that will display our Game text
+                var ttTextBlock = (tt.Content as Border).Child as TextBlock;
+                // Then give it the full Game text to display
+                ttTextBlock.Text = ((sender as TextBlock).DataContext as Toast).DisplayName;
+            }
+            // Set Handled if we dont need the Tooltip so no empty Tooltip appears
+            e.Handled = !trimmed;
+        }
         #endregion
         #endregion
 
@@ -474,7 +512,7 @@ namespace TwitchAlert
         private void PlayFollowedSound()
         {
             if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\266092__fantom57__el-harp-fis6.wav"))
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\149187__adriann__harp-strum.wav"))
             {
                 player.Play();
             }
@@ -543,5 +581,7 @@ namespace TwitchAlert
             // textBlock is single or multi-line.
             return formattedText.Width > textBlock.ActualWidth;
         }
+
+ 
     }
 }

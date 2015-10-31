@@ -23,6 +23,8 @@ namespace TwitchAlert.classes
         /// Used to compensate for Twitch misreporting Offline state
         /// </summary>
         public int OfflineCount { get; set; }
+        public int GameChangeCount { get; set; }
+        public int StatusChangeCount { get; set; }
         public override string ToString() => Name;
         
     }

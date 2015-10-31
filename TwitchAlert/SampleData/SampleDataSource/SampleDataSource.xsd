@@ -9,5 +9,6 @@
   <xs:complexType name="SampleDataSource">
     <xs:attribute name="Game" type="xs:string" />
     <xs:attribute name="Status" type="xs:string" />
+    <xs:attribute name="DisplayName" type="xs:string" />
   </xs:complexType>
 </xs:schema>

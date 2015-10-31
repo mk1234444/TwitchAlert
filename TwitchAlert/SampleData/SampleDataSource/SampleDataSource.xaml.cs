@@ -73,6 +73,25 @@ namespace Expression.Blend.SampleData.SampleDataSource
 				}
 			}
 		}
+
+		private string _DisplayName = string.Empty;
+
+		public string DisplayName
+		{
+			get
+			{
+				return this._DisplayName;
+			}
+
+			set
+			{
+				if (this._DisplayName != value)
+				{
+					this._DisplayName = value;
+					this.OnPropertyChanged("DisplayName");
+				}
+			}
+		}
 	}
 #endif
 }

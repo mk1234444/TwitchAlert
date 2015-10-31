@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
-        xmlns:classes="clr-namespace:TwitchAlert.classes" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Name="window" x:Class="TwitchAlert.MainWindow"
+        xmlns:classes="clr-namespace:TwitchAlert.classes" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Name="window" x:Class="TwitchAlert.MainWindow"
         mc:Ignorable="d" Background="{x:Null}" AllowsTransparency="True" WindowStyle="None" SizeToContent="WidthAndHeight" MouseLeftButtonDown="Window_MouseLeftButtonDown" ResizeMode="NoResize" ContentRendered="window_ContentRendered" Topmost="True" Closing="window_Closing" d:DesignWidth="213.75" d:DesignHeight="101.625" Foreground="#FF2C2C2C" Left="0" Top="768" VerticalContentAlignment="Center" VerticalAlignment="Center" ShowInTaskbar="False" Loaded="window_Loaded" KeyDown="window_KeyDown" d:DataContext="{d:DesignData /SampleData/SampleDataSource/SampleDataSource.xaml}">
     <Window.Resources>
         <classes:BoolToIsLiveConverter x:Key="BoolToIsLiveConverter"/>
@@ -38,6 +39,11 @@
         <ToolTip x:Key="GameTooltip" HasDropShadow="True" Placement="Bottom" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
             <Border CornerRadius="7" BorderThickness="1" BorderBrush="#99FF0000" Style="{StaticResource TooltipBorderStyle}">
                 <TextBlock FontSize="11" Height="auto" Width="auto" FontWeight="Normal" TextWrapping="NoWrap" Foreground="White" Padding="5,1,5,2" UseLayoutRounding="True" VerticalAlignment="Center"/>
+            </Border>
+        </ToolTip>
+        <ToolTip x:Key="DisplayNameTooltip" HasDropShadow="True" Placement="RelativePoint" BorderBrush="{x:Null}" BorderThickness="0" Background="{x:Null}">
+            <Border CornerRadius="7" BorderThickness="1" BorderBrush="#FFFF0000" Style="{StaticResource TooltipBorderStyle}">
+                <TextBlock FontSize="14" Height="auto" Width="auto" FontWeight="Bold" TextWrapping="NoWrap" Foreground="#FF15B5D8" Padding="5,4,5,4" UseLayoutRounding="True" VerticalAlignment="Center" />
             </Border>
         </ToolTip>
 
@@ -197,8 +203,8 @@
             <DockPanel x:Name="dockPanel" LastChildFill="False" HorizontalAlignment="Left" >
                 <Image x:Name="image" DockPanel.Dock="Left" HorizontalAlignment="Left" Height="Auto" Grid.RowSpan="1"  Width="auto"  Opacity="{Binding Opacity, ElementName=rootGrid}" Source="{Binding Thumbnail}"/>
                 <!--Source="static-cdn.jtvnw.net_jtv_user_pictures_2mgovercsquared-profile_image-5329ba7f8158dba8-300x300.png"/>-->
-                <StackPanel DockPanel.Dock="Right" Width="128" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-                    <TextBlock x:Name="txtDisplayName" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FF15B5D8" RenderTransformOrigin="0.5,0.5">
+                <StackPanel x:Name="infoStackPanel" DockPanel.Dock="Right" Width="128" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="txtDisplayName" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FF15B5D8" RenderTransformOrigin="0.5,0.5" TextTrimming="CharacterEllipsis" ToolTip="{StaticResource DisplayNameTooltip}" ToolTipOpening="txtDisplayName_ToolTipOpening" TextAlignment="Center" FontWeight="Bold">
                         <Hyperlink x:Name="hyperLink" NavigateUri="{Binding Link}" TextDecorations="None" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF00FFF3">
                         <i:Interaction.Triggers>
         					<i:EventTrigger EventName="PreviewMouseLeftButtonDown">
@@ -241,7 +247,6 @@
                             </TransformGroup>
                         </TextBlock.RenderTransform>
                     </TextBlock>
-
 
                     <TextBlock x:Name="txtStatus" Text="{Binding Status}" Height="auto" Width="auto" Foreground="Yellow" FontSize="9" MaxWidth="140" Margin="0,0,3,0" Padding="1,0" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" LineStackingStrategy="BlockLineHeight" LineHeight="{Binding FontSize, RelativeSource={RelativeSource Self}}" MaxHeight="27" MinHeight="27" ToolTip="{StaticResource StatusTooltip}" ToolTipOpening="txtStatus_ToolTipOpening" RenderTransformOrigin="0.5,0.5" >
                         <TextBlock.RenderTransform>
@@ -293,56 +298,7 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
-
             </Border>
-            <!--<Hyperlink x:Name="hyperLink" NavigateUri="{Binding Link}" TextDecorations="None" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#FF00FFF3">-->
-            <!--<i:Interaction.Triggers>
-        					<i:EventTrigger EventName="PreviewMouseLeftButtonDown">
-        						<ei:ChangePropertyAction x:Name="changePropertyAction11" TargetName="txtIsOnline" PropertyName="RenderTransform" TargetObject="{Binding ElementName=txtIsOnline}">
-        							<ei:ChangePropertyAction.Value>
-        								<TransformGroup>
-        									<ScaleTransform ScaleX="0.98"/>
-        								</TransformGroup>
-        							</ei:ChangePropertyAction.Value>
-        						</ei:ChangePropertyAction>
-        					</i:EventTrigger>
-        					<i:EventTrigger EventName="Click">
-        						<ei:ChangePropertyAction TargetName="txtIsOnline" PropertyName="RenderTransform" TargetObject="{Binding ElementName=txtIsOnline}"/>
-        					</i:EventTrigger>
-        					<i:EventTrigger EventName="MouseLeave">
-        						<ei:ChangePropertyAction TargetName="txtIsOnline" PropertyName="RenderTransform" TargetObject="{Binding ElementName=txtIsOnline}"/>
-        					</i:EventTrigger>
-        				</i:Interaction.Triggers>
-                        <Run Text="{Binding IsLive, Converter={StaticResource BoolToIsLiveConverter}}">
-                            <Run.Style>
-                                <Style TargetType="Run">
-                                    <Style.Resources>
-                                         <Storyboard x:Key="FlashIsLive" RepeatBehavior="Forever">
-                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Run.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="{x:Null}">
-                                                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="White"/>
-                                                <EasingColorKeyFrame KeyTime="0:0:1" Value="#FF00A2FF"/>
-                                            </ColorAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </Style.Resources>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="TextDecorations" Value="Underline"/>
-                                        </Trigger>
-                                        <Trigger Property="Text" Value="Is Live">
-                                            <Trigger.ExitActions>
-                                                <StopStoryboard BeginStoryboardName="FlashIsLive_BeginStoryboard"/>
-                                            </Trigger.ExitActions>
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard x:Name="FlashIsLive_BeginStoryboard" Storyboard="{StaticResource FlashIsLive}"/>
-                                            </Trigger.EnterActions> 
-                                        </Trigger>
-                                    </Style.Triggers>
-                                    </Style>
-                            </Run.Style>
-                        </Run>
-                    </Hyperlink>-->
-
-
             <TextBlock x:Name="txtNobodyOnline" Text="Nobody Online" Foreground="#FF05A6A6" FontSize="20" TextAlignment="Center" Padding="0,0,0,0" Width="210" Height="80" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -354,6 +310,8 @@
             </TextBlock>
 
             <TextBlock x:Name="txtUpdating" Text="Updating" HorizontalAlignment="Right" VerticalAlignment="Top" Height="auto" FontSize="8" Foreground="White" Background="Black" Visibility="Collapsed" Margin="0,0,4,0"/>
+
+            <TextBlock x:Name="txtDisplayNameDummy" Text="{Binding ElementName=txtDisplayName, Path=Text}" MaxWidth="129" TextTrimming="{Binding ElementName=txtDisplayName, Path=TextTrimming}" FontWeight="Bold" Height="{Binding ElementName=txtDisplayName, Path=Height}" Width="129" VerticalAlignment="Top" HorizontalAlignment="Center" Foreground="#FF68FF00" FontSize="14" Margin="42,9,39,0" Visibility="Hidden"/>
         </Grid>
     </Border>
 </Window>
