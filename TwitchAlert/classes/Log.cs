@@ -34,6 +34,14 @@ public static class Log
         }
     }
 
+    public static void Seperator( string filename = "log.txt")
+    {
+        using (StreamWriter w = File.AppendText(filename))
+        {
+            w.WriteLine("**********************************************************************************************");
+        }
+    }
+
     /// <summary>
     /// Dumps the contents of the StreamReader to the Console
     /// </summary>

@@ -25,6 +25,9 @@ namespace TwitchAlert.classes
         /// </summary>
         public static bool IsStarted;
 
+        /// <summary>
+        /// Indicates we are in the process of changing the UserName
+        /// </summary>
         public static bool IsChangingUser;
 
         /// <summary>
@@ -52,6 +55,7 @@ namespace TwitchAlert.classes
             /// The new Status text
             /// </summary>
             public string NewStatus { get; set; }
+            public string OldStatus { get; set; }
             /// <summary>
             /// Indicates if the Toast should actually be displayed
             /// </summary>
@@ -137,10 +141,10 @@ namespace TwitchAlert.classes
             handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewGame = newGame });
         }
 
-        private static void OnStatusChanged(User user, string newStatus)
+        private static void OnStatusChanged(User user, string newStatus, string oldStatus)
         {
             EventHandler<MKTwitchEventArgs> handler = StatusChanged;
-            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus });
+            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus, OldStatus=oldStatus });
         }
 
         private static void OnFollowed(User user)
@@ -334,9 +338,10 @@ namespace TwitchAlert.classes
                   
                         // Status has to be different for two consecutive pulls before we change our version of it
                         if (followed.StatusChangeCount < 2) continue;
+                        var oldStatus = followed.Status;
                         followed.Status = streamer.channel.status;
                         followed.StatusChangeCount = 0;         // Reset the count
-                        OnStatusChanged(followed, streamer.channel.status);
+                        OnStatusChanged(followed, streamer.channel.status,oldStatus);
                     }
                     followed.OfflineCount = 0;
                     continue;

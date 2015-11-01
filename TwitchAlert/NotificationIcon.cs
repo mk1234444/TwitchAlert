@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TwitchAlert.classes;
 using System;
+using System.Diagnostics;
 
 namespace TwitchAlert
 {
@@ -15,6 +16,9 @@ namespace TwitchAlert
         MenuItem miNITurnSoundOff;
         MenuItem miNISkipPopupsAtStart;
         MenuItem miNIGameStatusPopups;
+        MenuItem miNIDebug;
+        MenuItem miNIOpenLogFile;
+        
         //MenuItem miNIRefreshFollowed;
 
 
@@ -34,7 +38,9 @@ namespace TwitchAlert
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
             miNIGameStatusPopups = new MenuItem { Text = "Game and Status Changes", Name = nameof(miNIGameStatusPopups),Checked=true};
-           // miNIRefreshFollowed = new MenuItem { Text = "Refresh Followed", Name = nameof(miNIRefreshFollowed) };
+            miNIOpenLogFile = new MenuItem { Text = "Open Log File", Name = nameof(miNIOpenLogFile) };
+            miNIDebug = new MenuItem { Text = "Debug", Name = nameof(miNIDebug) };
+            miNIDebug.MenuItems.Add(miNIOpenLogFile);
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -42,9 +48,10 @@ namespace TwitchAlert
             miNIOnline.Click +=  (s, e) => ShowOnlineUsers();
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
+            miNIOpenLogFile.Click += (s, e) => Process.Start("log.txt");
             //miNIRefreshFollowed.Click += (s, e) => MKTwitch.UpdateFollowedUsers(USER_NAME);
 
-            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups, miNIQuit });
+            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups,miNIDebug, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.Click += (s, e) => this.Focus();

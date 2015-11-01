@@ -2,6 +2,8 @@
 // DONE:  Detect if user has followed/unfollowed a streamer
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
 // DONE:  Add some logging to file
+// DONE:  Added Debug MenuItem
+// DONE:  Added 'Open Log File MenuItem' into the Debug menu. LCTRL+LSHIFT+L also opens the log file
 
 
 using System;
@@ -193,7 +195,6 @@ namespace TwitchAlert
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
                 toast.DisplayName = user.Name;
-               // toast.Game = user.Game;
                 toast.Viewers = user.NumViewers;
                 toast.StreamCreatedAt = user.StreamCreatedAt;
                 toast.IsLive = user.IsStreaming;
@@ -215,7 +216,7 @@ namespace TwitchAlert
                 toast.IsLive = user.IsStreaming;
                 toast.Thumbnail = user.Thumbnail;
                 toast.Link = user.Link;
-                Log.WriteLog($"{e.User.Name} changed STATUS from {e.User.Status} to {e.NewStatus}");
+                Log.WriteLog($"{e.User.Name} changed STATUS from {e.OldStatus} to {e.NewStatus}");
                 DisplayStatusChangeToast(e.NewStatus);
             };
 
@@ -245,7 +246,7 @@ namespace TwitchAlert
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            Log.WriteLog("**********************************************************************************************");
+            Log.Seperator();
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
@@ -323,6 +324,8 @@ namespace TwitchAlert
             }
             else if (e.Key == Key.F3)
                 PlayNewGameSound();
+            else if (Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl) && e.Key == Key.L)
+                Process.Start("log.txt");
         }
         #endregion
 
