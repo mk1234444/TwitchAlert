@@ -36,7 +36,7 @@ Notes:
   The App polls Twitch every 20 seconds.
 
   If a streamers Name/Game/Status information can't all fit into the popup then a Tooltip will fire up if you mouse
-  over it a Tooltp wil display the full text. Be quick though as the popups don't stay open for long :-)
+  over it and display the full text. Be quick though as the popups don't stay open for long :-)
   
   There is a bit of a problem with the information Twitch gives whereby it sometimes indicates that a
   streamer has stopped streaming when in fact they haven't. This means there would be an Offline popup,
