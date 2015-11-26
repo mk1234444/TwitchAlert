@@ -19,6 +19,7 @@ namespace TwitchAlert.classes
         /// </summary>
         public static bool CancelPopupCycle = false;
         static bool skipPopupsAtStart = false;
+
         /// <summary>
         /// Indicates that the Start() Method has been run. Start() has to
         /// be run once to setup the Timer and stuff
@@ -36,6 +37,8 @@ namespace TwitchAlert.classes
         private static bool IsUpdating;
 
         static DispatcherTimer timer;
+
+        public static DispatcherTimer MKTwitchTimer { get { return timer; } }
         public static string UserName { get; set; }
 
         #region Custom EventArgs
@@ -100,58 +103,105 @@ namespace TwitchAlert.classes
         #endregion
 
         #region Event Trigger Methods
+        /// <summary>
+        /// Invoked when a followed user goes Online (Starts Streaming)
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="displayToast"></param>
         private static void OnOnline(User user,bool displayToast=true)
         {
             EventHandler<MKTwitchEventArgs> handler = Online;
             handler?.Invoke(null, new MKTwitchEventArgs { User = user, DisplayToast=displayToast });
         }
 
+        /// <summary>
+        /// Invoked when a streamer goes Offline (Stops Streaming)
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="displayToast"></param>
         private static void OnOffline(User user,bool displayToast=true)
         {
             EventHandler<MKTwitchEventArgs> handler = OffLine;
-            handler?.Invoke(null, new MKTwitchEventArgs{ User = user, DisplayToast=displayToast});
+            handler?.Invoke(null, new MKTwitchEventArgs{ User = user, DisplayToast = displayToast});
         }
 
+        /// <summary>
+        /// Invoked when the call to GetStreamers() is starting. The class's IsUpdating property will be
+        /// set to isUpdating (true for OnUpdateStarted). **Is the 'isUpdating' flag needed? Can't remember**
+        /// </summary>
+        /// <param name="isUpdating"></param>
         private static void OnUpdateStarted(bool isUpdating)
         {
             EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateStarted;
             handler?.Invoke(null, new MKTwitchUpdatingEventArgs{ IsUpdating = isUpdating});
         }
 
+        /// <summary>
+        /// Invoked when the call to GetStreamers() is completed. The class's IsUpdating property will be
+        /// set to isUpdating (false for OnUpdateCompleted). **Is the 'isUpdating' flag needed? Can't remember**
+        /// </summary>
+        /// <param name="isUpdating"></param>
         private static void OnUpdateCompleted(bool isUpdating)
         {
             EventHandler<MKTwitchUpdatingEventArgs> handler = UpdateCompleted;
             handler?.Invoke(null, new MKTwitchUpdatingEventArgs { IsUpdating = IsUpdating });
         }
 
+        /// <summary>
+        /// Invoked when the FollowedUsers collection has changed.
+        /// </summary>
         private static void OnFollowedUsersChanged()
         {
             EventHandler<MKTwitchFollowedUsersEventArgs> handler = FollowedUsersChanged;
             handler?.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedUsers });
         }
 
+        /// <summary>
+        /// Invoked when the MKTwitch.Start() method has completed
+        /// </summary>
         private static void OnStartCompleted()
         {
             EventHandler handler = StartCompleted;
             handler?.Invoke(null, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Invoked when a streamer changes their Game
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newGame"></param>
         private static void OnGameChanged(User user, string newGame)
         {
             EventHandler<MKTwitchEventArgs> handler = GameChanged;
             handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewGame = newGame });
         }
 
+        /// <summary>
+        /// Invoked when a streamer changes their Status
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newStatus"></param>
+        /// <param name="oldStatus"></param>
         private static void OnStatusChanged(User user, string newStatus, string oldStatus)
         {
             EventHandler<MKTwitchEventArgs> handler = StatusChanged;
             handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus, OldStatus=oldStatus });
         }
 
+        /// <summary>
+        /// Invoked whenever the user Follows a new streamer
+        /// </summary>
+        /// <param name="user"></param>
         private static void OnFollowed(User user)
         {
             EventHandler<MKTwitchEventArgs> handler = Followed;
             handler?.Invoke(null, new MKTwitchEventArgs() { User = user });
         }
+
+        /// <summary>
+        /// Invoked whenever the user UnFollows a streamer
+        /// </summary>
+        /// <param name="user"></param>
         private static void OnUnfollowed(User user)
         {
             EventHandler<MKTwitchEventArgs> handler = Unfollowed;
@@ -482,7 +532,9 @@ namespace TwitchAlert.classes
                 await UpdateFollowedUsers(users);
 
             numUsers = users._total;
+            OnUpdateStarted(true);
             TwitchStreamers.RootObject streamers = await GetStreamers(users);
+            OnUpdateCompleted(false);
      
             for (int offset = 100; offset < numUsers; offset += 100)
             {
@@ -557,6 +609,11 @@ namespace TwitchAlert.classes
             }
         }
 
+        public static bool IsTimerEnabled()
+        {
+            if (timer == null) return false;
+            return timer.IsEnabled;
+        }
 
         public static void TriggerOnline(User user)
         {

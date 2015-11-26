@@ -18,6 +18,8 @@ namespace TwitchAlert
         MenuItem miNIGameStatusPopups;
         MenuItem miNIDebug;
         MenuItem miNIOpenLogFile;
+        MenuItem miNITimerStatus;
+        MenuItem miNIStartTimer;
         
         //MenuItem miNIRefreshFollowed;
 
@@ -40,7 +42,11 @@ namespace TwitchAlert
             miNIGameStatusPopups = new MenuItem { Text = "Game and Status Changes", Name = nameof(miNIGameStatusPopups),Checked=true};
             miNIOpenLogFile = new MenuItem { Text = "Open Log File", Name = nameof(miNIOpenLogFile) };
             miNIDebug = new MenuItem { Text = "Debug", Name = nameof(miNIDebug) };
-            miNIDebug.MenuItems.Add(miNIOpenLogFile);
+            miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
+            miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
+            miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus });
+           
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -49,6 +55,14 @@ namespace TwitchAlert
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
             miNIOpenLogFile.Click += (s, e) => Process.Start("log.txt");
+            miNITimerStatus.Click += (s, e) => {
+                var enabled = MKTwitch.IsTimerEnabled();
+               // Log.WriteLog($"Timer Status = {(enabled?"Enabled":"Disabled")} * Last Pull = {lastPull}", "MKTwitchTimerLog.txt");
+               // Process.Start("MKTwitchTimerLog.txt");
+                MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
+
+            };
+ 
             //miNIRefreshFollowed.Click += (s, e) => MKTwitch.UpdateFollowedUsers(USER_NAME);
 
             contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups,miNIDebug, miNIQuit });

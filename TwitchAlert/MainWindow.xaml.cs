@@ -5,6 +5,9 @@
 // DONE:  Added Debug MenuItem
 // DONE:  Added 'Open Log File MenuItem' into the Debug menu. LCTRL+LSHIFT+L also opens the log file
 
+// If Status/Games changes in timer tick and a cycle is already in progress then the update may be
+// displayed using the previous streamers name
+
 
 using System;
 using System.ComponentModel;
@@ -28,6 +31,7 @@ namespace TwitchAlert
     /// </summary>
     public partial class MainWindow : Window
     {
+        DateTime lastPull;
         public class Toast:DependencyObject
         {
            public Toast()
@@ -131,6 +135,8 @@ namespace TwitchAlert
         public MainWindow()
         {
             InitializeComponent();
+
+           // MessageBox.Show("");
             this.DataContext = toast;
             SetupNotificationIcon();
 
@@ -178,7 +184,10 @@ namespace TwitchAlert
 
             // Subscribe to the MKTwitch UpdateStarted event so we hear about
             // when we've completed updating our Twitch info
-            MKTwitch.UpdateCompleted += (s, e) => txtUpdating.Visibility = Visibility.Collapsed;
+            MKTwitch.UpdateCompleted += (s, e) => {
+                txtUpdating.Visibility = Visibility.Collapsed;
+                lastPull = DateTime.Now;
+            };
 
 
             // Subscribe to the MKTwitch FollowedUsersChanged event so we hear about
