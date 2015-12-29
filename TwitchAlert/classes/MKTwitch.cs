@@ -54,6 +54,7 @@ namespace TwitchAlert.classes
             /// The bew Game text
             /// </summary>
             public string NewGame { get; set; }
+            public string OldGame { get; set; }
             /// <summary>
             /// The new Status text
             /// </summary>
@@ -96,9 +97,21 @@ namespace TwitchAlert.classes
         /// Invoked when the MKTwitch.Start() method has completed
         /// </summary>
         public static event EventHandler StartCompleted;
+        /// <summary>
+        /// Invoked when a streamer changes his Game
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> GameChanged;
+        /// <summary>
+        /// Invoked when a streamer changes his Status
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> StatusChanged;
+        /// <summary>
+        /// Invoked when the user adds a new streamer to his followed list
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> Followed;
+        /// <summary>
+        /// Invoked when the user removes a streamer from his followed list
+        /// </summary>
         public static event EventHandler<MKTwitchEventArgs> Unfollowed;
         #endregion
 
@@ -170,10 +183,10 @@ namespace TwitchAlert.classes
         /// </summary>
         /// <param name="user"></param>
         /// <param name="newGame"></param>
-        private static void OnGameChanged(User user, string newGame)
+        private static void OnGameChanged(User user, string newGame, string oldGame)
         {
             EventHandler<MKTwitchEventArgs> handler = GameChanged;
-            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewGame = newGame });
+            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewGame = newGame, OldGame = oldGame});
         }
 
         /// <summary>
@@ -185,7 +198,7 @@ namespace TwitchAlert.classes
         private static void OnStatusChanged(User user, string newStatus, string oldStatus)
         {
             EventHandler<MKTwitchEventArgs> handler = StatusChanged;
-            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus, OldStatus=oldStatus });
+            handler?.Invoke(null, new MKTwitchEventArgs() {User = user, NewStatus = newStatus, OldStatus = oldStatus });
         }
 
         /// <summary>
@@ -236,7 +249,7 @@ namespace TwitchAlert.classes
         }
 
         /// <summary>
-        /// Starts the MKTwitch engine , filling the followedUser collection and
+        /// Starts the MKTwitch engine, filling the followedUser collection and
         /// starting up the Timer
         /// </summary>
         /// <param name="userName"></param>
@@ -372,14 +385,15 @@ namespace TwitchAlert.classes
                 {
                     if (followed.Game != streamer.game)
                     {
+                        var oldGame = followed.Game;
                         followed.GameChangeCount++;
-                        Console.WriteLine($"\n{followed.Name} followed.Game = {followed.Game} streamer.channel.game = {streamer.channel.game} streamer.game = {streamer.game} **followed.GameChangeCount = {followed.GameChangeCount}**");
+                        Console.WriteLine($"\n{followed.Name} followed.Game = {oldGame} streamer.channel.game = {streamer.channel.game} streamer.game = {streamer.game} **followed.GameChangeCount = {followed.GameChangeCount}**");
                    
                         // Game has to be different for two consecutive pulls before we change our version of it
                         if (followed.GameChangeCount < 2) continue;
                         followed.Game = streamer.game;
                         followed.GameChangeCount = 0;           // Reset the count
-                        OnGameChanged(followed, streamer.game);
+                        OnGameChanged(followed, streamer.game, oldGame);
                     }
                     if (followed.Status != streamer.channel.status)
                     {
@@ -441,6 +455,19 @@ namespace TwitchAlert.classes
             });
         }
 
+
+
+        //******************************************************************************
+        // ********** THE UpdateFollowedUsers() METHODS ARE COMPLETELY FUCKED **********
+        // *** THEY ARE STOPPING THE 'CHANGE USERNAME' FUNCTIONALITY FROM WORKING ***
+        // *******************************  IDIOT!! ************************************
+        // *****************************************************************************
+
+        /// <summary>
+        /// Check to see if we have Followed/Unfollowed any streamers
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public static async Task UpdateFollowedUsers(string userName)
         {
             var user = await GetUsersFollowedChannelsAsync(userName);
@@ -480,6 +507,7 @@ namespace TwitchAlert.classes
                 followedUsers.Remove(rem);
                 OnUnfollowed(rem);
             }
+
             if(followedUsersChanged)
                 OnFollowedUsersChanged();
         }
@@ -523,6 +551,8 @@ namespace TwitchAlert.classes
         {
             CancelPopupCycle = false;
             int numUsers = 0;
+
+            // Get the first batch (max 100) of streamers that 'userName' follows
             var users = await GetUsersFollowedChannelsAsync(userName);
             if (users == null) return;
 
@@ -532,13 +562,14 @@ namespace TwitchAlert.classes
                 await UpdateFollowedUsers(users);
 
             numUsers = users._total;
-            OnUpdateStarted(true);
+
+            //OnUpdateStarted(true);
+            
             TwitchStreamers.RootObject streamers = await GetStreamers(users);
-            OnUpdateCompleted(false);
+         
      
             for (int offset = 100; offset < numUsers; offset += 100)
             {
-                // users1.Add(GetUsersFollowedChannels(userName, 100, offset));
                 var u = await GetUsersFollowedChannelsAsync(userName, 100, offset);
                 users.follows.AddRange(u.follows);
                 if (streamers == null)
@@ -551,7 +582,12 @@ namespace TwitchAlert.classes
                 streamers._total = streamers.streams.Count;
             }
 
+          // OnUpdateCompleted(false);
+
+
+            // Clear followedUsers collection before we start to refill it with new users
             followedUsers.Clear();
+
             foreach (var followedUser in users.follows)
             {
                 bool isUserLive = false;
@@ -721,10 +757,11 @@ namespace TwitchAlert.classes
             }
             return iuld;
         }
+
         /// <summary>
-        /// Returns all of the people in the followed collection who are currently streaming
+        /// Returns all of the people in the followedUsers collection who are currently streaming
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task<TwitchStreamers.RootObject></returns>
         private static async Task<TwitchStreamers.RootObject> GetStreamers()
         {
             //  https://api.twitch.tv/kraken/streams?channel=chan1,monstercat,chan3
@@ -736,6 +773,11 @@ namespace TwitchAlert.classes
             return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
         }
 
+        /// <summary>
+        /// Returns all of the people in the 'users' collection who are currently streaming
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns>Task<TwitchStreamers.RootObject></returns>
         private static async Task<TwitchStreamers.RootObject> GetStreamers(Twitch.Root users)
         {
             string url = "https://api.twitch.tv/kraken/streams?channel=";

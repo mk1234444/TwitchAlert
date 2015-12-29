@@ -96,7 +96,21 @@ namespace TwitchAlert
                     if (MKTwitch.IsStarted)
                     {
                         MKTwitch.CancelPopupCycle = true;
-                        await MKTwitch.ChangeUser(USER_NAME);
+                        try
+                        {
+                            miNIUserName.Enabled = false;
+                            await MKTwitch.ChangeUser(USER_NAME);
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
+                        finally
+                        {
+                            miNIUserName.Enabled = true;
+                        }
+
+
                         notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
                     }
                 }

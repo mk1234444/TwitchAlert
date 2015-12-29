@@ -2,6 +2,10 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="TwitchAlert.classes.MKTwitch">
     <Position X="0.5" Y="0.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
     <NestedTypes>
       <Class Name="TwitchAlert.classes.MKTwitch.MKTwitchUpdatingEventArgs" Collapsed="true">
         <TypeIdentifier>
@@ -30,7 +34,7 @@
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AIQCAgAAECQQAVBAQBABGgAMAERBIBICEQAgJICIAME=</HashCode>
+      <HashCode>AIQCAgAAECQQAXBAQBADGgAMAERBoBICFSAgJICIANE=</HashCode>
       <FileName>classes\MKTwitch.cs</FileName>
     </TypeIdentifier>
   </Class>

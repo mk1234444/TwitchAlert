@@ -211,6 +211,7 @@ namespace TwitchAlert
                 toast.Link = user.Link;
                 toast.Status = user.Status;
                 Log.WriteLog($"{e.User.Name} changed GAME from {e.User.Game} to {e.NewGame}");
+                Log.WriteLog($"{e.User.Name} e.OldGame {e.OldGame} e.NewGame {e.NewGame} e.User.Game {e.User.Game}");
                 DisplayGameChangeToast(e.NewGame);
                 
             };
