@@ -197,9 +197,12 @@ namespace TwitchAlert
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             };
 
+            // Subscribe to the MKTwitch StartCompleted event so we hear when the
+            // its Start() method has completed
             MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true;  };
 
-
+            // Subscribe to the MKTwitch GameChanged event so we hear about
+            // when a Streamer changes their Game
             MKTwitch.GameChanged += (s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
@@ -216,6 +219,8 @@ namespace TwitchAlert
                 
             };
 
+            // Subscribe to the MKTwitch StatusChanged event so we hear about
+            // when a Streamer changes their Status message
             MKTwitch.StatusChanged += (s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
@@ -230,12 +235,17 @@ namespace TwitchAlert
                 DisplayStatusChangeToast(e.NewStatus);
             };
 
+            // Subscribe to the MKTwitch Followed event so we hear
+            // when the user follows a new Streamer
             MKTwitch.Followed += (s, e) =>
             {
                 if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
                 Console.WriteLine($"\nNow following {e.User.Name}");
                 PlayFollowedSound();
             };
+
+            // Subscribe to the MKTwitch UnFollowed event so we hear
+            // when the user unfollows a Streamer
             MKTwitch.Unfollowed += (s, e) =>
             {
                 if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
