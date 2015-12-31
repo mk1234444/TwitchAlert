@@ -239,11 +239,18 @@ namespace TwitchAlert.classes
             IsChangingUser = true;
             UserName = userName;
             timer.Stop();
+            int loopCount = 0;
+
             while(IsUpdating)
             {
-                await Task.Delay(500);
+                if (loopCount < 5)
+                {
+                    await Task.Delay(500);
+                    loopCount++;
+                }
             }
-            await SetupStreamTracker(userName);
+            if(loopCount<5)
+                await SetupStreamTracker(userName);
             timer.Start();
             IsChangingUser = false;
         }
@@ -454,8 +461,6 @@ namespace TwitchAlert.classes
                 Console.WriteLine(u.StreamCreatedAt);
             });
         }
-
-
 
         //******************************************************************************
         // ********** THE UpdateFollowedUsers() METHODS ARE COMPLETELY FUCKED **********

@@ -214,9 +214,9 @@ namespace TwitchAlert
                 toast.Link = user.Link;
                 toast.Status = user.Status;
                 Log.WriteLog($"{e.User.Name} changed GAME from {e.OldGame} to {e.NewGame}");
-                Log.WriteLog($"{e.User.Name} e.OldGame {e.OldGame} e.NewGame {e.NewGame} e.User.Game {e.User.Game}");
+                Log.WriteLog($"{e.User.Name} e.OldGame: {e.OldGame} e.NewGame: {e.NewGame} e.User.Game: {e.User.Game}");
                 DisplayGameChangeToast(e.NewGame);
-                
+               
             };
 
             // Subscribe to the MKTwitch StatusChanged event so we hear about
@@ -313,7 +313,6 @@ namespace TwitchAlert
                 Properties.Settings.Default.settingsUserName = USER_NAME;
             Properties.Settings.Default.settingsSoundOff = miNITurnSoundOff.Checked;
             Properties.Settings.Default.settingsSkipPopups = miNISkipPopupsAtStart.Checked;
-
             Properties.Settings.Default.Save();
 
             //Console.WriteLine("Property settings after save");
@@ -358,7 +357,7 @@ namespace TwitchAlert
         private void toastBorder_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             //var top = this.Top;
-           // Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
+            // Console.WriteLine($"toastBorder.ActualHeight = {(sender as Border).ActualHeight}\ntoastBorder.Height = {(sender as Border).Height}");
             toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height + 15);
         }
 
