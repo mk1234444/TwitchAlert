@@ -248,7 +248,12 @@ namespace TwitchAlert.classes
                     await Task.Delay(500);
                     loopCount++;
                 }
+                else
+                    break;     
             }
+
+            // Assume a loopCount of 5 means that the IsUpdating flag is not getting cleared
+            // then skip the SeupStreamTracker() and just restart the timer
             if(loopCount<5)
                 await SetupStreamTracker(userName);
             timer.Start();
