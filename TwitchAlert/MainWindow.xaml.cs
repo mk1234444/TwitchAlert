@@ -207,6 +207,7 @@ namespace TwitchAlert
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
                 toast.DisplayName = user.Name;
+                toast.Game = e.OldGame;
                 toast.Viewers = user.NumViewers;
                 toast.StreamCreatedAt = user.StreamCreatedAt;
                 toast.IsLive = user.IsStreaming;
@@ -226,6 +227,7 @@ namespace TwitchAlert
                 var user = e.User;
                 toast.DisplayName = user.Name;
                 toast.Game = user.Game;
+                toast.Status = e.OldStatus;
                 toast.Viewers = user.NumViewers;
                 toast.StreamCreatedAt = user.StreamCreatedAt;
                 toast.IsLive = user.IsStreaming;
