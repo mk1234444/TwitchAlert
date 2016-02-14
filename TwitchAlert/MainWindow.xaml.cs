@@ -127,6 +127,7 @@ namespace TwitchAlert
         }
 
         Toast toast = new Toast();
+
         string USER_NAME = Properties.Settings.Default.settingsUserName;
         
         Storyboard SlideUpStoryboard;
@@ -262,7 +263,30 @@ namespace TwitchAlert
                 //notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             }
             notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
-            MKTwitch.Start(USER_NAME, Properties.Settings.Default.settingsSkipPopups);
+            StartEngine();
+        }
+
+        private async void StartEngine()
+        {
+
+            try
+            {
+                await MKTwitch.Start(USER_NAME, Properties.Settings.Default.settingsSkipPopups);
+            }
+            catch (Exception)
+            {
+                
+            }
+            finally
+            {
+                if (MKTwitch.IsStarted == false)
+                {
+                    Console.WriteLine(notifyIcon.Text = "Failed to start the MKTwitch engine. Retrying in 10 seconds");
+                    await Task.Delay(10000);
+                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
+                    StartEngine();
+                }
+            }
         }
 
         #region Windows Events

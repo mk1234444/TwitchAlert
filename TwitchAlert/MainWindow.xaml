@@ -47,8 +47,6 @@
             </Border>
         </ToolTip>
 
-
-
         <Style x:Key="SperatorStyle" TargetType="{x:Type Separator}">
             <Style.Resources>
                 <LinearGradientBrush x:Key="Seperator_LinearGradientBrush" EndPoint="1,1" MappingMode="RelativeToBoundingBox" StartPoint="0,0">

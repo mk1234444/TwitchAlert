@@ -14,6 +14,10 @@ namespace TwitchAlert.classes
 {
     public static class MKTwitch
     {
+        private static bool SetupStreamTrackerFailed = false;
+
+
+
         /// <summary>
         /// Used to break the popup cycle loop
         /// </summary>
@@ -266,14 +270,14 @@ namespace TwitchAlert.classes
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="skipToastAtStart"></param>
-        public async static void Start(string userName, bool skipToastAtStart=false)
+        public async static Task Start(string userName, bool skipToastAtStart=false)
         {
             skipPopupsAtStart = skipToastAtStart;
             UserName = userName;
             await SetupStreamTracker( userName);
 
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(20);
+            timer.Interval = TimeSpan.FromSeconds(40);
             int dotCount = 0;
             timer.Tick+= async(s,e) => 
             {
@@ -366,7 +370,7 @@ namespace TwitchAlert.classes
         }
 
         /// <summary>
-        /// Updates the streaming info for followed users, triggering any Online/Offline events where needed
+        /// Updates the streaming info for followed users, triggering any Online/Offline/GameChanged/StatusChanged events where needed
         /// </summary>
         /// <returns></returns>
         private static async Task Update()
@@ -852,7 +856,8 @@ namespace TwitchAlert.classes
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"MKTwitch.Get() Failed with {ex.Message}.");
+                Console.WriteLine($"MKTwitch.GetAsync() Failed with {ex.Message}.");
+                throw;
             }
             return res;
         }

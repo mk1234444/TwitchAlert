@@ -5,6 +5,7 @@
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
       <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Events" Collapsed="true" />
     </Compartments>
     <NestedTypes>
       <Class Name="TwitchAlert.classes.MKTwitch.MKTwitchUpdatingEventArgs" Collapsed="true">
