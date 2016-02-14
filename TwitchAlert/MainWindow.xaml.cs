@@ -4,9 +4,11 @@
 // DONE:  Add some logging to file
 // DONE:  Added Debug MenuItem
 // DONE:  Added 'Open Log File MenuItem' into the Debug menu. LCTRL+LSHIFT+L also opens the log file
-
+// DONE:  If no there is network connection when trying to start the MKTwitch engine then the NotifyIcon
+//        Tooltip would just be stuck with the 'Retrieving information...' message and the app just sits doing nothing.
+//        Now we retry every 10 seconds till the engine starts successfuly.
 // If Status/Games changes in timer tick and a cycle is already in progress then the update may be
-// displayed using the previous streamers name
+// displayed using the previous streamers name  DONE?????
 
 
 using System;
@@ -268,7 +270,6 @@ namespace TwitchAlert
 
         private async void StartEngine()
         {
-
             try
             {
                 await MKTwitch.Start(USER_NAME, Properties.Settings.Default.settingsSkipPopups);

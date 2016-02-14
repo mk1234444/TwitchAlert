@@ -86,34 +86,34 @@ namespace TwitchAlert
             
             newUserHandler = async (newUserName) =>
             {
-                if (!string.IsNullOrEmpty(newUserName))
+                if (string.IsNullOrEmpty(newUserName)) return;
+               
+                // If the entered username is already the current one or doesn't exist then do nothing.
+                // NOTE: If username is invalid then maybe a MessageBox saying so or the UserNameWindow
+                //       should be re-opened?
+                if (newUserName == USER_NAME || !MKTwitch.UserExists(newUserName)) return;
+                USER_NAME = newUserName;
+                if (MKTwitch.IsStarted)
                 {
-                    // If the entered username is already the current one or doesn't exist then do nothing.
-                    // NOTE: If username is invalid then maybe a MessageBox saying so or the UserNameWindow
-                    //       should be re-opened?
-                    if (newUserName == USER_NAME || !MKTwitch.UserExists(newUserName)) return;
-                    USER_NAME = newUserName;
-                    if (MKTwitch.IsStarted)
+                    MKTwitch.CancelPopupCycle = true;
+                    try
                     {
-                        MKTwitch.CancelPopupCycle = true;
-                        try
-                        {
-                            miNIUserName.Enabled = false;
-                            await MKTwitch.ChangeUser(USER_NAME);
-                        }
-                        catch(Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-                        finally
-                        {
-                            miNIUserName.Enabled = true;
-                        }
-
-
-                        notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                        miNIUserName.Enabled = false;
+                        await MKTwitch.ChangeUser(USER_NAME);
                     }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    finally
+                    {
+                        miNIUserName.Enabled = true;
+                    }
+
+
+                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
                 }
+                
                 userNameWindow.NewUser -= newUserHandler;
                 userNameWindow = null;
             };

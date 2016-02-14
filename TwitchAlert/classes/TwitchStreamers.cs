@@ -86,6 +86,10 @@ namespace TwitchAlert.classes
 
         public class RootObject
         {
+            public RootObject()
+            {
+                streams = new List<Stream>();
+            }
             public List<Stream> streams { get; set; }
             public int _total { get; set; }
             public Links3 _links { get; set; }

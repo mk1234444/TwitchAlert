@@ -12,11 +12,9 @@ using System.Windows;
 
 namespace TwitchAlert.classes
 {
-    public static class MKTwitch
+    public static partial class MKTwitch
     {
         private static bool SetupStreamTrackerFailed = false;
-
-
 
         /// <summary>
         /// Used to break the popup cycle loop
@@ -258,15 +256,18 @@ namespace TwitchAlert.classes
 
             // Assume a loopCount of 5 means that the IsUpdating flag is not getting cleared
             // then skip the SeupStreamTracker() and just restart the timer
-            if(loopCount<5)
+            if (loopCount < 5)
+            {
+                followedUsers.Clear();
                 await SetupStreamTracker(userName);
+            }
             timer.Start();
             IsChangingUser = false;
         }
 
         /// <summary>
         /// Starts the MKTwitch engine, filling the followedUser collection and
-        /// starting up the Timer
+        /// starting up the Timer. If successful the IsStarted property is set to true
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="skipToastAtStart"></param>
@@ -458,6 +459,7 @@ namespace TwitchAlert.classes
             }
         }
 
+
         private static void FollowedUsersToConsole()
         {
             followedUsers.ForEach(u => {
@@ -476,6 +478,7 @@ namespace TwitchAlert.classes
         // *** THEY ARE STOPPING THE 'CHANGE USERNAME' FUNCTIONALITY FROM WORKING ***
         // *******************************  IDIOT!! ************************************
         // *****************************************************************************
+        // Think it's fixed but needs testing
 
         /// <summary>
         /// Check to see if we have Followed/Unfollowed any streamers
@@ -484,15 +487,19 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         public static async Task UpdateFollowedUsers(string userName)
         {
-            var user = await GetUsersFollowedChannelsAsync(userName);
-            if (user == null) return;
-            await UpdateFollowedUsers(user);
+            var result = await GetALLUsersFollowers(userName);
+            var followers = (Twitch.Root)result.Followers;       
+            if (followers == null) return;
+            await UpdateFollowedUsers(followers);
         }
 
         private static async Task UpdateFollowedUsers(Twitch.Root user)
         {
+            if (followedUsers.Count == 0) return;
+
             bool followedUsersChanged = false;
             if (user == null) return;
+
             // Check if we've followed another streamer and if so add them to our followed collection
             foreach (var u in user.follows)
             {
@@ -564,40 +571,14 @@ namespace TwitchAlert.classes
         private async static Task SetupStreamTracker( string userName)
         {
             CancelPopupCycle = false;
-            int numUsers = 0;
 
-            // Get the first batch (max 100) of streamers that 'userName' follows
-            var users = await GetUsersFollowedChannelsAsync(userName);
-            if (users == null) return;
-
+            var fs = await GetALLUsersFollowers(userName);
+            var users = (Twitch.Root)fs.Followers;
+            var streamers = (TwitchStreamers.RootObject)fs.Streamers;
             // If this is the first run (MKTwitch.Start() hasnt completed) then skip
             // any followed user update check this time.
             if(MKTwitch.IsStarted)
                 await UpdateFollowedUsers(users);
-
-            numUsers = users._total;
-
-            //OnUpdateStarted(true);
-            
-            TwitchStreamers.RootObject streamers = await GetStreamers(users);
-         
-     
-            for (int offset = 100; offset < numUsers; offset += 100)
-            {
-                var u = await GetUsersFollowedChannelsAsync(userName, 100, offset);
-                users.follows.AddRange(u.follows);
-                if (streamers == null)
-                    streamers = await GetStreamers(u);
-                else
-                {
-                    var stre = (await GetStreamers(u));
-                    streamers.streams.AddRange(stre.streams);
-                }
-                streamers._total = streamers.streams.Count;
-            }
-
-          // OnUpdateCompleted(false);
-
 
             // Clear followedUsers collection before we start to refill it with new users
             followedUsers.Clear();

@@ -66,6 +66,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="100PlusUsers.cs" />
     <Compile Include="classes\Log.cs" />
     <Compile Include="classes\TwitchStreamers.cs" />
     <Compile Include="SampleData\SampleDataSource\SampleDataSource.xaml.cs">

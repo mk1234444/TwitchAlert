@@ -125,6 +125,11 @@ namespace TwitchAlert.classes
 
         public class Root
         {
+            public Root()
+            {
+                follows = new List<Follow>();
+                streams = new List<Stream>();
+            }
             public List<Follow> follows { get; set; }
             public List<Stream> streams { get; set; }
             public int _total { get; set; }
