@@ -306,8 +306,6 @@ namespace TwitchAlert.classes
                 {
                     timer.Start();
                 }
-              //  OnUpdateCompleted(IsUpdating = false);
-
                 #region Old
                 //foreach (var u in followedUsers)
                 //{              

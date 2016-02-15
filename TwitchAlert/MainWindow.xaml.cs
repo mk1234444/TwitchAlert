@@ -322,10 +322,6 @@ namespace TwitchAlert
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
-            //Console.WriteLine($"Window_Closing");
-            //Console.WriteLine($"\tthis.Left {this.Left} this.Top {this.Top} toast.TopPosition {toast.TopPosition} toastLeftPosition {toast.LeftPosition}");
-            //Console.WriteLine($"\tUSER_NAME {USER_NAME}");
-
             if (userNameWindow != null) userNameWindow.Close();
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
@@ -333,10 +329,6 @@ namespace TwitchAlert
             Properties.Settings.Default.settingsSoundOff = miNITurnSoundOff.Checked;
             Properties.Settings.Default.settingsSkipPopups = miNISkipPopupsAtStart.Checked;
             Properties.Settings.Default.Save();
-
-            //Console.WriteLine("Property settings after save");
-            //Console.WriteLine($"\tProperties.Settings.Default.settingsLeft {Properties.Settings.Default.settingsLeft}");
-            //Console.WriteLine($"\tProperties.Settings.Default.settingsUserName {Properties.Settings.Default.settingsUserName}");
             DisposeNotifyIcon();
         }
 
@@ -522,10 +514,6 @@ namespace TwitchAlert
         private void PlayNewGameSound()
         {
             if (miNITurnSoundOff.Checked) return;
-            //var s = Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav";
-            //if (!File.Exists(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
-            //    MessageBox.Show("I'm Lost");
-
             using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
             {
                 player.Play();
