@@ -89,7 +89,7 @@ namespace TwitchAlert
             public string StreamCreatedAt
             {
                 get { return (string)GetValue(StreamCreatedAtProperty); }
-                set { SetValue(StreamCreatedAtProperty, $"Started: {value} ({Viewers} Viewers)"); }
+                set { SetValue(StreamCreatedAtProperty, $"Started: {value} ({(Viewers>1000? ((float)Viewers/1000).ToString("F1") + "k" : Viewers.ToString())} Viewers)");}
             }
 
             public string Link

@@ -56,7 +56,7 @@ namespace TwitchAlert.classes
             }
             catch (IOException ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message,"TwitchAlert");
             }
         }
 

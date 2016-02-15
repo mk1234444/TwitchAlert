@@ -299,7 +299,7 @@ namespace TwitchAlert.classes
                 {
                     string m = $"{nameof(timer.Tick)} await Update() threw Exception: ex.Message is '{ex.Message}'";
                     Console.WriteLine(m);
-                    MessageBox.Show(m);
+                   // MessageBox.Show(m);
 
                 }
                 finally
