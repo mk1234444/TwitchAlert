@@ -96,6 +96,10 @@ namespace TwitchAlert
                 if (MKTwitch.IsStarted)
                 {
                     MKTwitch.CancelPopupCycle = true;
+
+                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
+
+
                     try
                     {
                         miNIUserName.Enabled = false;

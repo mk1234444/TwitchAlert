@@ -139,19 +139,11 @@ namespace TwitchAlert
         {
             InitializeComponent();
 
-           // MessageBox.Show("");
             this.DataContext = toast;
             SetupNotificationIcon();
 
             SlideUpStoryboard = FindResource("SlideUp") as Storyboard;
             SlideDownStoryboard = FindResource("SlideDown") as Storyboard;
-
-            //DispatcherTimer debugTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1)};
-            //debugTimer.Tick += (s, e) => {
-            //    txtTopPostion.Text = $"TopPosition {toast.TopPosition.ToString()} this.Top {this.Top}";
-            //   // Console.WriteLine(toast.TopPosition);
-            //};
-            //debugTimer.Start();
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live
@@ -200,11 +192,11 @@ namespace TwitchAlert
                 notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
             };
 
-            // Subscribe to the MKTwitch StartCompleted event so we hear when the
-            // its Start() method has completed
+            // Subscribe to the MKTwitch StartCompleted event so we hear when its
+            // Start() method has completed
             MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true;  };
 
-            // Subscribe to the MKTwitch GameChanged event so we hear about
+            // Subscribe to the MKTwitch GameChanged event so we hear
             // when a Streamer changes their Game
             MKTwitch.GameChanged += (s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
@@ -223,7 +215,7 @@ namespace TwitchAlert
                
             };
 
-            // Subscribe to the MKTwitch StatusChanged event so we hear about
+            // Subscribe to the MKTwitch StatusChanged event so we hear
             // when a Streamer changes their Status message
             MKTwitch.StatusChanged += (s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
@@ -250,7 +242,7 @@ namespace TwitchAlert
             };
 
             // Subscribe to the MKTwitch UnFollowed event so we hear
-            // when the user unfollows a Streamer
+            // when the user UNfollows a Streamer
             MKTwitch.Unfollowed += (s, e) =>
             {
                 if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
