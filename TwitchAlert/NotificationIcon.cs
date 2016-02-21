@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TwitchAlert.classes;
 using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace TwitchAlert
 {
@@ -20,6 +21,9 @@ namespace TwitchAlert
         MenuItem miNIOpenLogFile;
         MenuItem miNITimerStatus;
         MenuItem miNIStartTimer;
+
+        MenuItem miMoveToCentre;
+        MenuItem miShowVB;
         
         //MenuItem miNIRefreshFollowed;
 
@@ -44,8 +48,11 @@ namespace TwitchAlert
             miNIDebug = new MenuItem { Text = "Debug", Name = nameof(miNIDebug) };
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
+            miMoveToCentre = new MenuItem { Text = "Move ToCenter", Name = nameof(miMoveToCentre) };
+            miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
+
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus });
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus, miMoveToCentre,miShowVB });
            
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
@@ -59,10 +66,13 @@ namespace TwitchAlert
                 var enabled = MKTwitch.IsTimerEnabled();
                // Log.WriteLog($"Timer Status = {(enabled?"Enabled":"Disabled")} * Last Pull = {lastPull}", "MKTwitchTimerLog.txt");
                // Process.Start("MKTwitchTimerLog.txt");
-                MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
+                System.Windows.MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
 
             };
- 
+
+
+            miMoveToCentre.Click += miMoveToCentre_Click;
+            miShowVB.Click += miShowVB_Click;
             //miNIRefreshFollowed.Click += (s, e) => MKTwitch.UpdateFollowedUsers(USER_NAME);
 
             contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups,miNIDebug, miNIQuit });
@@ -70,6 +80,25 @@ namespace TwitchAlert
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.Click += (s, e) => this.Focus();
             notifyIcon.ContextMenu = contextMenu;
+        }
+
+        private void miShowVB_Click(object sender, EventArgs e)
+        {
+            var win = new Window1(toastBorder);
+            win.Show();
+        }
+
+        private async void miMoveToCentre_Click(object sender, EventArgs e)
+        {
+            var newTop = SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2;
+            this.Top = newTop;
+            var newLeft = SystemParameters.WorkArea.Width / 2 - this.Width / 2;
+            this.Left = newLeft;
+            await Task.Delay(2000);
+            if(toastBorder.Opacity!=1) toastBorder.Opacity = 1;
+            await Task.Delay(2000);
+            toastBorder.Visibility = Visibility.Visible;
+            rootGrid.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -107,7 +136,7 @@ namespace TwitchAlert
                     }
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message,"TwitchAlert");
+                       System.Windows.MessageBox.Show(ex.Message,"TwitchAlert");
                     }
                     finally
                     {

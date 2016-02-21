@@ -1,14 +1,10 @@
-﻿// 0.4.6
-// DONE:  Detect if user has followed/unfollowed a streamer
+﻿// 0.4.7
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
-// DONE:  Add some logging to file
-// DONE:  Added Debug MenuItem
-// DONE:  Added 'Open Log File MenuItem' into the Debug menu. LCTRL+LSHIFT+L also opens the log file
-// DONE:  If no there is network connection when trying to start the MKTwitch engine then the NotifyIcon
-//        Tooltip would just be stuck with the 'Retrieving information...' message and the app just sits doing nothing.
-//        Now we retry every 10 seconds till the engine starts successfuly.
 // If Status/Games changes in timer tick and a cycle is already in progress then the update may be
 // displayed using the previous streamers name  DONE?????
+// TODO: Use the ToatBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
+//       used and when that is collapsed it leaves then empty red ToastBprder still hanging
+// TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
 
 
 using System;
@@ -33,7 +29,6 @@ namespace TwitchAlert
     /// </summary>
     public partial class MainWindow : Window
     {
-        DateTime lastPull;
         public class Toast:DependencyObject
         {
            public Toast()
@@ -127,11 +122,10 @@ namespace TwitchAlert
             // Using a DependencyProperty as the backing store for DisplayName.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(Toast), new PropertyMetadata(null));  
         }
-
         Toast toast = new Toast();
 
         string USER_NAME = Properties.Settings.Default.settingsUserName;
-        
+        DateTime lastPull;
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
 
@@ -287,6 +281,8 @@ namespace TwitchAlert
         {
             Log.Seperator();
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
+            this.Top = toast.BottomPosition = SystemParameters.PrimaryScreenHeight; //DEBUG STUFF
+
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
             // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.ActualHeight);
@@ -316,6 +312,7 @@ namespace TwitchAlert
         private void window_ContentRendered(object sender, EventArgs e)
         {
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
+            this.Top = toast.BottomPosition = SystemParameters.PrimaryScreenHeight; // DEBUG STUFF
             //Console.WriteLine($"ContentRendered - this.Top {this.Top}");
             //Console.WriteLine($"ContentRendered - TopPosition = {toast.TopPosition}");
         }
@@ -337,13 +334,15 @@ namespace TwitchAlert
             DragMove();
         }
 
-        private async void window_KeyDown(object sender, KeyEventArgs e)
+        private void window_KeyDown(object sender, KeyEventArgs e)
         {
             // Ctrl+ Shift+ C centers the popup
             if ((Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl)) && e.Key == Key.C)
                 toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
             else if (e.Key == Key.Escape)
                 MKTwitch.CancelPopupCycle = true;
+
+            // F1,F2 and F3 used here to test stuff
             else if (e.Key == Key.F1)
             {
                 DisplayGameChangeToast("SomeNewGame");
@@ -442,6 +441,7 @@ namespace TwitchAlert
         /// <returns></returns>
         public async Task DisplayToast(bool AllOffline = false)
         {
+    
             this.Topmost = true;
             if (AllOffline)
             {
@@ -449,16 +449,47 @@ namespace TwitchAlert
                 brdIsOnline.Visibility = Visibility.Collapsed;
                 // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height);
                 toast.TopPosition = SystemParameters.WorkArea.Height - (this.Height);
+                toast.TopPosition = SystemParameters.PrimaryScreenHeight - this.Height;
+
+                var primaryScreenHeight = SystemParameters.PrimaryScreenHeight;
+                var workingAreaHeight = SystemParameters.WorkArea.Height;
 
                 //Console.WriteLine($"TopPosition = {toast.TopPosition}");
                 this.Top = SystemParameters.WorkArea.Height;
             }
             await StartAnimationAsync(SlideUpStoryboard);
+            //Console.WriteLine($"\nWindow.Top {this.Top}");
+            //Console.WriteLine($"Window.Left {this.Left}");
+            //Console.WriteLine($"Window.Visibilty {this.Visibility}");
+            //Console.WriteLine($"toastTopPosition {toast.TopPosition}");
+            //Console.WriteLine($"toastBottomPosition {toast.BottomPosition}");
+            //Console.WriteLine($"toastBorder.Visibility {toastBorder.Visibility}");
+            //Console.WriteLine($"toastBorder.ActualWidth {toastBorder.ActualWidth }");
+            //Console.WriteLine($"toastBorder.ActualHeight {toastBorder.ActualHeight}");
+            //Console.WriteLine($"toastBorder.Opacity {toastBorder.Opacity}");
+            //Console.WriteLine($"rootGrid.Visibility {rootGrid.Visibility}");
+            //Console.WriteLine($"rootGrid.Opacity {rootGrid.Opacity}");
+            //Console.WriteLine($"PromaryScreenHeight {SystemParameters.PrimaryScreenHeight}");
+            //Console.WriteLine($"WorkArea.Height {SystemParameters.WorkArea.Height}\n");
             await Task.Delay(4000);
             await StartAnimationAsync(SlideDownStoryboard);
 
             txtNobodyOnline.Visibility = Visibility.Collapsed;
             brdIsOnline.Visibility = Visibility.Visible;
+            //Console.WriteLine($"\nWindow.Top {this.Top}");
+            //Console.WriteLine($"Window.Left {this.Left}");
+            //Console.WriteLine($"Window.Visibilty {this.Visibility}");
+            //Console.WriteLine($"toastTopPosition {toast.TopPosition}");
+            //Console.WriteLine($"toastBottomPosition {toast.BottomPosition}");
+            //Console.WriteLine($"toastBorder.Visibility {toastBorder.Visibility}");
+            //Console.WriteLine($"toastBorder.ActualWidth {toastBorder.ActualWidth }");
+            //Console.WriteLine($"toastBorder.ActualHeight {toastBorder.ActualHeight}");
+            //Console.WriteLine($"toastBorder.Opacity {toastBorder.Opacity}");
+            //Console.WriteLine($"rootGrid.Opacity {rootGrid.Opacity}");
+
+            //Console.WriteLine($"rootGrid.Visibility {rootGrid.Visibility}");
+            //Console.WriteLine($"PromaryScreenHeight {SystemParameters.PrimaryScreenHeight}");
+            //Console.WriteLine($"WorkArea.Height {SystemParameters.WorkArea.Height}\n");
         }
 
         public async Task DisplayGameChangeToast(string newGame)
