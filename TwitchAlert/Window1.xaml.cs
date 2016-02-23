@@ -26,6 +26,15 @@ namespace TwitchAlert
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             miShowVB.Text = "Show Current Visual";
+            Properties.Settings.Default.settingsVBWindowLeft = this.Left;
+            Properties.Settings.Default.settingsVBWindowTop = this.Top;
+            Properties.Settings.Default.Save();
+        }
+
+        private void Window_ContentRendered(object sender, System.EventArgs e)
+        {
+            this.Left = Properties.Settings.Default.settingsVBWindowLeft;
+            this.Top = Properties.Settings.Default.settingsVBWindowTop;
         }
     }
 }

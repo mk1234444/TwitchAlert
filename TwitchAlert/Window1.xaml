@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
         mc:Ignorable="d"
-        Title="TwitchAlert Visual State" Width="239.798" Height="150.846" Closing="Window_Closing">
+        Title="TwitchAlert Visual State" Width="239.798" Height="150.846" Closing="Window_Closing" ContentRendered="Window_ContentRendered">
     <Grid Width="auto" Height="auto">
         <Rectangle x:Name="rect1" Fill="#FF9898C9"  Stroke="Black" Width="auto" Height="auto"/>
 

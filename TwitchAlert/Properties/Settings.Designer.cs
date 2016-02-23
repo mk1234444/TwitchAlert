@@ -82,5 +82,29 @@ namespace TwitchAlert.Properties {
                 this["settingsSkipPopups"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double settingsVBWindowLeft {
+            get {
+                return ((double)(this["settingsVBWindowLeft"]));
+            }
+            set {
+                this["settingsVBWindowLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double settingsVBWindowTop {
+            get {
+                return ((double)(this["settingsVBWindowTop"]));
+            }
+            set {
+                this["settingsVBWindowTop"] = value;
+            }
+        }
     }
 }

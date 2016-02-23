@@ -90,6 +90,13 @@ namespace TwitchAlert
             {
                 miShowVB.Text = "Hide Current Visual";
                 win1 = new Window1(toastBorder, miShowVB);
+                EventHandler closed = null;
+                closed=(s, e) => {
+                    this.Closed -= closed;
+                    win1 = null;
+
+                };
+                win1.Closed += closed;
                 win1.Show();
                 win1.BringToFront();
             }
