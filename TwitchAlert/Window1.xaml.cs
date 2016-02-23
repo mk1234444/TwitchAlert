@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace TwitchAlert
 {
@@ -19,11 +9,23 @@ namespace TwitchAlert
     /// </summary>
     public partial class Window1 : Window
     {
-        VisualBrush visualBrush;
-        public Window1(Border toastBorder)
+        System.Windows.Forms.MenuItem miShowVB;
+
+        public Window1(Border toastBorder,System.Windows.Forms.MenuItem miShowVB)
         {
+            this.miShowVB = miShowVB;
             InitializeComponent();
             rect1.Fill = new VisualBrush() { Visual = toastBorder};
+        }
+
+        public void BringToFront()
+        {
+            this.Activate();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            miShowVB.Text = "Show Current Visual";
         }
     }
 }

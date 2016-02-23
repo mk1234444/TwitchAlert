@@ -5,6 +5,10 @@
 // TODO: Use the ToatBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
 //       used and when that is collapsed it leaves then empty red ToastBprder still hanging
 // TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
+// TODO: If NotifyIcon ContextMenu is accessed when the app is in 'Retrieving Information...' mode
+//       then we crash with an InvalidOperation Exception. FIXED-TEST
+// TODO: When Nobody Online: The first time we try to display the toast when noone is online it pops up
+//       correctly. If we try again it fails to popup although it is still being rendered correctly
 
 
 using System;
@@ -128,6 +132,8 @@ namespace TwitchAlert
         DateTime lastPull;
         Storyboard SlideUpStoryboard;
         Storyboard SlideDownStoryboard;
+
+        Window1 win1;
 
         public MainWindow()
         {
@@ -269,8 +275,18 @@ namespace TwitchAlert
                 if (MKTwitch.IsStarted == false)
                 {
                     Console.WriteLine(notifyIcon.Text = "Failed to start the MKTwitch engine. Retrying in 10 seconds");
+
+                    Dispatcher.BeginInvoke(new Action(() => {
+                        notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFailed to start the MKTwitch engine.\nRetrying in 10 seconds";
+                    }));
+
                     await Task.Delay(10000);
-                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
+
+                    Dispatcher.BeginInvoke(new Action(() => {
+                        notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
+                    }));
+
+
                     StartEngine();
                 }
             }
@@ -319,6 +335,7 @@ namespace TwitchAlert
 
         private void window_Closing(object sender, CancelEventArgs e)
         {
+            if (win1 != null) win1.Close();
             if (userNameWindow != null) userNameWindow.Close();
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
@@ -441,7 +458,7 @@ namespace TwitchAlert
         /// <returns></returns>
         public async Task DisplayToast(bool AllOffline = false)
         {
-    
+            if (win1 != null) win1.Activate();
             this.Topmost = true;
             if (AllOffline)
             {
@@ -494,6 +511,7 @@ namespace TwitchAlert
 
         public async Task DisplayGameChangeToast(string newGame)
         {
+            if (win1 != null) win1.Activate();
             toastBorder.BorderBrush = Brushes.Yellow;
             await StartAnimationAsync(SlideUpStoryboard);
             await StartAnimationAsync(FindResource("GameOut") as Storyboard);
@@ -507,6 +525,7 @@ namespace TwitchAlert
 
         public async Task DisplayStatusChangeToast(string newStatus)
         {
+            if (win1 != null) win1.Activate();
             toastBorder.BorderBrush = Brushes.Yellow;
             await StartAnimationAsync(SlideUpStoryboard);
             await StartAnimationAsync(FindResource("StatusOut") as Storyboard);

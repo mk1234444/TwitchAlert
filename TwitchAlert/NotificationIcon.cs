@@ -22,7 +22,6 @@ namespace TwitchAlert
         MenuItem miNITimerStatus;
         MenuItem miNIStartTimer;
 
-        MenuItem miMoveToCentre;
         MenuItem miShowVB;
         
         //MenuItem miNIRefreshFollowed;
@@ -48,11 +47,10 @@ namespace TwitchAlert
             miNIDebug = new MenuItem { Text = "Debug", Name = nameof(miNIDebug) };
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
-            miMoveToCentre = new MenuItem { Text = "Move ToCenter", Name = nameof(miMoveToCentre) };
             miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
 
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus, miMoveToCentre,miShowVB });
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus,miShowVB });
            
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
@@ -71,7 +69,6 @@ namespace TwitchAlert
             };
 
 
-            miMoveToCentre.Click += miMoveToCentre_Click;
             miShowVB.Click += miShowVB_Click;
             //miNIRefreshFollowed.Click += (s, e) => MKTwitch.UpdateFollowedUsers(USER_NAME);
 
@@ -84,22 +81,27 @@ namespace TwitchAlert
 
         private void miShowVB_Click(object sender, EventArgs e)
         {
-            var win = new Window1(toastBorder);
-            win.Show();
+            ToggleCurrentVisualDisplay();
         }
 
-        private async void miMoveToCentre_Click(object sender, EventArgs e)
+        private void ToggleCurrentVisualDisplay()
         {
-            var newTop = SystemParameters.PrimaryScreenHeight / 2 - this.Height / 2;
-            this.Top = newTop;
-            var newLeft = SystemParameters.WorkArea.Width / 2 - this.Width / 2;
-            this.Left = newLeft;
-            await Task.Delay(2000);
-            if(toastBorder.Opacity!=1) toastBorder.Opacity = 1;
-            await Task.Delay(2000);
-            toastBorder.Visibility = Visibility.Visible;
-            rootGrid.Visibility = Visibility.Visible;
+            if (win1 == null)
+            {
+                miShowVB.Text = "Hide Current Visual";
+                win1 = new Window1(toastBorder, miShowVB);
+                win1.Show();
+                win1.BringToFront();
+            }
+            else
+            {
+                miShowVB.Text = "Show Current Visual";
+                win1.Close();
+                win1 = null;
+            }
         }
+
+
 
         /// <summary>
         /// Opens UserName entry window for user to enter name.
@@ -156,6 +158,7 @@ namespace TwitchAlert
 
         private async Task ShowOnlineUsers()
         {
+            if (win1 != null) win1.Activate();
             int count = 0;
             foreach (var user in MKTwitch.followedUsers.Where(i => i.IsStreaming))
             {
