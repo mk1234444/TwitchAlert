@@ -1,14 +1,13 @@
 ﻿// 0.4.7
-// FIXED: The Nobody Online popup only displayed every other invocation
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
 // If Status/Games changes in timer tick and a cycle is already in progress then the update may be
 // displayed using the previous streamers name  DONE?????
-// TODO: Use the ToatBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
+// TODO: Use the ToastBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
 //       used and when that is collapsed it leaves then empty red ToastBorder still hanging
 // TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
-// TODO: If NotifyIcon ContextMenu is accessed when the app is in 'Retrieving Information...' mode
+// FIXED: If NotifyIcon ContextMenu is accessed when the app is in 'Retrieving Information...' mode
 //       then we crash with an InvalidOperation Exception. FIXED-TEST
-// TODO: When Nobody Online: The first time we try to display the toast when noone is online it pops up
+// FIXED: When Nobody Online: The first time we try to display the toast when noone is online it pops up
 //       correctly. If we try again it fails to popup although it is still being rendered correctly
 
 
