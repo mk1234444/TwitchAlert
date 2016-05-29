@@ -23,15 +23,24 @@ namespace TwitchAlert.classes
         static bool skipPopupsAtStart = false;
 
         /// <summary>
+        /// Indicates we are in the process of changing the UserName
+        /// </summary>
+        public static bool IsChangingUser;
+
+
+        /// <summary>
+        /// Indicates if we are already in the middle of a popup cycle.
+        /// Can be used to prevent timed updated from trying to display
+        /// a popups during this time.
+        /// </summary>
+        public static bool IsPopupCycleRunning;
+
+
+        /// <summary>
         /// Indicates that the Start() Method has been run. Start() has to
         /// be run once to setup the Timer and stuff
         /// </summary>
         public static bool IsStarted;
-
-        /// <summary>
-        /// Indicates we are in the process of changing the UserName
-        /// </summary>
-        public static bool IsChangingUser;
 
         /// <summary>
         /// Indicates that stream information is being updated
@@ -624,6 +633,7 @@ namespace TwitchAlert.classes
 
             if (skipPopupsAtStart==false)
             {
+                IsPopupCycleRunning = true;
                 foreach (var user in followedUsers.Where(i => i.IsStreaming))
                 {
                     if (CancelPopupCycle)
@@ -635,6 +645,7 @@ namespace TwitchAlert.classes
                     }
                 }
                 CancelPopupCycle = false;
+                IsPopupCycleRunning = false;
             }
         }
 

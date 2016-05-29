@@ -3,11 +3,14 @@
   <Class Name="TwitchAlert.classes.MKTwitch">
     <Position X="0.5" Y="0.5" Width="2.5" />
     <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Events" Collapsed="true" />
     </Compartments>
     <NestedTypes>
+      <Struct Name="TwitchAlert.classes.MKTwitch.GetALLUsersFollowers_Result" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>100PlusUsers.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
       <Class Name="TwitchAlert.classes.MKTwitch.MKTwitchUpdatingEventArgs" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>classes\MKTwitch.cs</NewMemberFileName>
@@ -35,8 +38,8 @@
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AIQCAgAAECQQAXBAQBADGgAMAERBoBICFSAgJICIANE=</HashCode>
-      <FileName>classes\MKTwitch.cs</FileName>
+      <HashCode>AIQCAgAQESQQAXBAQBADGgAMAERBoBICFSAgJICIANE=</HashCode>
+      <FileName>100PlusUsers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

@@ -1,9 +1,10 @@
 ﻿// 0.4.7
+// FIXED: The Nobody Online popup only displayed every other invocation
 // TODO:  If the streamers name doesnt fit then either make the font smaller or add a tooltip
 // If Status/Games changes in timer tick and a cycle is already in progress then the update may be
 // displayed using the previous streamers name  DONE?????
 // TODO: Use the ToatBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
-//       used and when that is collapsed it leaves then empty red ToastBprder still hanging
+//       used and when that is collapsed it leaves then empty red ToastBorder still hanging
 // TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
 // TODO: If NotifyIcon ContextMenu is accessed when the app is in 'Retrieving Information...' mode
 //       then we crash with an InvalidOperation Exception. FIXED-TEST
@@ -128,6 +129,7 @@ namespace TwitchAlert
         }
         Toast toast = new Toast();
 
+        const int NOBODY_ONLINE_HEIGHT = 100;
         string USER_NAME = Properties.Settings.Default.settingsUserName;
         DateTime lastPull;
         Storyboard SlideUpStoryboard;
@@ -198,7 +200,7 @@ namespace TwitchAlert
 
             // Subscribe to the MKTwitch GameChanged event so we hear
             // when a Streamer changes their Game
-            MKTwitch.GameChanged += (s, e) => {
+            MKTwitch.GameChanged += async (s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
                 toast.DisplayName = user.Name;
@@ -211,13 +213,13 @@ namespace TwitchAlert
                 toast.Status = user.Status;
                 Log.WriteLog($"{e.User.Name} changed GAME from {e.OldGame} to {e.NewGame}");
                 Log.WriteLog($"{e.User.Name} e.OldGame: {e.OldGame} e.NewGame: {e.NewGame} e.User.Game: {e.User.Game}");
-                DisplayGameChangeToast(e.NewGame);
+                await DisplayGameChangeToast(e.NewGame);
                
             };
 
             // Subscribe to the MKTwitch StatusChanged event so we hear
             // when a Streamer changes their Status message
-            MKTwitch.StatusChanged += (s, e) => {
+            MKTwitch.StatusChanged += async(s, e) => {
                 if (!miNIGameStatusPopups.Checked) return;
                 var user = e.User;
                 toast.DisplayName = user.Name;
@@ -229,7 +231,7 @@ namespace TwitchAlert
                 toast.Thumbnail = user.Thumbnail;
                 toast.Link = user.Link;
                 Log.WriteLog($"{e.User.Name} changed STATUS from {e.OldStatus} to {e.NewStatus}");
-                DisplayStatusChangeToast(e.NewStatus);
+                await DisplayStatusChangeToast(e.NewStatus);
             };
 
             // Subscribe to the MKTwitch Followed event so we hear
@@ -465,8 +467,8 @@ namespace TwitchAlert
                 txtNobodyOnline.Visibility = Visibility.Visible;
                 brdIsOnline.Visibility = Visibility.Collapsed;
                 // toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height);
-                toast.TopPosition = SystemParameters.WorkArea.Height - (this.Height);
-                toast.TopPosition = SystemParameters.PrimaryScreenHeight - this.Height;
+                toast.TopPosition = SystemParameters.WorkArea.Height - (NOBODY_ONLINE_HEIGHT);
+                toast.TopPosition = SystemParameters.PrimaryScreenHeight - NOBODY_ONLINE_HEIGHT;
 
                 var primaryScreenHeight = SystemParameters.PrimaryScreenHeight;
                 var workingAreaHeight = SystemParameters.WorkArea.Height;

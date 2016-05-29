@@ -89,9 +89,11 @@ namespace TwitchAlert
             if (win1 == null)
             {
                 miShowVB.Text = "Hide Current Visual";
-                win1 = new Window1(toastBorder, miShowVB);
+                win1 = new Window1(toastBorder, miShowVB,toast);
+
                 EventHandler closed = null;
-                closed=(s, e) => {
+                closed = (s, e) =>
+                {
                     this.Closed -= closed;
                     win1 = null;
 
@@ -166,20 +168,33 @@ namespace TwitchAlert
         private async Task ShowOnlineUsers()
         {
             if (win1 != null) win1.Activate();
+            // If we are already i the middle of a popup cyclethen do nothing
+            if (MKTwitch.IsPopupCycleRunning) return;
+
             int count = 0;
-            foreach (var user in MKTwitch.followedUsers.Where(i => i.IsStreaming))
+            MKTwitch.IsPopupCycleRunning = true;
+            var isStreaming = MKTwitch.followedUsers.Where(i => i.IsStreaming).ToList();
+            if (isStreaming.Count==0)
             {
-                count++;
-                if (!MKTwitch.CancelPopupCycle)
+                PlayOnlineSound();
+               // FillInToast();
+                await DisplayToast(true);
+            }
+            else
+            {
+                foreach (var user in isStreaming)
                 {
-                    PlayOnlineSound();
-                    FillInToast(user);
-                    await DisplayToast();
+                    count++;
+                    if (!MKTwitch.CancelPopupCycle)
+                    {
+                        PlayOnlineSound();
+                        FillInToast(user);
+                        await DisplayToast();
+                    }
                 }
             }
             MKTwitch.CancelPopupCycle = false;
-            if (count == 0)
-                DisplayToast(true);
+            MKTwitch.IsPopupCycleRunning = false;
         }
 
         public void DisposeNotifyIcon()

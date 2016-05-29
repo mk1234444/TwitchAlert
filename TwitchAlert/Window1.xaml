@@ -5,9 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TwitchAlert"
         mc:Ignorable="d"
-        Title="TwitchAlert Visual State" Width="239.798" Height="150.846" Closing="Window_Closing" ContentRendered="Window_ContentRendered">
+        Title="TwitchAlert Visual State" Width="239.798" Height="182.395" Closing="Window_Closing" ContentRendered="Window_ContentRendered">
     <Grid Width="auto" Height="auto">
-        <Rectangle x:Name="rect1" Fill="#FF9898C9"  Stroke="Black" Width="auto" Height="auto"/>
-
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Rectangle x:Name="rect1" Fill="#FF9898C9"  Stroke="Black" Width="auto" Height="auto" Grid.RowSpan="1"/>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="IsPopupCycleRunning: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtIsPopupCycleRunning" Text="true"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="MKTwitchTimerEnabled: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtMKTwitchTimerEnabled" Text="true"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="TopPos: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtTopPos" Text="0"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+                <TextBlock Text="BottomPos: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtBottomPos" Text="0"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+                <TextBlock Text="LeftPos: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtLeftPos" Text="0"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
