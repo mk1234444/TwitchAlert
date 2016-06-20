@@ -21,6 +21,7 @@ namespace TwitchAlert
         MenuItem miNIOpenLogFile;
         MenuItem miNITimerStatus;
         MenuItem miNIStartTimer;
+        MenuItem miOpenAppDirectory;
 
         MenuItem miShowVB;
         
@@ -43,15 +44,15 @@ namespace TwitchAlert
             miNITurnSoundOff = new MenuItem { Text = "Sound Off", Name = nameof(miNITurnSoundOff)};
             miNISkipPopupsAtStart = new MenuItem { Text = "Skip Popups at Start", Name = nameof(miNISkipPopupsAtStart) };
             miNIGameStatusPopups = new MenuItem { Text = "Game and Status Changes", Name = nameof(miNIGameStatusPopups),Checked=true};
-            miNIOpenLogFile = new MenuItem { Text = "Open Log File", Name = nameof(miNIOpenLogFile) };
+
             miNIDebug = new MenuItem { Text = "Debug", Name = nameof(miNIDebug) };
+            miNIOpenLogFile = new MenuItem { Text = "Open Log File", Name = nameof(miNIOpenLogFile) };
+            miOpenAppDirectory = new MenuItem { Text = "Open App Diectory", Name = nameof(miOpenAppDirectory) };
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
             miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
-
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miNIStartTimer, miNITimerStatus,miShowVB });
-           
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNITimerStatus,miShowVB });
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -60,6 +61,7 @@ namespace TwitchAlert
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
             miNIOpenLogFile.Click += (s, e) => Process.Start("log.txt");
+            miOpenAppDirectory.Click += (s, e) => Process.Start(Environment.CurrentDirectory);
             miNITimerStatus.Click += (s, e) => {
                 var enabled = MKTwitch.IsTimerEnabled();
                // Log.WriteLog($"Timer Status = {(enabled?"Enabled":"Disabled")} * Last Pull = {lastPull}", "MKTwitchTimerLog.txt");

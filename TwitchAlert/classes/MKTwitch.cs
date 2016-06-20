@@ -308,6 +308,7 @@ namespace TwitchAlert.classes
                 {
                     string m = $"{nameof(timer.Tick)} await Update() threw Exception: ex.Message is '{ex.Message}'";
                     Console.WriteLine(m);
+                    Log.WriteLog(m, "TimerException.log");
                    // MessageBox.Show(m);
 
                 }
