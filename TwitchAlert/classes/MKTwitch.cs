@@ -9,11 +9,24 @@ using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Runtime.Serialization;
 
 namespace TwitchAlert.classes
 {
     public static partial class MKTwitch
     {
+        internal class MKTwitchTestException : Exception, ISerializable
+        {
+            public MKTwitchTestException() { }
+            public MKTwitchTestException(string message) : base(message) { }
+            public MKTwitchTestException(string message, Exception inner) : base(message, inner) { }
+
+            protected MKTwitchTestException(SerializationInfo info, StreamingContext context)
+            { }
+        }
+
+
+
         private static bool SetupStreamTrackerFailed = false;
 
         /// <summary>
@@ -306,7 +319,7 @@ namespace TwitchAlert.classes
                 }
                 catch(Exception ex)
                 {
-                    string m = $"{nameof(timer.Tick)} await Update() threw Exception: ex.Message is '{ex.Message}'";
+                    string m = $"{nameof(timer.Tick)} await Update() threw Exception: of type {ex.GetType().Name}. ex.Message is '{ex.Message}'";
                     Console.WriteLine(m);
                     Log.WriteLog(m, "TimerException.log");
                    // MessageBox.Show(m);
@@ -378,12 +391,17 @@ namespace TwitchAlert.classes
             OnStartCompleted();
         }
 
+        
+
+
         /// <summary>
         /// Updates the streaming info for followed users, triggering any Online/Offline/GameChanged/StatusChanged events where needed
         /// </summary>
         /// <returns></returns>
         private static async Task Update()
         {
+//            throw new MKTwitchTestException("Thrown in Update() before UpdateFollowedUsers() call");
+
             await UpdateFollowedUsers(UserName);
             OnUpdateStarted(true);
             var streamers = await GetStreamers();
@@ -769,7 +787,7 @@ namespace TwitchAlert.classes
         /// <returns>Task<TwitchStreamers.RootObject></returns>
         private static async Task<TwitchStreamers.RootObject> GetStreamers()
         {
-            //  https://api.twitch.tv/kraken/streams?channel=chan1,monstercat,chan3
+           // throw new MKTwitchTestException("Thrown in GetStreamers()");
 
             string url = "https://api.twitch.tv/kraken/streams?channel=";
             string users= followedUsers.Aggregate("", (current, u) => current + (u.Name + ","));

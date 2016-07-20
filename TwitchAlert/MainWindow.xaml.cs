@@ -279,7 +279,8 @@ namespace TwitchAlert
                     Console.WriteLine(notifyIcon.Text = "Failed to start the MKTwitch engine. Retrying in 10 seconds");
 
                     Dispatcher.BeginInvoke(new Action(() => {
-                        notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFailed to start the MKTwitch engine.\nRetrying in 10 seconds";
+                        // NotifyIcon text cannot be over 64 chars??? WTF?
+                        notifyIcon.Text = $"Failed to start the MKTwitch engine.\nRetrying in 10s";
                     }));
 
                     await Task.Delay(10000);
