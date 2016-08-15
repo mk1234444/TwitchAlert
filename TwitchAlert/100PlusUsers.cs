@@ -29,7 +29,7 @@ namespace TwitchAlert.classes
 
                 var str = await GetStreamers(u);
                 followers.follows.AddRange(u.follows);
-                streamers.streams.AddRange(str.streams);
+                streamers.Streams.AddRange(str.Streams);
                 offset += 100;
             }
 

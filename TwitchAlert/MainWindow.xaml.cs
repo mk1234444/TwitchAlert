@@ -1,5 +1,7 @@
 ﻿// 0.4.8
 // FIX:  Update AssemblyInfo.cs to the correct version number
+// DONE: Convert Json property names to .Net naming convention
+
 // TODO: If the streamers name doesnt fit then either make the font smaller or add a tooltip
 // TODO: If Status/Games changes in timer tick and a cycle is already in progress then the update may be
 //       displayed using the previous streamers name  DONE????? NO!!

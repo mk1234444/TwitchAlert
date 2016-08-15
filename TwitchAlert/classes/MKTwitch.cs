@@ -407,45 +407,45 @@ namespace TwitchAlert.classes
 
             if (streamers == null) return;
 
-            var nonStreamers = followedUsers.Where(i => !streamers.streams.Any(x => x.channel.display_name == i.Name));
+            var nonStreamers = followedUsers.Where(i => !streamers.Streams.Any(x => x.Channel.DisplayName == i.Name));
 
             // Do the streamers bit first
-            foreach (var streamer in streamers.streams)
+            foreach (var streamer in streamers.Streams)
             {
                 // Get the followed user who is now streaming
-                var followed = followedUsers.First(i => i.Name == streamer.channel.display_name);
+                var followed = followedUsers.First(i => i.Name == streamer.Channel.DisplayName);
 
                 // Update his info
-                followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
-                followed.NumViewers = streamer.viewers;
+                followed.StreamCreatedAt = streamer.CreatedAt.Split('T')[1].Replace("Z", "");
+                followed.NumViewers = streamer.Viewers;
 
                 // if user was already streaming then check if Game or Status have changed. If they 
                 // have then throw a popup else just continue
                 if (followed.IsStreaming)
                 {
-                    if (followed.Game != streamer.game)
+                    if (followed.Game != streamer.Game)
                     {
                         var oldGame = followed.Game;
                         followed.GameChangeCount++;
-                        Console.WriteLine($"\n{followed.Name} followed.Game = {oldGame} streamer.channel.game = {streamer.channel.game} streamer.game = {streamer.game} **followed.GameChangeCount = {followed.GameChangeCount}**");
+                        Console.WriteLine($"\n{followed.Name} followed.Game = {oldGame} streamer.channel.game = {streamer.Channel.Game} streamer.game = {streamer.Game} **followed.GameChangeCount = {followed.GameChangeCount}**");
                    
                         // Game has to be different for two consecutive pulls before we change our version of it
                         if (followed.GameChangeCount < 2) continue;
-                        followed.Game = streamer.game;
+                        followed.Game = streamer.Game;
                         followed.GameChangeCount = 0;           // Reset the count
-                        OnGameChanged(followed, streamer.game, oldGame);
+                        OnGameChanged(followed, streamer.Game, oldGame);
                     }
-                    if (followed.Status != streamer.channel.status)
+                    if (followed.Status != streamer.Channel.Status)
                     {
                         followed.StatusChangeCount++;
-                        Console.WriteLine($"\n{followed.Name} followed.Status = {followed.Status} streamer.channel.status = {streamer.channel.status} **followed.StatusChangeCount = {followed.StatusChangeCount}**");
+                        Console.WriteLine($"\n{followed.Name} followed.Status = {followed.Status} streamer.channel.status = {streamer.Channel.Status} **followed.StatusChangeCount = {followed.StatusChangeCount}**");
                   
                         // Status has to be different for two consecutive pulls before we change our version of it
                         if (followed.StatusChangeCount < 2) continue;
                         var oldStatus = followed.Status;
-                        followed.Status = streamer.channel.status;
+                        followed.Status = streamer.Channel.Status;
                         followed.StatusChangeCount = 0;         // Reset the count
-                        OnStatusChanged(followed, streamer.channel.status, oldStatus);
+                        OnStatusChanged(followed, streamer.Channel.Status, oldStatus);
                     }
                     followed.OfflineCount = 0;
                     continue;
@@ -612,16 +612,16 @@ namespace TwitchAlert.classes
                 string createdAt = "";
                 int numViewers=0;
 
-                if (streamers !=null && streamers.streams.Count > 0)
+                if (streamers !=null && streamers.Streams.Count > 0)
                 {
                     // if this followedUser is also a streamer then get his/her streamer object from streamers
                     // so we can get his streaming information
-                    var streamer = streamers.streams.FirstOrDefault(i => i.channel.display_name == followedUser.channel.display_name);
+                    var streamer = streamers.Streams.FirstOrDefault(i => i.Channel.DisplayName == followedUser.channel.display_name);
                     if (streamer != null)
                     {
                         isUserLive = true;
-                        createdAt = streamer.created_at.Split('T')[1].Replace("Z", "");
-                        numViewers = streamer.viewers;
+                        createdAt = streamer.CreatedAt.Split('T')[1].Replace("Z", "");
+                        numViewers = streamer.Viewers;
                     }
                 }
 
