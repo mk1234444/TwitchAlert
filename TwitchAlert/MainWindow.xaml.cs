@@ -12,6 +12,7 @@
 
 
 
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -26,6 +27,7 @@ using System.Linq;
 using TwitchAlert.classes;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace TwitchAlert
 {
@@ -129,6 +131,9 @@ namespace TwitchAlert
         }
         Toast toast = new Toast();
 
+       // DispatcherTimer mkTwitchTimerStatusTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
+
+
         const int NOBODY_ONLINE_HEIGHT = 100;
         string USER_NAME = Properties.Settings.Default.settingsUserName;
         DateTime lastPull;
@@ -140,6 +145,14 @@ namespace TwitchAlert
         public MainWindow()
         {
             InitializeComponent();
+
+            //mkTwitchTimerStatusTimer.Tick += (s, e) =>
+            //{
+            //    // MKTwitch.
+            //    ellTimerStatus.Opacity = MKTwitch.IsTimerEnabled() ? 0.30 : 1;
+            //};
+
+
 
             this.DataContext = toast;
             SetupNotificationIcon();
@@ -196,7 +209,7 @@ namespace TwitchAlert
 
             // Subscribe to the MKTwitch StartCompleted event so we hear when its
             // Start() method has completed
-            MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true;  };
+            MKTwitch.StartCompleted += (s, e) => { miNIUserName.Enabled = true; }; // mkTwitchTimerStatusTimer.Start(); };
 
             // Subscribe to the MKTwitch GameChanged event so we hear
             // when a Streamer changes their Game
@@ -262,15 +275,15 @@ namespace TwitchAlert
             StartEngine();
         }
 
-        private async void StartEngine()
+        private async Task StartEngine()
         {
             try
             {
                 await MKTwitch.Start(USER_NAME, Properties.Settings.Default.settingsSkipPopups);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
             }
             finally
             {
@@ -278,10 +291,19 @@ namespace TwitchAlert
                 {
                     Console.WriteLine(notifyIcon.Text = "Failed to start the MKTwitch engine. Retrying in 10 seconds");
 
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        // NotifyIcon text cannot be over 64 chars??? WTF?
-                        notifyIcon.Text = $"Failed to start the MKTwitch engine.\nRetrying in 10s";
-                    }));
+                    try
+                    {
+                        await Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            // NotifyIcon text cannot be over 64 chars??? WTF?
+                            notifyIcon.Text = $"Failed to start the MKTwitch engine.\nRetrying in 10s";
+                        }));
+                    }
+                    catch(Exception ex)
+                    {
+                        MessageBox.Show($"Error setting NotifyIcon.Text {ex.Message}");
+                    }
+
 
                     await Task.Delay(10000);
 

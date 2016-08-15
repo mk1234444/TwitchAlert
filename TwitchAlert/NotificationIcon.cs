@@ -21,6 +21,7 @@ namespace TwitchAlert
         MenuItem miNIOpenLogFile;
         MenuItem miNITimerStatus;
         MenuItem miNIStartTimer;
+        MenuItem miNIStopTimer;
         MenuItem miOpenAppDirectory;
 
         MenuItem miShowVB;
@@ -50,9 +51,12 @@ namespace TwitchAlert
             miOpenAppDirectory = new MenuItem { Text = "Open App Diectory", Name = nameof(miOpenAppDirectory) };
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
+            miNIStopTimer = new MenuItem { Text = "Stop Timer", Name = nameof(miNIStopTimer) };
+
             miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNITimerStatus,miShowVB });
+            miNIStopTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Stop();
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus,miShowVB });
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -115,12 +119,12 @@ namespace TwitchAlert
 
 
         /// <summary>
-        /// Opens UserName entry window for user to enter name.
+        /// Opens UserName entry window.
         /// If the name is a valid Twitch user name then change MKTwitch
         /// over to this new userName. If the name entered is not a valid
-        /// Twitch user then no changes are made in MKTwitch
+        /// Twitch user then no changes are made in the MKTwitch class
         /// </summary>
-        /// <returns>bool indicating whether the MKTwitch use name was actually changed</returns>
+        /// <returns>bool indicating whether the MKTwitch user name was actually changed</returns>
         private void GetUserName()
         {
             userNameWindow = new UserNameWindow();
@@ -170,7 +174,7 @@ namespace TwitchAlert
         private async Task ShowOnlineUsers()
         {
             if (win1 != null) win1.Activate();
-            // If we are already i the middle of a popup cyclethen do nothing
+            // If we are already in the middle of a popup cycle then do nothing
             if (MKTwitch.IsPopupCycleRunning) return;
 
             int count = 0;

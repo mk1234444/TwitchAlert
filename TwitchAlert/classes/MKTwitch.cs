@@ -27,7 +27,7 @@ namespace TwitchAlert.classes
 
 
 
-        private static bool SetupStreamTrackerFailed = false;
+       // private static bool SetupStreamTrackerFailed = false;
 
         /// <summary>
         /// Used to break the popup cycle loop
@@ -322,8 +322,6 @@ namespace TwitchAlert.classes
                     string m = $"{nameof(timer.Tick)} await Update() threw Exception: of type {ex.GetType().Name}. ex.Message is '{ex.Message}'";
                     Console.WriteLine(m);
                     Log.WriteLog(m, "TimerException.log");
-                   // MessageBox.Show(m);
-
                 }
                 finally
                 {
@@ -420,7 +418,6 @@ namespace TwitchAlert.classes
                 // Update his info
                 followed.StreamCreatedAt = streamer.created_at.Split('T')[1].Replace("Z", "");
                 followed.NumViewers = streamer.viewers;
-                //followed.Game = streamer.game;
 
                 // if user was already streaming then check if Game or Status have changed. If they 
                 // have then throw a popup else just continue
@@ -448,7 +445,7 @@ namespace TwitchAlert.classes
                         var oldStatus = followed.Status;
                         followed.Status = streamer.channel.status;
                         followed.StatusChangeCount = 0;         // Reset the count
-                        OnStatusChanged(followed, streamer.channel.status,oldStatus);
+                        OnStatusChanged(followed, streamer.channel.status, oldStatus);
                     }
                     followed.OfflineCount = 0;
                     continue;

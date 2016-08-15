@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace TwitchAlert.classes
 {
@@ -6,7 +7,8 @@ namespace TwitchAlert.classes
     {
         public class Links
         {
-            public string self { get; set; }
+            [JsonProperty("self")]
+            public string Self { get; set; }
         }
 
         public class Preview
