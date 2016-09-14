@@ -15,13 +15,11 @@ namespace TwitchAlert.classes
             public object Streamers;
         }
 
-   
-
         public async static Task<GetALLUsersFollowers_Result> GetALLUsersFollowers(string userName)
         {
             Twitch.Root followers = new Twitch.Root();
             TwitchStreamers.RootObject streamers = new TwitchStreamers.RootObject();
-            //int numFollowers;
+            int numFollowers;
             int offset = 0;
 
             while (true)

@@ -6,7 +6,7 @@
 // TODO: If Status/Games changes in timer tick and a cycle is already in progress then the update may be
 //       displayed using the previous streamers name  DONE????? NO!!
 // TODO: Use the ToastBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
-//       used and when that is collapsed it leaves then empty red ToastBorder still hanging ((( Is This Still Necessary??? )))
+//       used and when that is collapsed it leaves then empty red ToastBorder still hanging
 // TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
 
 
@@ -251,9 +251,7 @@ namespace TwitchAlert
             MKTwitch.Followed += (s, e) =>
             {
                 if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
-#if debug
                 Console.WriteLine($"\nNow following {e.User.Name}");
-#endif
                 PlayFollowedSound();
             };
 
@@ -262,9 +260,7 @@ namespace TwitchAlert
             MKTwitch.Unfollowed += (s, e) =>
             {
                 if (!MKTwitch.IsStarted || MKTwitch.IsChangingUser) return;
-#if debug
                 Console.WriteLine($"\nUnfollowing {e.User.Name}");
-#endif
                 PlayUnfollowedSound();
             };
 
@@ -286,9 +282,7 @@ namespace TwitchAlert
             }
             catch (Exception ex)
             {
-#if debug
                 Console.WriteLine(ex.Message);
-#endif
             }
             finally
             {
@@ -312,7 +306,7 @@ namespace TwitchAlert
 
                     await Task.Delay(10000);
 
-                    await Dispatcher.BeginInvoke(new Action(() => {
+                    Dispatcher.BeginInvoke(new Action(() => {
                         notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
                     }));
 
@@ -322,7 +316,7 @@ namespace TwitchAlert
             }
         }
 
-#region Windows Events
+        #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             Log.Seperator();
@@ -403,9 +397,9 @@ namespace TwitchAlert
             else if (Keyboard.IsKeyDown(Key.LeftShift) && Keyboard.IsKeyDown(Key.LeftCtrl) && e.Key == Key.L)
                 Process.Start("log.txt");
         }
-#endregion
+        #endregion
 
-#region Event Handlers
+        #region Event Handlers
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             Process.Start(e.Uri.AbsoluteUri);
@@ -418,7 +412,7 @@ namespace TwitchAlert
             toast.TopPosition = SystemParameters.WorkArea.Height - ((sender as Border).Height + 15);
         }
 
-#region Tooltip Event Handlers
+        #region Tooltip Event Handlers
         private void txtStatus_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
             bool trimmed = CalculateIsTextTrimmedMultiline(sender as TextBlock);
@@ -465,8 +459,8 @@ namespace TwitchAlert
             // Set Handled if we dont need the Tooltip so no empty Tooltip appears
             e.Handled = !trimmed;
         }
-#endregion
-#endregion
+        #endregion
+        #endregion
 
         private void FillInToast(User user)
         {
@@ -593,40 +587,48 @@ namespace TwitchAlert
 
         private void PlayNewGameSound()
         {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav");
-        }
-
-        private void PlayOnlineSound()
-        {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav");
-        }
-
-        private void PlayOfflineSound()
-        {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav");
-        }
-
-        private void PlayFollowedSound()
-        {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\149187__adriann__harp-strum.wav");
-        }
-
-        private void PlayUnfollowedSound()
-        {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\lightclunk2.wav");
-        }
-
-        private void PlaySound(string path)
-        {
             if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(path))
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
             {
                 player.Play();
             }
         }
 
+        private void PlayOnlineSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav"))
+            {
+                player.Play();
+            }
+        }
 
+        private void PlayOfflineSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav"))
+            {
+                player.Play();
+            }
+        }
 
+        private void PlayFollowedSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\149187__adriann__harp-strum.wav"))
+            {
+                player.Play();
+            }
+        }
+
+        private void PlayUnfollowedSound()
+        {
+            if (miNITurnSoundOff.Checked) return;
+            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\lightclunk2.wav"))
+            {
+                player.Play();
+            }
+        }
 
         /// <summary>
         /// Returns bool indicating if the text in the multiline TextBlock has been trimmed
