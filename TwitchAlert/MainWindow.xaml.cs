@@ -587,48 +587,38 @@ namespace TwitchAlert
 
         private void PlayNewGameSound()
         {
-            if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav"))
-            {
-                player.Play();
-            }
+            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Balloon_Popping_SoundBible.com_1247261379.wav");
         }
 
         private void PlayOnlineSound()
         {
-            if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav"))
-            {
-                player.Play();
-            }
+            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav");
         }
 
         private void PlayOfflineSound()
         {
-            if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav"))
-            {
-                player.Play();
-            }
+            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\165316__ani-music__synthesizer-echo-plinks-2.wav");
         }
 
         private void PlayFollowedSound()
         {
+            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\149187__adriann__harp-strum.wav");
+        }
+
+        private void PlayUnfollowedSound()
+        {
+            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\lightclunk2.wav");
+        }
+
+        private void PlaySound(string path)
+        {
             if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\149187__adriann__harp-strum.wav"))
+            using (SoundPlayer player = new SoundPlayer(path))
             {
                 player.Play();
             }
         }
 
-        private void PlayUnfollowedSound()
-        {
-            if (miNITurnSoundOff.Checked) return;
-            using (SoundPlayer player = new SoundPlayer(Directory.GetCurrentDirectory() + @"\sounds\lightclunk2.wav"))
-            {
-                player.Play();
-            }
-        }
 
         /// <summary>
         /// Returns bool indicating if the text in the multiline TextBlock has been trimmed
