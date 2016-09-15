@@ -137,8 +137,7 @@ namespace TwitchAlert
         const int NOBODY_ONLINE_HEIGHT = 100;
         string USER_NAME = Properties.Settings.Default.settingsUserName;
         DateTime lastPull;
-        Storyboard SlideUpStoryboard;
-        Storyboard SlideDownStoryboard;
+        Storyboard SlideUpStoryboard, SlideDownStoryboard, GameOutStoryboard, GameIn2Storyboard, StatusOutStoryboard, StatusInStoryboard;
 
         Window1 win1;
 
@@ -159,6 +158,11 @@ namespace TwitchAlert
 
             SlideUpStoryboard = FindResource("SlideUp") as Storyboard;
             SlideDownStoryboard = FindResource("SlideDown") as Storyboard;
+            GameOutStoryboard = FindResource("GameOut") as Storyboard;
+            GameIn2Storyboard = FindResource("GameIn2") as Storyboard;
+            StatusInStoryboard = FindResource("StatusIn") as Storyboard;
+            StatusOutStoryboard = FindResource("StatusOut") as Storyboard;
+
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live
@@ -540,9 +544,9 @@ namespace TwitchAlert
             if (win1 != null) win1.Activate();
             toastBorder.BorderBrush = Brushes.Yellow;
             await StartAnimationAsync(SlideUpStoryboard);
-            await StartAnimationAsync(FindResource("GameOut") as Storyboard);
+            await StartAnimationAsync(GameOutStoryboard);
             toast.Game = newGame;
-            await StartAnimationAsync(FindResource("GameIn2") as Storyboard);
+            await StartAnimationAsync(GameIn2Storyboard);
             PlayNewGameSound();
             await Task.Delay(3000);
             await StartAnimationAsync(SlideDownStoryboard);
@@ -554,10 +558,10 @@ namespace TwitchAlert
             if (win1 != null) win1.Activate();
             toastBorder.BorderBrush = Brushes.Yellow;
             await StartAnimationAsync(SlideUpStoryboard);
-            await StartAnimationAsync(FindResource("StatusOut") as Storyboard);
+            await StartAnimationAsync(StatusOutStoryboard);
             toast.Status = newStatus;
             PlayNewGameSound();
-            await StartAnimationAsync(FindResource("StatusIn") as Storyboard);  
+            await StartAnimationAsync(StatusInStoryboard);  
             await Task.Delay(3000);
             await StartAnimationAsync(SlideDownStoryboard);
             toastBorder.BorderBrush = Brushes.Red;
