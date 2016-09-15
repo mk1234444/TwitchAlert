@@ -23,5 +23,8 @@
     <Setting Name="settingsVBWindowTop" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="settingsCI" Type="System.String" Scope="User">
+      <Value Profile="(Default)">hm3hccqtuki0m737r6ws2b76bdovyq9</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

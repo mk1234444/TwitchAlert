@@ -106,5 +106,17 @@ namespace TwitchAlert.Properties {
                 this["settingsVBWindowTop"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("hm3hccqtuki0m737r6ws2b76bdovyq9")]
+        public string settingsCI {
+            get {
+                return ((string)(this["settingsCI"]));
+            }
+            set {
+                this["settingsCI"] = value;
+            }
+        }
     }
 }

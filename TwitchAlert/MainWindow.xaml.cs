@@ -1,5 +1,6 @@
 ﻿// 0.4.8
 // FIX:  Update AssemblyInfo.cs to the correct version number
+// FIX:  Twitch now requires Client-ID to be passed to any API calls
 // DONE: Convert Json property names to .Net naming convention
 
 // TODO: If the streamers name doesnt fit then either make the font smaller or add a tooltip
@@ -283,6 +284,7 @@ namespace TwitchAlert
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Log.WriteLog(ex.Message);
             }
             finally
             {

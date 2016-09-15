@@ -813,10 +813,13 @@ namespace TwitchAlert.classes
         /// <returns>string</returns>
         static string Get(string fullyFormedUrl)
         {
+           // fullyFormedUrl += "client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
             HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(fullyFormedUrl);
             wRequest.ContentType = "application/json";
             wRequest.Accept = "application/vnd.twitchtv.v3+json";
             wRequest.Method = "GET";
+            wRequest.Headers.Add("Client-ID", Properties.Settings.Default.settingsCI);
+
             string res = "";
 
             try
@@ -844,10 +847,13 @@ namespace TwitchAlert.classes
         /// <returns>string</returns>
         static async Task<string> GetAsync(string fullyFormedUrl)
         {
+           // fullyFormedUrl += "client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
             HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(fullyFormedUrl);
             wRequest.ContentType = "application/json";
             wRequest.Accept = "application/vnd.twitchtv.v3+json";
             wRequest.Method = "GET";
+            wRequest.Headers.Add("Client-ID", Properties.Settings.Default.settingsCI);
+           
             string res = "";
 
             try
