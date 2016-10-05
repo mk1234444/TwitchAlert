@@ -510,7 +510,18 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         public static async Task UpdateFollowedUsers(string userName)
         {
-            var result = await GetALLUsersFollowers(userName);
+            GetALLUsersFollowers_Result result = default(GetALLUsersFollowers_Result);
+            try
+            {
+                result = await GetALLUsersFollowers(userName);
+            }
+            catch(Exception ex)
+            {
+                Log.WriteLog($"{nameof(UpdateFollowedUsers)} threw an Exception when calling {nameof(GetALLUsersFollowers)}. ex.Message = {ex.Message}");
+                return;
+            }
+
+
             var followers = (Twitch.Root)result.Followers;       
             if (followers == null) return;
             await UpdateFollowedUsers(followers);

@@ -15,6 +15,12 @@ namespace TwitchAlert.classes
             public object Streamers;
         }
 
+        /// <summary>
+        /// Retrieve userNames' followers, and the ones that are currently streaming
+        /// and return them in a GetALLUsersFollowers_Result struct
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async static Task<GetALLUsersFollowers_Result> GetALLUsersFollowers(string userName)
         {
             Twitch.Root followers = new Twitch.Root();
