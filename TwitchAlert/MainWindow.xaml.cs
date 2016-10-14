@@ -1,6 +1,7 @@
 ﻿// 0.4.8
 // FIX:  Update AssemblyInfo.cs to the correct version number
 // FIX:  Twitch now requires Client-ID to be passed to any API calls
+// Added:Toast now displays the number of followed Twitchers that are currently streaming in the top right 
 // DONE: Convert Json property names to .Net naming convention
 
 // TODO: If the streamers name doesnt fit then either make the font smaller or add a tooltip
@@ -62,6 +63,12 @@ namespace TwitchAlert
             {
                 get { return (string)GetValue(DisplayNameProperty); }
                 set { SetValue(DisplayNameProperty, value); }
+            }
+
+            public int NumberLiveStreaming
+            {
+                get { return (int)GetValue(NumberLiveStreamingProperty); }
+                set { SetValue(NumberLiveStreamingProperty, value); }
             }
 
             public string Game
@@ -127,7 +134,10 @@ namespace TwitchAlert
             // Using a DependencyProperty as the backing store for Game.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty GameProperty = DependencyProperty.Register("Game", typeof(string), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for DisplayName.  This enables animation, styling, binding, etc...
-            public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(Toast), new PropertyMetadata(null));  
+            public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(Toast), new PropertyMetadata(null));
+
+            // Using a DependencyProperty as the backing store for NumberLiveStreaming.  This enables animation, styling, binding, etc...
+            public static readonly DependencyProperty NumberLiveStreamingProperty = DependencyProperty.Register("NumberLiveStreaming", typeof(int), typeof(Toast), new PropertyMetadata(null));
         }
         Toast toast = new Toast();
 
@@ -478,6 +488,7 @@ namespace TwitchAlert
             toast.Thumbnail = user.Thumbnail;
             toast.Link = user.Link;
             toast.Status = user.Status;
+            toast.NumberLiveStreaming = MKTwitch.followedUsers.Count(i => i.IsStreaming);
         }
 
         /// <summary>

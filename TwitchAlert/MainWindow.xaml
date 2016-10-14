@@ -313,6 +313,28 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Border>
+
+            <Border x:Name="brdNumberOnline" BorderThickness="1" BorderBrush="Yellow" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="2,0" CornerRadius="5" Margin="0,0,16,0" RenderTransformOrigin="0.5,0.5"  >
+                <Border.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF000B78" Offset="0.004"/>
+                        <GradientStop Color="#FF000027" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform Y="-7" X="18"/>
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <Border.Effect>
+                    <DropShadowEffect/>
+                </Border.Effect>
+                <TextBlock x:Name="txtNumOnline" Text="{Binding NumberLiveStreaming}" FontWeight="Bold" Height="Auto" Width="auto" HorizontalAlignment="Center" FontFamily="Segoe UI Semibold" TextWrapping="NoWrap" VerticalAlignment="Center" TextAlignment="Center" FontStyle="Italic" Padding="2,0" Foreground="White" RenderTransformOrigin="0.5,0.5" TextOptions.TextFormattingMode="Display"/>
+            </Border>
+
             <TextBlock x:Name="txtNobodyOnline" Text="Nobody Online" Foreground="#FF05A6A6" FontSize="20" TextAlignment="Center" Padding="0,0,0,0" Width="210" Height="80" VerticalAlignment="Center" Visibility="Collapsed">
                 <TextBlock.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
