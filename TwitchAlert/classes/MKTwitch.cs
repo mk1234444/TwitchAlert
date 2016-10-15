@@ -8,8 +8,8 @@ using System.IO;
 using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace TwitchAlert.classes
 {
@@ -416,7 +416,7 @@ namespace TwitchAlert.classes
                 var followed = followedUsers.First(i => i.Name == streamer.Channel.DisplayName);
 
                 // Update his info
-                followed.StreamCreatedAt = streamer.CreatedAt.Split('T')[1].Replace("Z", "");
+                followed.StreamCreatedAt = (DateTime.Parse(streamer.CreatedAt, new CultureInfo("en-GB", true), DateTimeStyles.AssumeUniversal)).ToLongTimeString();
                 followed.NumViewers = streamer.Viewers;
 
                 // if user was already streaming then check if Game or Status have changed. If they 
@@ -576,8 +576,9 @@ namespace TwitchAlert.classes
             // Remove the date and the trailing Z from the createdAt string
             if (isUserLiveData.CreatedAt != "")
             {
-                var arr = isUserLiveData.CreatedAt.Split('T');
-                isUserLiveData.CreatedAt = arr[1].Remove(arr[1].Length - 1);
+                //var arr = isUserLiveData.CreatedAt.Split('T');
+                //isUserLiveData.CreatedAt = arr[1].Remove(arr[1].Length - 1);
+                isUserLiveData.CreatedAt = (DateTime.Parse(isUserLiveData.CreatedAt, new CultureInfo("en-GB", true), DateTimeStyles.AssumeUniversal)).ToLongTimeString();
             }
             BitmapImage bm = null;
             // If user does not have a logo then use the Twitch default
@@ -631,7 +632,8 @@ namespace TwitchAlert.classes
                     if (streamer != null)
                     {
                         isUserLive = true;
-                        createdAt = streamer.CreatedAt.Split('T')[1].Replace("Z", "");
+
+                        createdAt = (DateTime.Parse(streamer.CreatedAt, new CultureInfo("en-GB", true), DateTimeStyles.AssumeUniversal)).ToLongTimeString();
                         numViewers = streamer.Viewers;
                     }
                 }
@@ -775,11 +777,14 @@ namespace TwitchAlert.classes
             try
             {
                 var user = JsonConvert.DeserializeObject<TwitchStream.Root>(await GetAsync(url));
-                //if (userName == "Trisarahtops_")
-                //    Console.WriteLine($"{userName} stream is {(user.stream == null ? "null" : "Live")}");
                 iuld.IsLive = user?.stream != null;
-                iuld.CreatedAt = user?.stream?.created_at == null ? "" : user.stream.created_at;
-                iuld.Game = user?.stream?.game == null ? "" : user.stream.game;
+               
+                // iuld.CreatedAt = user?.stream?.created_at == null ? "" : user.stream.created_at;
+                iuld.CreatedAt = user?.stream?.created_at ?? "";
+               
+                // iuld.Game = user?.stream?.game == null ? "" : user.stream.game;
+                iuld.Game = user?.stream?.game ?? "";
+
                 iuld.NumViewers = user?.stream == null ? 0 : user.stream.viewers;
             }
             catch(Exception ex)
