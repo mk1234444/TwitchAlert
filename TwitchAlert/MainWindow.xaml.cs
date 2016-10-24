@@ -14,6 +14,8 @@
 // FIX:  The number if Twitchers streaming indicator at the top right is collapsed when
 //       nobody is online
 // FIX:  The 'Started' time now takes into account daylight saving in UK
+// FIX:  Stopped working. Started getting 400 Bad Request errors when trying to get Streamers. (removing
+//       'wRequest.ContentType = "application/json";' from the Get() and GetAsync() methods fixed it.)
 
 
 
@@ -302,6 +304,7 @@ namespace TwitchAlert
             {
                 Console.WriteLine(ex.Message);
                 Log.WriteLog(ex.Message);
+                Log.WriteLog(ex.StackTrace);
             }
             finally
             {

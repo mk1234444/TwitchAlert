@@ -35,7 +35,7 @@ namespace TwitchAlert.classes
 
                 var str = await GetStreamers(u);
                 followers.follows.AddRange(u.follows);
-                streamers.Streams.AddRange(str.Streams);
+                streamers.Streams.AddRange(str?.Streams?? new List<TwitchStreamers.Stream>());
                 offset += 100;
             }
 

@@ -92,7 +92,7 @@ namespace TwitchAlert.classes
             public Channel channel { get; set; }
             public override string ToString()
             {
-                return user.name;
+                return channel.display_name;
             }
         }
 

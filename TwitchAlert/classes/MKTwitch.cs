@@ -816,6 +816,7 @@ namespace TwitchAlert.classes
         /// <returns>Task<TwitchStreamers.RootObject></returns>
         private static async Task<TwitchStreamers.RootObject> GetStreamers(Twitch.Root users)
         {
+           // return null;
             string url = "https://api.twitch.tv/kraken/streams?channel=";
             string userNames = users.follows.Aggregate("", (current, u) => current + u.channel.display_name + ",");
             url += userNames.Remove(userNames.Length - 1);
@@ -829,12 +830,13 @@ namespace TwitchAlert.classes
         /// <returns>string</returns>
         static string Get(string fullyFormedUrl)
         {
-           // fullyFormedUrl += "client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
+            //fullyFormedUrl += "&client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
             HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(fullyFormedUrl);
-            wRequest.ContentType = "application/json";
+            //wRequest.ContentType = "application/json";
             wRequest.Accept = "application/vnd.twitchtv.v3+json";
             wRequest.Method = "GET";
             wRequest.Headers.Add("Client-ID", Properties.Settings.Default.settingsCI);
+        
 
             string res = "";
 
@@ -863,15 +865,15 @@ namespace TwitchAlert.classes
         /// <returns>string</returns>
         static async Task<string> GetAsync(string fullyFormedUrl)
         {
-           // fullyFormedUrl += "client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
+            //fullyFormedUrl += "&client_id=hm3hccqtuki0m737r6ws2b76bdovyq9";
             HttpWebRequest wRequest = (HttpWebRequest)WebRequest.Create(fullyFormedUrl);
-            wRequest.ContentType = "application/json";
+
+          //  wRequest.ContentType = "application/json"; // This line started breaking it
             wRequest.Accept = "application/vnd.twitchtv.v3+json";
             wRequest.Method = "GET";
             wRequest.Headers.Add("Client-ID", Properties.Settings.Default.settingsCI);
-           
-            string res = "";
 
+            string res = "";
             try
             {
                 using (var wResponse = (await wRequest.GetResponseAsync()).GetResponseStream())
