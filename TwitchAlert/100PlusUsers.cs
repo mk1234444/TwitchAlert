@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TwitchAlert.classes;
+﻿using System.Threading.Tasks;
 
 namespace TwitchAlert.classes
 {
@@ -25,7 +20,6 @@ namespace TwitchAlert.classes
         {
             Twitch.Root followers = new Twitch.Root();
             TwitchStreamers.RootObject streamers = new TwitchStreamers.RootObject();
-            int numFollowers;
             int offset = 0;
 
             while (true)
@@ -35,10 +29,9 @@ namespace TwitchAlert.classes
 
                 var str = await GetStreamers(u);
                 followers.follows.AddRange(u.follows);
-                streamers.Streams.AddRange(str?.Streams?? new List<TwitchStreamers.Stream>());
+                streamers.Streams.AddRange(str.Streams);
                 offset += 100;
             }
-
            return new GetALLUsersFollowers_Result() { Followers = followers, Streamers = streamers };
         }
     }

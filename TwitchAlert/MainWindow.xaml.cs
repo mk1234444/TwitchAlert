@@ -18,7 +18,6 @@
 //       'wRequest.ContentType = "application/json";' from the Get() and GetAsync() methods fixed it.)
 
 
-
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -147,7 +146,6 @@ namespace TwitchAlert
         Toast toast = new Toast();
 
        // DispatcherTimer mkTwitchTimerStatusTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
-
 
         const int NOBODY_ONLINE_HEIGHT = 100;
         string USER_NAME = Properties.Settings.Default.settingsUserName;
@@ -325,14 +323,10 @@ namespace TwitchAlert
                         MessageBox.Show($"Error setting NotifyIcon.Text {ex.Message}");
                     }
 
-
                     await Task.Delay(10000);
-
                     Dispatcher.BeginInvoke(new Action(() => {
                         notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nRetrieving information...";
                     }));
-
-
                     StartEngine();
                 }
             }
@@ -699,7 +693,5 @@ namespace TwitchAlert
             // textBlock is single or multi-line.
             return formattedText.Width > textBlock.ActualWidth;
         }
-
- 
     }
 }
