@@ -213,7 +213,7 @@ namespace TwitchAlert
             // when we've completed updating our Twitch info
             MKTwitch.UpdateCompleted += (s, e) => {
                 txtUpdating.Visibility = Visibility.Collapsed;
-                lastPull = DateTime.Now;
+                lastPull = MKTwitch.LastPull = DateTime.Now;
             };
 
 

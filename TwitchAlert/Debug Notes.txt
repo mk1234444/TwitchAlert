@@ -1,0 +1,8 @@
+﻿timer.Tick
+	try
+	{
+		Update()
+	}
+
+Update()
+	await UpdateFollowedUsers()

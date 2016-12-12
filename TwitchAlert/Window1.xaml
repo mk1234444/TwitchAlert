@@ -15,7 +15,8 @@
         <StackPanel Orientation="Vertical" Grid.Row="1">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="IsPopupCycleRunning: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
-                <TextBlock x:Name="txtIsPopupCycleRunning" Text="true"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
+                <TextBlock x:Name="txtIsPopupCycleRunning" Text="true"  Background="Aquamarine" Padding="4,0"  />
+                <TextBlock x:Name="txtLastUpdate" Background="Azure" Text="test" Padding="4,0" Margin="10,0" ToolTip="Last Updated"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="MKTwitchTimerEnabled: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>

@@ -25,9 +25,27 @@ namespace TwitchAlert.classes
             { }
         }
 
+        internal class MKTwitchUpdateFollowedUsersTestException : Exception, ISerializable
+        {
+            public MKTwitchUpdateFollowedUsersTestException() { }
+            public MKTwitchUpdateFollowedUsersTestException(string message) : base(message) { }
+            public MKTwitchUpdateFollowedUsersTestException(string message, Exception inner) : base(message, inner) { }
 
+            protected MKTwitchUpdateFollowedUsersTestException(SerializationInfo info, StreamingContext context)
+            { }
+        }
 
-       // private static bool SetupStreamTrackerFailed = false;
+        internal class MKTwitchGetAllUsersFollowersTestException : Exception, ISerializable
+        {
+            public MKTwitchGetAllUsersFollowersTestException() { }
+            public MKTwitchGetAllUsersFollowersTestException(string message) : base(message) { }
+            public MKTwitchGetAllUsersFollowersTestException(string message, Exception inner) : base(message, inner) { }
+
+            protected MKTwitchGetAllUsersFollowersTestException(SerializationInfo info, StreamingContext context)
+            { }
+        }
+
+        // private static bool SetupStreamTrackerFailed = false;
 
         /// <summary>
         /// Used to break the popup cycle loop
@@ -60,10 +78,12 @@ namespace TwitchAlert.classes
         /// </summary>
         private static bool IsUpdating;
 
-        static DispatcherTimer timer;
+        static DispatcherTimer timer, kludgeTimer;
 
         public static DispatcherTimer MKTwitchTimer { get { return timer; } }
+        public static DispatcherTimer MKKludgeTimer { get { return kludgeTimer; } }
         public static string UserName { get; set; }
+        public static DateTime LastPull { get; internal set; }
 
         #region Custom EventArgs
         public class MKTwitchUpdatingEventArgs : EventArgs
@@ -326,6 +346,7 @@ namespace TwitchAlert.classes
                 finally
                 {
                     timer.Start();
+                  
                 }
                 #region Old
                 //foreach (var u in followedUsers)
@@ -385,11 +406,45 @@ namespace TwitchAlert.classes
           
             };
             timer.Start();
+            StartKludgeTimer();
             IsStarted = true;
             OnStartCompleted();
         }
 
-        
+        private static void StartKludgeTimer()
+        {
+            kludgeTimer = new DispatcherTimer();
+            kludgeTimer.Interval = TimeSpan.FromSeconds(1);
+            int timerCount = 0;
+            int dotCount = 0;
+            kludgeTimer.Tick += (s, e) => {
+                if (timer.IsEnabled)
+                {
+                    // Console.Write(".");
+                    if (dotCount >= 60)
+                    {
+                        Console.WriteLine(".");
+                        dotCount = 0;
+                    }
+                    else
+                    {
+                        Console.Write(".");
+                        dotCount++;
+                    }
+                }
+                else
+                {
+                    if (timerCount++ < 120) 
+                        return;
+                    timer.Start();
+                    timerCount = 0;
+                    Log.WriteLog("KludgeTimer is starting main timer", "kludgeTimerLog.txt");
+                }
+            };
+            kludgeTimer.Start();
+        }
+
+
 
 
         /// <summary>
@@ -398,9 +453,23 @@ namespace TwitchAlert.classes
         /// <returns></returns>
         private static async Task Update()
         {
-//            throw new MKTwitchTestException("Thrown in Update() before UpdateFollowedUsers() call");
+            //            throw new MKTwitchTestException("Thrown in Update() before UpdateFollowedUsers() call");
 
-            await UpdateFollowedUsers(UserName);
+            try
+            {
+                await UpdateFollowedUsers(UserName);
+
+            }
+
+            catch(MKTwitchUpdateFollowedUsersTestException ex)
+            {
+                Log.WriteLog(ex.Message, "DebugLog.txt");
+                Console.WriteLine(ex.Message);
+                return;
+            }
+
+
+
             OnUpdateStarted(true);
             var streamers = await GetStreamers();
             OnUpdateCompleted(false);
@@ -508,17 +577,19 @@ namespace TwitchAlert.classes
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
+        /// <exception cref="MKTwitchUpdateFollowedUsersTestException"></exception>
         public static async Task UpdateFollowedUsers(string userName)
         {
             GetALLUsersFollowers_Result result = default(GetALLUsersFollowers_Result);
             try
             {
+               // throw new NullReferenceException("Test Exeption");
                 result = await GetALLUsersFollowers(userName);
             }
             catch(Exception ex)
             {
-                Log.WriteLog($"{nameof(UpdateFollowedUsers)} threw an Exception when calling {nameof(GetALLUsersFollowers)}. ex.Message = {ex.Message}");
-                return;
+                Log.WriteLog($"{nameof(UpdateFollowedUsers)} threw an Exception when calling {nameof(GetALLUsersFollowers)}. ex.Message = {ex.Message}","DebugLog.txt");
+                throw new MKTwitchUpdateFollowedUsersTestException($"{nameof(GetALLUsersFollowers)} call failed in the {nameof(UpdateFollowedUsers)} method. ex.Message = {ex.Message}");
             }
 
 
