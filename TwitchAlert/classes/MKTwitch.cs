@@ -420,25 +420,33 @@ namespace TwitchAlert.classes
             kludgeTimer.Tick += (s, e) => {
                 if (timer.IsEnabled)
                 {
+                    timerCount = 0;
                     // Console.Write(".");
                     if (dotCount >= 60)
                     {
-                        Console.WriteLine(".");
+                       // Console.WriteLine(".");
                         dotCount = 0;
                     }
                     else
                     {
-                        Console.Write(".");
+                       // Console.Write(".");
                         dotCount++;
                     }
                 }
-                else
+                else // timer disabled
                 {
-                    if (timerCount++ < 120) 
+                    if (timerCount++ < 120)
+                    {
+                        string message = $"timer disabled. timerCount={timerCount}";
+                        Log.WriteLog(message, "kludgeTimerLog.txt");
+                        Console.WriteLine(message);
                         return;
+                    }
                     timer.Start();
                     timerCount = 0;
-                    Log.WriteLog("KludgeTimer is starting main timer", "kludgeTimerLog.txt");
+                    string s1 = "KludgeTimer is starting main timer";
+                    Log.WriteLog(s1, "kludgeTimerLog.txt");
+                    Console.WriteLine(s1);
                 }
             };
             kludgeTimer.Start();
@@ -454,7 +462,6 @@ namespace TwitchAlert.classes
         private static async Task Update()
         {
             //            throw new MKTwitchTestException("Thrown in Update() before UpdateFollowedUsers() call");
-
             try
             {
                 await UpdateFollowedUsers(UserName);
@@ -979,7 +986,6 @@ namespace TwitchAlert.classes
                     rhd(ourImg, handlerCompleted, handlerDownloadFailed, handlerDecodeFailed);
                 }
             };
-
             handlerDownloadFailed = (s3, e2) =>
             {
                 var ourImg = s3 as BitmapImage;

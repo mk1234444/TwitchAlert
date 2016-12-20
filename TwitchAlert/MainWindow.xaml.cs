@@ -164,8 +164,6 @@ namespace TwitchAlert
             //    ellTimerStatus.Opacity = MKTwitch.IsTimerEnabled() ? 0.30 : 1;
             //};
 
-
-
             this.DataContext = toast;
             SetupNotificationIcon();
 
@@ -244,7 +242,6 @@ namespace TwitchAlert
                 Log.WriteLog($"{e.User.Name} changed GAME from {e.OldGame} to {e.NewGame}");
                 Log.WriteLog($"{e.User.Name} e.OldGame: {e.OldGame} e.NewGame: {e.NewGame} e.User.Game: {e.User.Game}");
                 await DisplayGameChangeToast(e.NewGame);
-               
             };
 
             // Subscribe to the MKTwitch StatusChanged event so we hear
