@@ -10,12 +10,14 @@
 // TODO: Use the ToastBorder in the SlideUp and SlideDown animations. Currently the rootGrid is being
 //       used and when that is collapsed it leaves then empty red ToastBorder still hanging
 // TODO: Sort out the toast positioning for hidden taskbar/small taskbar/large taskbar
-// TODO: The 'Updating' message obscures the streaming number in the top right.
+// FIX:  The 'Updating' message obscures the streaming number in the top right.
 // FIX:  The number if Twitchers streaming indicator at the top right is collapsed when
 //       nobody is online
 // FIX:  The 'Started' time now takes into account daylight saving in UK
 // FIX:  Stopped working. Started getting 400 Bad Request errors when trying to get Streamers. (removing
 //       'wRequest.ContentType = "application/json";' from the Get() and GetAsync() methods fixed it.)
+// FIX:  KludgeTimer added to restart the main timer when it becomes permenantly disabled after some
+//       network error.Stopgap fix. Needs fixing properly
 
 
 using System;

@@ -24,7 +24,11 @@ namespace TwitchAlert
 
         private void txtUserName_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter) this.Close();
+            if (e.Key == Key.Enter)
+            {
+                Console.WriteLine($"{nameof(UserNameWindow)} KeyUp event called with a keypress of ENTER");
+                this.Close();
+            }
         }
 
         private void Window_ContentRendered(object sender, EventArgs e)
@@ -32,10 +36,14 @@ namespace TwitchAlert
             txtUserName.Focus();
         }
 
-        private async void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+#if debug
             txtUserName.Text = Properties.Settings.Default.settingsMe;
             await Task.Delay(500);
+#endif
+        
+            Console.WriteLine($"{nameof(UserNameWindow)} MouseDoubleClick event called");
             this.Close();
         }
 

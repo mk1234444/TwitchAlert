@@ -137,7 +137,10 @@ namespace TwitchAlert
                 // If the entered username is already the current one or doesn't exist then do nothing.
                 // NOTE: If username is invalid then maybe a MessageBox saying so or the UserNameWindow
                 //       should be re-opened?
-                if (newUserName == USER_NAME || !MKTwitch.UserExists(newUserName)) return;
+                if (newUserName == USER_NAME || !await MKTwitch.UserExists(newUserName)) return;
+
+          
+
                 USER_NAME = newUserName;
                 if (MKTwitch.IsStarted)
                 {

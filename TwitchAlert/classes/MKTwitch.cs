@@ -411,6 +411,10 @@ namespace TwitchAlert.classes
             OnStartCompleted();
         }
 
+        /// <summary>
+        /// KludgeTimer added to restart the main timer when it becomes permenantly disabled after some
+//      /// network error. Stopgap fix. Needs fixing properly
+        /// </summary>
         private static void StartKludgeTimer()
         {
             kludgeTimer = new DispatcherTimer();
@@ -805,11 +809,11 @@ namespace TwitchAlert.classes
             return JsonConvert.DeserializeObject<Twitch.Root>(await GetAsync(url));
         }
 
-        public static bool UserExists(string userName)
+        public async static Task<bool> UserExists(string userName)
         {
             //GET https://api.twitch.tv/kraken/user
             string url = $"{twitchUrl}users/{userName}";
-            var res = Get(url);
+            var res = await GetAsync(url);
             return res != "mk404mk";
         }
         static Twitch.Root GetStreams(string user, int limit = 25, string sortDirection = "DESC")
