@@ -23,6 +23,7 @@ namespace TwitchAlert
         MenuItem miNIStartTimer;
         MenuItem miNIStopTimer;
         MenuItem miOpenAppDirectory;
+        MenuItem miGoToAllGames;
 
         MenuItem miShowVB;
         
@@ -57,6 +58,7 @@ namespace TwitchAlert
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
             miNIStopTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Stop();
             miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus,miShowVB });
+            miGoToAllGames = new MenuItem { Text = "Goto All Games", Name = nameof(miGoToAllGames) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
             miNIQuit.Click += (s, e) => this.Close();
@@ -71,14 +73,15 @@ namespace TwitchAlert
                // Log.WriteLog($"Timer Status = {(enabled?"Enabled":"Disabled")} * Last Pull = {lastPull}", "MKTwitchTimerLog.txt");
                // Process.Start("MKTwitchTimerLog.txt");
                 System.Windows.MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
-
             };
 
 
             miShowVB.Click += miShowVB_Click;
-            //miNIRefreshFollowed.Click += (s, e) => MKTwitch.UpdateFollowedUsers(USER_NAME);
 
-            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups,miNIDebug, miNIQuit });
+            miGoToAllGames.Click += (s, e) => Process.Start(@"https://www.twitch.tv/directory");
+
+
+            contextMenu.MenuItems.AddRange(new MenuItem[] { miNIOnline,miNIUserName, miNITurnSoundOff, miNISkipPopupsAtStart, miNIGameStatusPopups, miGoToAllGames, miNIDebug, miNIQuit });
             notifyIcon = new NotifyIcon() { Icon = Properties.Resources._48_twitch, Text="Twitch Alert", Visible=true};
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.Click += (s, e) => this.Focus();

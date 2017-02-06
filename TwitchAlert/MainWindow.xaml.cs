@@ -18,6 +18,7 @@
 //       'wRequest.ContentType = "application/json";' from the Get() and GetAsync() methods fixed it.)
 // FIX:  KludgeTimer added to restart the main timer when it becomes permenantly disabled after some
 //       network error.Stopgap fix. Needs fixing properly
+// Add:  Added 'Goto All Games' to the NotifyIcon Menu
 
 
 using System;
@@ -35,6 +36,9 @@ using TwitchAlert.classes;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
+//using System.Windows.Forms;
 
 namespace TwitchAlert
 {
@@ -43,6 +47,25 @@ namespace TwitchAlert
     /// </summary>
     public partial class MainWindow : Window
     {
+        internal static class NativeMethods
+        {
+            public const Int32 MONITOR_DEFAULTTOPRIMARY = 0x00000001;
+            public const Int32 MONITOR_DEFAULTTONEAREST = 0x00000002;
+
+            [DllImport("user32.dll")]
+            public static extern IntPtr MonitorFromWindow(IntPtr handle, Int32 flags);
+
+            public static bool IsInPrimaryMonitor(MainWindow window)
+            {
+                var hwnd = new WindowInteropHelper(window).EnsureHandle();
+                var currentMonitor = NativeMethods.MonitorFromWindow(hwnd, NativeMethods.MONITOR_DEFAULTTONEAREST);
+                var primaryMonitor = NativeMethods.MonitorFromWindow(IntPtr.Zero, NativeMethods.MONITOR_DEFAULTTOPRIMARY);
+                return currentMonitor == primaryMonitor;
+            }
+        }
+
+   
+
         public class Toast:DependencyObject
         {
            public Toast()
@@ -335,8 +358,27 @@ namespace TwitchAlert
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             Log.Seperator();
+
+
+            var screens = System.Windows.Forms.Screen.AllScreens;
+            var primary = screens.First(i => i.Primary);
+            var secondary = screens.FirstOrDefault(i => !i.Primary);
+            var isPrimary = NativeMethods.IsInPrimaryMonitor(this);
+
+            var workingAreaWidth = isPrimary ? primary.WorkingArea.Width : secondary.WorkingArea.Width;
+            var workingAreaHeight = isPrimary ? primary.WorkingArea.Height : secondary.WorkingArea.Height;
+            var screenHeight = isPrimary ? primary.Bounds.Y : secondary.Bounds.Y;
+            var screenWidth = isPrimary ? primary.Bounds.X : secondary.Bounds.X;
+
+
+
+
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             this.Top = toast.BottomPosition = SystemParameters.PrimaryScreenHeight; //DEBUG STUFF
+
+            this.Top = toast.BottomPosition = workingAreaHeight;
+
+
 
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
@@ -349,10 +391,23 @@ namespace TwitchAlert
             // If this is the first time we've been run then calculate the Left position, else
             // use the Left position that we saved the last time we ran
             if (Properties.Settings.Default.settingsLeft == 0.1)
+            {
                 toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+                // Using Screens class
+                toast.LeftPosition = this.Left = workingAreaWidth - this.Width;
+            }
             // If Left was saved previously off the right hand side of the screen then reset it so that the full popup will be displayed at the right
             else if (Properties.Settings.Default.settingsLeft > (SystemParameters.WorkArea.Width - this.Width))
+            {
                 toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+                // Using Screens class
+                toast.LeftPosition = this.Left = workingAreaWidth - this.Width;
+            }
+
+            //-----------------------
+
+
+
             // If the Left was saved previously off the left side of the screen then reset is so the full popup will be displayed at the left
             else if (Properties.Settings.Default.settingsLeft < 0)
                 toast.LeftPosition = this.Left;
@@ -694,3 +749,4 @@ namespace TwitchAlert
         }
     }
 }
+  
