@@ -24,6 +24,7 @@ namespace TwitchAlert
         MenuItem miNIStopTimer;
         MenuItem miOpenAppDirectory;
         MenuItem miGoToAllGames;
+        MenuItem miNICentre;
 
         MenuItem miShowVB;
         
@@ -53,11 +54,12 @@ namespace TwitchAlert
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
             miNIStopTimer = new MenuItem { Text = "Stop Timer", Name = nameof(miNIStopTimer) };
+            miNICentre = new MenuItem { Text = "Centre", Name = nameof(miNICentre) };
 
             miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
             miNIStopTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Stop();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus,miShowVB });
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus, miShowVB,miNICentre });
             miGoToAllGames = new MenuItem { Text = "Goto All Games", Name = nameof(miGoToAllGames) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
@@ -74,6 +76,8 @@ namespace TwitchAlert
                // Process.Start("MKTwitchTimerLog.txt");
                 System.Windows.MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
             };
+            miNICentre.Click += (s, e) => { toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2); };
+
 
 
             miShowVB.Click += miShowVB_Click;
@@ -86,6 +90,8 @@ namespace TwitchAlert
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.Click += (s, e) => this.Focus();
             notifyIcon.ContextMenu = contextMenu;
+
+
         }
 
         private void miShowVB_Click(object sender, EventArgs e)

@@ -19,6 +19,8 @@
 // FIX:  KludgeTimer added to restart the main timer when it becomes permenantly disabled after some
 //       network error.Stopgap fix. Needs fixing properly
 // Add:  Added 'Goto All Games' to the NotifyIcon Menu
+//
+// Add:  Added 'Centre' MenuItem to the NotifyIcon Menu, under Debug
 
 
 using System;
@@ -183,12 +185,6 @@ namespace TwitchAlert
         {
             InitializeComponent();
 
-            //mkTwitchTimerStatusTimer.Tick += (s, e) =>
-            //{
-            //    // MKTwitch.
-            //    ellTimerStatus.Opacity = MKTwitch.IsTimerEnabled() ? 0.30 : 1;
-            //};
-
             this.DataContext = toast;
             SetupNotificationIcon();
 
@@ -198,7 +194,6 @@ namespace TwitchAlert
             GameIn2Storyboard = FindResource("GameIn2") as Storyboard;
             StatusInStoryboard = FindResource("StatusIn") as Storyboard;
             StatusOutStoryboard = FindResource("StatusOut") as Storyboard;
-
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live

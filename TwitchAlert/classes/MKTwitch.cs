@@ -594,7 +594,7 @@ namespace TwitchAlert.classes
             GetALLUsersFollowers_Result result = default(GetALLUsersFollowers_Result);
             try
             {
-               // throw new NullReferenceException("Test Exeption");
+                //throw new NullReferenceException("Test Exeption");
                 result = await GetALLUsersFollowers(userName);
             }
             catch(Exception ex)
