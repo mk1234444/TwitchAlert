@@ -25,12 +25,19 @@ public static class Log
     /// <param name="logMessage"></param>
     public static void WriteLog(string logMessage, string filename = "log.txt")
     {
-        using (StreamWriter w = File.AppendText(filename))
+        try
         {
-            w.Write("\r\nLog Entry : ");
-            w.WriteLine("{0} {1}\n  :", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
-            w.WriteLine("  :{0}", logMessage);
-            w.WriteLine("-------------------------------");
+            using (StreamWriter w = File.AppendText(filename))
+            {
+                w.Write("\r\nLog Entry : ");
+                w.WriteLine("{0} {1}\n  :", DateTime.Now.ToLongTimeString(), DateTime.Now.ToLongDateString());
+                w.WriteLine("  :{0}", logMessage);
+                w.WriteLine("-------------------------------");
+            }
+        }
+        catch(Exception)
+        {
+
         }
     }
 
