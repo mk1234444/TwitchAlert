@@ -412,6 +412,8 @@ namespace TwitchAlert
      
             miNITurnSoundOff.Checked = Properties.Settings.Default.settingsSoundOff;
             miNISkipPopupsAtStart.Checked = Properties.Settings.Default.settingsSkipPopups;
+            miNIUseFirefox.Checked = Properties.Settings.Default.settingsUseFirefox;
+
         }
 
         private void window_ContentRendered(object sender, EventArgs e)
@@ -431,6 +433,7 @@ namespace TwitchAlert
                 Properties.Settings.Default.settingsUserName = USER_NAME;
             Properties.Settings.Default.settingsSoundOff = miNITurnSoundOff.Checked;
             Properties.Settings.Default.settingsSkipPopups = miNISkipPopupsAtStart.Checked;
+            Properties.Settings.Default.settingsUseFirefox = miNIUseFirefox.Checked;
             Properties.Settings.Default.Save();
             DisposeNotifyIcon();
         }
@@ -467,7 +470,10 @@ namespace TwitchAlert
         #region Event Handlers
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            Process.Start(e.Uri.AbsoluteUri);
+            if (miNIUseFirefox.Checked)
+                Process.Start("Firefox.exe", e.Uri.AbsoluteUri);
+            else
+                Process.Start(e.Uri.AbsoluteUri);
         }
 
         private void toastBorder_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -660,7 +666,7 @@ namespace TwitchAlert
 
         private void PlayOnlineSound()
         {
-            PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav");
+           PlaySound(Directory.GetCurrentDirectory() + @"\sounds\Door_Bell-SoundBible.wav");
         }
 
         private void PlayOfflineSound()

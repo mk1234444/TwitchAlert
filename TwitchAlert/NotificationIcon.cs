@@ -25,7 +25,7 @@ namespace TwitchAlert
         MenuItem miOpenAppDirectory;
         MenuItem miGoToAllGames;
         MenuItem miNICentre;
-
+        MenuItem miNIUseFirefox;
         MenuItem miShowVB;
         
         //MenuItem miNIRefreshFollowed;
@@ -54,12 +54,13 @@ namespace TwitchAlert
             miNITimerStatus = new MenuItem { Text = "Timer Status", Name = nameof(miNITimerStatus) };
             miNIStartTimer = new MenuItem { Text = "Start Timer", Name = nameof(miNIStartTimer) };
             miNIStopTimer = new MenuItem { Text = "Stop Timer", Name = nameof(miNIStopTimer) };
+            miNIUseFirefox = new MenuItem { Text = "Use Firefox", Name = nameof(miNIUseFirefox)};
             miNICentre = new MenuItem { Text = "Centre", Name = nameof(miNICentre) };
 
             miShowVB = new MenuItem { Text = "Show Current Visual", Name = nameof(miShowVB)};
             miNIStartTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Start();
             miNIStopTimer.Click += (s, e) => MKTwitch.MKTwitchTimer.Stop();
-            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus, miShowVB,miNICentre });
+            miNIDebug.MenuItems.AddRange(new MenuItem[] { miNIOpenLogFile, miOpenAppDirectory, miNIStartTimer, miNIStopTimer, miNITimerStatus, miShowVB, miNIUseFirefox, miNICentre });
             miGoToAllGames = new MenuItem { Text = "Goto All Games", Name = nameof(miGoToAllGames) };
             miNIQuit = new MenuItem { Text = "Quit", Name = "miNIQuit" };
             // Attach events to MenuItems
@@ -68,6 +69,9 @@ namespace TwitchAlert
             miNIOnline.Click +=  (s, e) => ShowOnlineUsers();
             miNITurnSoundOff.Click += (s, e) => miNITurnSoundOff.Checked = !miNITurnSoundOff.Checked;
             miNISkipPopupsAtStart.Click += (s, e) => miNISkipPopupsAtStart.Checked = !miNISkipPopupsAtStart.Checked;
+            miNIUseFirefox.Click += (s, e) => miNIUseFirefox.Checked = !miNIUseFirefox.Checked;
+
+
             miNIOpenLogFile.Click += (s, e) => Process.Start("log.txt");
             miOpenAppDirectory.Click += (s, e) => Process.Start(Environment.CurrentDirectory);
             miNITimerStatus.Click += (s, e) => {

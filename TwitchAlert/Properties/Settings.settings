@@ -26,5 +26,8 @@
     <Setting Name="settingsCI" Type="System.String" Scope="User">
       <Value Profile="(Default)">hm3hccqtuki0m737r6ws2b76bdovyq9</Value>
     </Setting>
+    <Setting Name="settingsUseFirefox" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
