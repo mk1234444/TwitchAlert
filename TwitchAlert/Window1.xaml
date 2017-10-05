@@ -30,6 +30,10 @@
                 <TextBlock Text="LeftPos: " Background="BlanchedAlmond" Width="auto" Height="auto" Padding="5,0,0,0"/>
                 <TextBlock x:Name="txtLeftPos" Text="0"  Background="Aquamarine" Padding="4,0" OverridesDefaultStyle="True" />
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="this.Top" Background="BlanchedAlmond" Width="auto" Padding="4,0"/>
+                <TextBlock x:Name="txtThisTop" Background="Aquamarine" Width="auto" Text="xx" Padding="5,0,0,0"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

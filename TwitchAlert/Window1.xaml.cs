@@ -13,9 +13,9 @@ namespace TwitchAlert
     public partial class Window1 : Window
     {
         System.Windows.Forms.MenuItem miShowVB;
-        DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
+        DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(500) };
 
-        public Window1(Border toastBorder,System.Windows.Forms.MenuItem miShowVB, MainWindow.Toast toast)
+        public Window1(Border toastBorder,System.Windows.Forms.MenuItem miShowVB, MainWindow.Toast toast,MainWindow toastWindow)
         {
             this.miShowVB = miShowVB;
             InitializeComponent();
@@ -29,6 +29,7 @@ namespace TwitchAlert
                   txtBottomPos.Text = toast.BottomPosition.ToString();
                   txtLeftPos.Text = toast.LeftPosition.ToString();
                   txtLastUpdate.Text = MKTwitch.LastPull.ToLongTimeString();
+                  txtThisTop.Text = ((int)toastWindow.Top).ToString();
               };
             timer.Start();
         }

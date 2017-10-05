@@ -95,6 +95,7 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        
         <Storyboard x:Key="SlideDown" Name="SlideDown" >
             <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding BottomPosition}" Duration="0:0:0.8" Storyboard.TargetName="window" >
                 <DoubleAnimation.EasingFunction>
@@ -110,6 +111,10 @@
                 <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
                 <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="{x:Static Visibility.Collapsed}"/>
             </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="ResetToastPosition" Name="ResetToastPosition" >
+            <DoubleAnimation Storyboard.TargetProperty="(Canvas.Top)" To="{Binding BottomPosition}" Duration="0:0:0.0" Storyboard.TargetName="window" />
         </Storyboard>
 
         <Storyboard x:Key="GameOut">

@@ -21,7 +21,8 @@
 // Add:  Added 'Goto All Games' to the NotifyIcon Menu
 //
 // Add:  Added 'Centre' MenuItem to the NotifyIcon Menu, under Debug
-
+//
+// FIX:  Now detects when screen resolution changes. *TEST*
 
 using System;
 using System.ComponentModel;
@@ -40,6 +41,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using Microsoft.Win32;
 //using System.Windows.Forms;
 
 namespace TwitchAlert
@@ -66,7 +68,6 @@ namespace TwitchAlert
             }
         }
 
-   
 
         public class Toast:DependencyObject
         {
@@ -74,11 +75,22 @@ namespace TwitchAlert
             {
                 Link = "";
             }
+
+
+            /// <summary>
+            /// The Top position the Toast will slide up to when being displayed, ex. on a 1080 display
+            /// this value will be 980
+            /// </summary>
             public double TopPosition
             {
                 get { return (double)GetValue(TopPositionProperty); }
                 set { SetValue(TopPositionProperty, value); }
             }
+
+            /// <summary>
+            /// The Top position the Toast will slide down to when being hidden, ex. on a 1080 display
+            /// this value will be 1080
+            /// </summary>
             public double BottomPosition
             {
                 get { return (double)GetValue(BottomPositionProperty); }
@@ -177,13 +189,23 @@ namespace TwitchAlert
         const int NOBODY_ONLINE_HEIGHT = 100;
         string USER_NAME = Properties.Settings.Default.settingsUserName;
         DateTime lastPull;
-        Storyboard SlideUpStoryboard, SlideDownStoryboard, GameOutStoryboard, GameIn2Storyboard, StatusOutStoryboard, StatusInStoryboard;
+        Storyboard ResetToastPosition, SlideUpStoryboard, SlideDownStoryboard, GameOutStoryboard, GameIn2Storyboard, StatusOutStoryboard, StatusInStoryboard;
+      
 
         Window1 win1;
 
         public MainWindow()
         {
             InitializeComponent();
+            SystemEvents.DisplaySettingsChanged += async(s, e) => {
+                setToastTopAndBottomPositions();
+                Console.WriteLine("**** Screen Resolution Changed ****");
+                Console.WriteLine($"toast.TopPosition = {toast.TopPosition}  toast.BottomPosition = {toast.BottomPosition}  this.Top = {this.Top}");
+                StartAnimationAsync(ResetToastPosition);
+            };
+
+
+
 
             this.DataContext = toast;
             SetupNotificationIcon();
@@ -194,6 +216,7 @@ namespace TwitchAlert
             GameIn2Storyboard = FindResource("GameIn2") as Storyboard;
             StatusInStoryboard = FindResource("StatusIn") as Storyboard;
             StatusOutStoryboard = FindResource("StatusOut") as Storyboard;
+            ResetToastPosition = FindResource("ResetToastPosition") as Storyboard;
 
             // Subscribe to the MKTwitch Online event so we hear about any user
             // that starts streaming live
@@ -349,11 +372,24 @@ namespace TwitchAlert
             }
         }
 
+        private void setToastTopAndBottomPositions()
+        {
+            var screens = System.Windows.Forms.Screen.AllScreens;
+            var primary = screens.First(i => i.Primary);
+            var secondary = screens.FirstOrDefault(i => !i.Primary);
+            var isPrimary = NativeMethods.IsInPrimaryMonitor(this);
+
+           // var workingAreaWidth = isPrimary ? primary.WorkingArea.Width : secondary.WorkingArea.Width;
+            var workingAreaHeight = isPrimary ? primary.WorkingArea.Height : secondary.WorkingArea.Height;
+            toast.BottomPosition = workingAreaHeight;
+            toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height + 15);
+
+        }
+
         #region Windows Events
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
             Log.Seperator();
-
 
             var screens = System.Windows.Forms.Screen.AllScreens;
             var primary = screens.First(i => i.Primary);
@@ -365,15 +401,11 @@ namespace TwitchAlert
             var screenHeight = isPrimary ? primary.Bounds.Y : secondary.Bounds.Y;
             var screenWidth = isPrimary ? primary.Bounds.X : secondary.Bounds.X;
 
-
-
-
             this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             this.Top = toast.BottomPosition = SystemParameters.PrimaryScreenHeight; //DEBUG STUFF
-
-            this.Top = toast.BottomPosition = workingAreaHeight;
-
-
+            //this.Top = toast.BottomPosition = workingAreaHeight;
+            setToastTopAndBottomPositions();
+        
 
             //Console.WriteLine($"Loaded - this.Top {this.Top}");
             //------------------
@@ -428,6 +460,7 @@ namespace TwitchAlert
         {
             if (win1 != null) win1.Close();
             if (userNameWindow != null) userNameWindow.Close();
+
             Properties.Settings.Default.settingsLeft = this.Left;
             if(!string.IsNullOrEmpty(USER_NAME))
                 Properties.Settings.Default.settingsUserName = USER_NAME;
@@ -471,7 +504,9 @@ namespace TwitchAlert
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             if (miNIUseFirefox.Checked)
-                Process.Start("Firefox.exe", e.Uri.AbsoluteUri);
+            {
+                Process.Start("Firefox.exe",e.Uri.AbsoluteUri);
+            }
             else
                 Process.Start(e.Uri.AbsoluteUri);
         }
@@ -571,40 +606,17 @@ namespace TwitchAlert
                 //Console.WriteLine($"TopPosition = {toast.TopPosition}");
                 this.Top = SystemParameters.WorkArea.Height;
             }
+            else
+            {
+                setToastTopAndBottomPositions();
+            }
             await StartAnimationAsync(SlideUpStoryboard);
-            //Console.WriteLine($"\nWindow.Top {this.Top}");
-            //Console.WriteLine($"Window.Left {this.Left}");
-            //Console.WriteLine($"Window.Visibilty {this.Visibility}");
-            //Console.WriteLine($"toastTopPosition {toast.TopPosition}");
-            //Console.WriteLine($"toastBottomPosition {toast.BottomPosition}");
-            //Console.WriteLine($"toastBorder.Visibility {toastBorder.Visibility}");
-            //Console.WriteLine($"toastBorder.ActualWidth {toastBorder.ActualWidth }");
-            //Console.WriteLine($"toastBorder.ActualHeight {toastBorder.ActualHeight}");
-            //Console.WriteLine($"toastBorder.Opacity {toastBorder.Opacity}");
-            //Console.WriteLine($"rootGrid.Visibility {rootGrid.Visibility}");
-            //Console.WriteLine($"rootGrid.Opacity {rootGrid.Opacity}");
-            //Console.WriteLine($"PromaryScreenHeight {SystemParameters.PrimaryScreenHeight}");
-            //Console.WriteLine($"WorkArea.Height {SystemParameters.WorkArea.Height}\n");
             await Task.Delay(4000);
             await StartAnimationAsync(SlideDownStoryboard);
 
             txtNobodyOnline.Visibility = Visibility.Collapsed;
             brdIsOnline.Visibility = Visibility.Visible;
             brdNumberOnline.Visibility = Visibility.Visible;
-            //Console.WriteLine($"\nWindow.Top {this.Top}");
-            //Console.WriteLine($"Window.Left {this.Left}");
-            //Console.WriteLine($"Window.Visibilty {this.Visibility}");
-            //Console.WriteLine($"toastTopPosition {toast.TopPosition}");
-            //Console.WriteLine($"toastBottomPosition {toast.BottomPosition}");
-            //Console.WriteLine($"toastBorder.Visibility {toastBorder.Visibility}");
-            //Console.WriteLine($"toastBorder.ActualWidth {toastBorder.ActualWidth }");
-            //Console.WriteLine($"toastBorder.ActualHeight {toastBorder.ActualHeight}");
-            //Console.WriteLine($"toastBorder.Opacity {toastBorder.Opacity}");
-            //Console.WriteLine($"rootGrid.Opacity {rootGrid.Opacity}");
-
-            //Console.WriteLine($"rootGrid.Visibility {rootGrid.Visibility}");
-            //Console.WriteLine($"PromaryScreenHeight {SystemParameters.PrimaryScreenHeight}");
-            //Console.WriteLine($"WorkArea.Height {SystemParameters.WorkArea.Height}\n");
         }
 
         public async Task DisplayGameChangeToast(string newGame)

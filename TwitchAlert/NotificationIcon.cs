@@ -82,8 +82,6 @@ namespace TwitchAlert
             };
             miNICentre.Click += (s, e) => { toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2); };
 
-
-
             miShowVB.Click += miShowVB_Click;
 
             miGoToAllGames.Click += (s, e) => Process.Start(@"https://www.twitch.tv/directory");
@@ -94,8 +92,6 @@ namespace TwitchAlert
             notifyIcon.DoubleClick += (s, e) => ShowOnlineUsers();
             notifyIcon.Click += (s, e) => this.Focus();
             notifyIcon.ContextMenu = contextMenu;
-
-
         }
 
         private void miShowVB_Click(object sender, EventArgs e)
@@ -108,15 +104,15 @@ namespace TwitchAlert
             if (win1 == null)
             {
                 miShowVB.Text = "Hide Current Visual";
-                win1 = new Window1(toastBorder, miShowVB,toast);
+                win1 = new Window1(toastBorder, miShowVB,toast,this);
 
                 EventHandler closed = null;
                 closed = (s, e) =>
                 {
                     this.Closed -= closed;
                     win1 = null;
-
                 };
+
                 win1.Closed += closed;
                 win1.Show();
                 win1.BringToFront();

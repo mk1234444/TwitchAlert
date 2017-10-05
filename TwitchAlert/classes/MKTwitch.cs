@@ -471,21 +471,40 @@ namespace TwitchAlert.classes
                 await UpdateFollowedUsers(UserName);
 
             }
-
             catch(MKTwitchUpdateFollowedUsersTestException ex)
             {
                 Log.WriteLog(ex.Message, "DebugLog.txt");
                 Console.WriteLine(ex.Message);
                 return;
             }
+            catch (Exception ex)
+            {
+                Log.WriteLog(ex.Message, "DebugLog.txt");
+                Console.WriteLine(ex.Message);
+            }
 
 
 
-            OnUpdateStarted(true);
-            var streamers = await GetStreamers();
-            OnUpdateCompleted(false);
-
+            // ************ 14/8/2017 *****************
+            // ****************************************
+            // Try/Catch added to catch index Exception
+            TwitchStreamers.RootObject streamers = null;
+            try
+            {
+                OnUpdateStarted(true);
+                streamers = await GetStreamers();
+            }
+            catch(Exception ex)
+            {
+                Log.WriteLog(ex.Message, "DebugLog.txt");
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                OnUpdateCompleted(false); 
+            }
             if (streamers == null) return;
+
 
             var nonStreamers = followedUsers.Where(i => !streamers.Streams.Any(x => x.Channel.DisplayName == i.Name));
 
@@ -880,9 +899,30 @@ namespace TwitchAlert.classes
            // throw new MKTwitchTestException("Thrown in GetStreamers()");
 
             string url = "https://api.twitch.tv/kraken/streams?channel=";
-            string users= followedUsers.Aggregate("", (current, u) => current + (u.Name + ","));
+
+
+            string users = followedUsers.Aggregate("", (current, u) => current + (u.Name + ","));
+
+            Log.WriteLog($"GetStreamers() Debug: users = {users}", "GetStreamersDebug.txt");
+
             url += users.Remove(users.Length - 1);
-            return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(await GetAsync(url));
+
+            Log.WriteLog($"GetStreamers() Debug: url = {url}", "GetStreamersDebug.txt");
+
+            string streamers = null;
+
+            try
+            {
+                streamers = await GetAsync(url);
+            }
+
+            catch (Exception ex)
+            {
+                Log.WriteLog($"GetStreamers() Debug: {ex.Message}", "GetStreamersDebug.txt");
+                throw ex;
+            }
+
+            return JsonConvert.DeserializeObject<TwitchStreamers.RootObject>(streamers);
         }
 
         /// <summary>
