@@ -205,9 +205,6 @@ namespace TwitchAlert
                 StartAnimationAsync(ResetToastPosition);
             };
 
-
-
-
             this.DataContext = toast;
             SetupNotificationIcon();
 
