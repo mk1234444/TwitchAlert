@@ -173,7 +173,7 @@ namespace TwitchAlert
                     }
 
 
-                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                    notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedStreamers.Count} ({MKTwitch.followedStreamers.Count(i => i.IsStreaming)} Online)";
                 }
                 
                 userNameWindow.NewUser -= newUserHandler;
@@ -191,7 +191,7 @@ namespace TwitchAlert
 
             int count = 0;
             MKTwitch.IsPopupCycleRunning = true;
-            var isStreaming = MKTwitch.followedUsers.Where(i => i.IsStreaming).ToList();
+            var isStreaming = MKTwitch.followedStreamers.Where(i => i.IsStreaming).ToList();
             if (isStreaming.Count==0)
             {
                 PlayOnlineSound();

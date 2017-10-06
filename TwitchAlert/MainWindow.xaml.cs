@@ -19,10 +19,11 @@
 // FIX:  KludgeTimer added to restart the main timer when it becomes permenantly disabled after some
 //       network error.Stopgap fix. Needs fixing properly
 // Add:  Added 'Goto All Games' to the NotifyIcon Menu
-//
 // Add:  Added 'Centre' MenuItem to the NotifyIcon Menu, under Debug
-//
 // FIX:  Now detects when screen resolution changes. *TEST*
+// FIX:  Twitch started to sometimes return 0 followed streams. If this happens then 
+//       UpdateFollowedUsers(Twitch.Root user) simply returns without changing anything
+
 
 using System;
 using System.ComponentModel;
@@ -228,7 +229,7 @@ namespace TwitchAlert
                     await DisplayToast();
                 }
                 // Display the Online followedUser count in the NotifyIcon Tooltip
-                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedStreamers.Count} ({MKTwitch.followedStreamers.Count(i => i.IsStreaming)} Online)";
                 Log.WriteLog($"{e.User.Name} went ONLINE at {e.User.StreamCreatedAt} playing {e.User.Game}");
             };
 
@@ -242,7 +243,7 @@ namespace TwitchAlert
                     PlayOfflineSound();
                     await DisplayToast();
                 }
-                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedStreamers.Count} ({MKTwitch.followedStreamers.Count(i => i.IsStreaming)} Online)";
                 Log.WriteLog($"{e.User.Name} went OFFLINE at {DateTime.Now.ToShortTimeString()} playing {e.User.Game}");
             };
 
@@ -262,7 +263,7 @@ namespace TwitchAlert
             // when its collection of FollowedUsers has changed
             MKTwitch.FollowedUsersChanged += (s, e) => {
                 Console.WriteLine("\nfollowedUsers Changed");
-                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedUsers.Count} ({MKTwitch.followedUsers.Count(i => i.IsStreaming)} Online)";
+                notifyIcon.Text = $"TwitchAlert ({USER_NAME})\nFollowing {MKTwitch.followedStreamers.Count} ({MKTwitch.followedStreamers.Count(i => i.IsStreaming)} Online)";
             };
 
             // Subscribe to the MKTwitch StartCompleted event so we hear when its
@@ -578,7 +579,7 @@ namespace TwitchAlert
             toast.Thumbnail = user.Thumbnail;
             toast.Link = user.Link;
             toast.Status = user.Status;
-            toast.NumberLiveStreaming = MKTwitch.followedUsers.Count(i => i.IsStreaming);
+            toast.NumberLiveStreaming = MKTwitch.followedStreamers.Count(i => i.IsStreaming);
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Runtime.Serialization;
 using System.Globalization;
+using System.Windows;
 
 namespace TwitchAlert.classes
 {
@@ -210,7 +211,7 @@ namespace TwitchAlert.classes
         private static void OnFollowedUsersChanged()
         {
             EventHandler<MKTwitchFollowedUsersEventArgs> handler = FollowedUsersChanged;
-            handler?.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedUsers });
+            handler?.Invoke(null, new MKTwitchFollowedUsersEventArgs { FollowedUsers = followedStreamers });
         }
 
         /// <summary>
@@ -267,8 +268,10 @@ namespace TwitchAlert.classes
 
         #endregion
 
-
-        public static List<User> followedUsers = new List<User>();
+        /// <summary>
+        /// List of streamers the user follows
+        /// </summary>
+        public static List<User> followedStreamers = new List<User>();
         const string twitchUrl = "https://api.twitch.tv/kraken/";
 
         /// <summary>
@@ -300,7 +303,7 @@ namespace TwitchAlert.classes
             // then skip the SeupStreamTracker() and just restart the timer
             if (loopCount < 5)
             {
-                followedUsers.Clear();
+                followedStreamers.Clear();
                 await SetupStreamTracker(userName);
             }
             timer.Start();
@@ -324,7 +327,7 @@ namespace TwitchAlert.classes
             int dotCount = 0;
             timer.Tick+= async(s,e) => 
             {
-                if (followedUsers.Count == 0) return;
+                if (followedStreamers.Count == 0) return;
               //  OnUpdateStarted(IsUpdating = true);
                 timer.Stop();
                 try {
@@ -506,13 +509,13 @@ namespace TwitchAlert.classes
             if (streamers == null) return;
 
 
-            var nonStreamers = followedUsers.Where(i => !streamers.Streams.Any(x => x.Channel.DisplayName == i.Name));
+            var nonStreamers = followedStreamers.Where(i => !streamers.Streams.Any(x => x.Channel.DisplayName == i.Name));
 
             // Do the streamers bit first
             foreach (var streamer in streamers.Streams)
             {
                 // Get the followed user who is now streaming
-                var followed = followedUsers.First(i => i.Name == streamer.Channel.DisplayName);
+                var followed = followedStreamers.First(i => i.Name == streamer.Channel.DisplayName);
 
                 // Update his info
                 followed.StreamCreatedAt = (DateTime.Parse(streamer.CreatedAt, new CultureInfo("en-GB", true), DateTimeStyles.AssumeUniversal)).ToLongTimeString();
@@ -584,7 +587,7 @@ namespace TwitchAlert.classes
 
         private static void FollowedUsersToConsole()
         {
-            followedUsers.ForEach(u => {
+            followedStreamers.ForEach(u => {
                 Console.WriteLine(u.Name);
                 Console.WriteLine(u.Status);
                 Console.WriteLine(u.Game);
@@ -622,15 +625,20 @@ namespace TwitchAlert.classes
                 throw new MKTwitchUpdateFollowedUsersTestException($"{nameof(GetALLUsersFollowers)} call failed in the {nameof(UpdateFollowedUsers)} method. ex.Message = {ex.Message}");
             }
 
-
-            var followers = (Twitch.Root)result.Followers;       
-            if (followers == null) return;
-            await UpdateFollowedUsers(followers);
+            var followed = (Twitch.Root)result.Followed;       
+            if (followed == null) return;
+            await UpdateFollowedUsers(followed);
         }
 
         private static async Task UpdateFollowedUsers(Twitch.Root user)
         {
-            if (followedUsers.Count == 0) return;
+            if (user.follows.Count == 0)
+            {
+                Log.WriteLog("Received a followedUser count of 0.\nSkipping UpdateFollowedUsers", "DebugLog.txt");
+               // MessageBox.Show("received a followedUser count of 0.\nSkipping UpdateFollowedUsers");
+                return;
+            }
+            if (followedStreamers.Count == 0) return;
 
             bool followedUsersChanged = false;
             if (user == null) return;
@@ -638,18 +646,18 @@ namespace TwitchAlert.classes
             // Check if we've followed another streamer and if so add them to our followed collection
             foreach (var u in user.follows)
             {
-                if (followedUsers.Any(i => i.Name == u.channel.display_name) == false)
+                if (followedStreamers.Any(i => i.Name == u.channel.display_name) == false)
                 {
                     followedUsersChanged = true;
                     var newUser = await CreateUserFromTwitchFollow(u);
-                    followedUsers.Add(newUser);
+                    followedStreamers.Add(newUser);
                     OnFollowed(newUser);
                 }
             }
 
             var toRemove = new List<User>();
             // Check for unfollows here
-            foreach (var u in followedUsers)
+            foreach (var u in followedStreamers)
             {
                 if (user.follows.Any(i => i.channel.display_name == u.Name) == false)
                 {
@@ -660,7 +668,7 @@ namespace TwitchAlert.classes
             // Remove unfollows if any
             foreach (var rem in toRemove)
             {
-                followedUsers.Remove(rem);
+                followedStreamers.Remove(rem);
                 OnUnfollowed(rem);
             }
 
@@ -700,7 +708,7 @@ namespace TwitchAlert.classes
 
 
         /// <summary>
-        /// Get userNames' followed channels and store them in the followedUsers collection
+        /// Get userNames' followed channels and store them in the followedStreamers collection
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -709,7 +717,7 @@ namespace TwitchAlert.classes
             CancelPopupCycle = false;
 
             var fs = await GetALLUsersFollowers(userName);
-            var users = (Twitch.Root)fs.Followers;
+            var users = (Twitch.Root)fs.Followed;
             var streamers = (TwitchStreamers.RootObject)fs.Streamers;
             // If this is the first run (MKTwitch.Start() hasnt completed) then skip
             // any followed user update check this time.
@@ -717,7 +725,7 @@ namespace TwitchAlert.classes
                 await UpdateFollowedUsers(users);
 
             // Clear followedUsers collection before we start to refill it with new users
-            followedUsers.Clear();
+            followedStreamers.Clear();
 
             foreach (var followedUser in users.follows)
             {
@@ -754,7 +762,7 @@ namespace TwitchAlert.classes
                 }
 
                 // followedUsers.Add(new User { Name = f.channel.display_name, IsStreaming = isUserLive, NumViewers = isUserLiveData.NumViewers, Game = f.channel.game,StreamCreatedAt = isUserLiveData.CreatedAt, ThumbnailPath = f.channel.logo, Thumbnail = bm ,Link = f.channel.url, Status = f.channel.status});
-                 followedUsers.Add(new User { Name = followedUser.channel.display_name, IsStreaming = isUserLive, NumViewers = numViewers, Game = followedUser.channel.game,StreamCreatedAt = createdAt, ThumbnailPath = followedUser.channel.logo, Thumbnail = bm ,Link = followedUser.channel.url, Status = followedUser.channel.status});
+                 followedStreamers.Add(new User { Name = followedUser.channel.display_name, IsStreaming = isUserLive, NumViewers = numViewers, Game = followedUser.channel.game,StreamCreatedAt = createdAt, ThumbnailPath = followedUser.channel.logo, Thumbnail = bm ,Link = followedUser.channel.url, Status = followedUser.channel.status});
 
                 if (isUserLive) Console.WriteLine($"\n{followedUser.channel.display_name} is {(isUserLive ? "Live " : "Not Live")}{(isUserLive ? "with " + followedUser.channel.game : "")}");
             }
@@ -764,7 +772,7 @@ namespace TwitchAlert.classes
             if (skipPopupsAtStart==false)
             {
                 IsPopupCycleRunning = true;
-                foreach (var user in followedUsers.Where(i => i.IsStreaming))
+                foreach (var user in followedStreamers.Where(i => i.IsStreaming))
                 {
                     if (CancelPopupCycle)
                         OnOnline(user,false);
@@ -825,7 +833,8 @@ namespace TwitchAlert.classes
         {
             //GET https://api.twitch.tv/kraken/users/test_user1/follows/channels
             string url = $"{twitchUrl}users/{userName}/follows/channels?direction={sortDirection}&limit={limit}&offset={offset}&sortby=created_at";
-            return JsonConvert.DeserializeObject<Twitch.Root>(await GetAsync(url));
+            var result = JsonConvert.DeserializeObject<Twitch.Root>(await GetAsync(url));
+            return result;
         }
 
         public async static Task<bool> UserExists(string userName)
@@ -901,7 +910,7 @@ namespace TwitchAlert.classes
             string url = "https://api.twitch.tv/kraken/streams?channel=";
 
 
-            string users = followedUsers.Aggregate("", (current, u) => current + (u.Name + ","));
+            string users = followedStreamers.Aggregate("", (current, u) => current + (u.Name + ","));
 
             Log.WriteLog($"GetStreamers() Debug: users = {users}", "GetStreamersDebug.txt");
 
@@ -998,6 +1007,7 @@ namespace TwitchAlert.classes
             catch (Exception ex)
             {
                 Console.WriteLine($"MKTwitch.GetAsync() Failed with {ex.Message}.");
+                MessageBox.Show($"MKTwitch.GetAsync() Failed with {ex.Message}.");
                 throw;
             }
             return res;

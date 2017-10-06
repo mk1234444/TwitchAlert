@@ -6,19 +6,19 @@ namespace TwitchAlert.classes
     {
         public struct GetALLUsersFollowers_Result
         {
-            public object Followers;
+            public object Followed;
             public object Streamers;
         }
 
         /// <summary>
-        /// Retrieve userNames' followers, and the ones that are currently streaming
+        /// Retrieve followed streamers and the ones that are currently streaming
         /// and return them in a GetALLUsersFollowers_Result struct
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
         public async static Task<GetALLUsersFollowers_Result> GetALLUsersFollowers(string userName)
         {
-            Twitch.Root followers = new Twitch.Root();
+            Twitch.Root followed = new Twitch.Root();
             TwitchStreamers.RootObject streamers = new TwitchStreamers.RootObject();
             int offset = 0;
 
@@ -28,11 +28,16 @@ namespace TwitchAlert.classes
                 if (u.follows.Count == 0) break;
 
                 var str = await GetStreamers(u);
-                followers.follows.AddRange(u.follows);
+                followed.follows.AddRange(u.follows);
                 streamers.Streams.AddRange(str.Streams);
                 offset += 100;
             }
-           return new GetALLUsersFollowers_Result() { Followers = followers, Streamers = streamers };
+            if(followed.follows.Count == 0)
+            {
+                System.Console.WriteLine();
+            }
+
+           return new GetALLUsersFollowers_Result() { Followed = followed, Streamers = streamers };
         }
     }
 }
