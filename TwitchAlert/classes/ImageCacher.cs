@@ -16,11 +16,13 @@ namespace TwitchAlert.classes
         //}
 
         const string IMAGE_CACHE_DIRECTORY_NAME = "thumbnail_cache/";
+        public static bool DirectoryExists { get; set; } = Directory.Exists(IMAGE_CACHE_DIRECTORY_NAME);
 
-    //    public static List<ImageItem> Images { get; set; }
+        //    public static List<ImageItem> Images { get; set; }
 
         static ImageCacher()
         {
+            Console.WriteLine("ImageCacher Constructor");
             //Images = new List<ImageItem>();
             if (!Directory.Exists(IMAGE_CACHE_DIRECTORY_NAME)) Directory.CreateDirectory(IMAGE_CACHE_DIRECTORY_NAME);
         }

@@ -23,7 +23,8 @@
 // FIX:  Now detects when screen resolution changes. *TEST*
 // FIX:  Twitch started to sometimes return 0 followed streams. If this happens then 
 //       UpdateFollowedUsers(Twitch.Root user) simply returns without changing anything
-
+// FIX:  Fixed problem of thumbnails not being downloaded anymore by forcingTls12
+//       Article with fix https://github.com/google/google-api-dotnet-client/issues/911
 
 using System;
 using System.ComponentModel;
@@ -43,6 +44,7 @@ using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Microsoft.Win32;
+using System.Net;
 //using System.Windows.Forms;
 
 namespace TwitchAlert
@@ -179,7 +181,6 @@ namespace TwitchAlert
             public static readonly DependencyProperty GameProperty = DependencyProperty.Register("Game", typeof(string), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for DisplayName.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(Toast), new PropertyMetadata(null));
-
             // Using a DependencyProperty as the backing store for NumberLiveStreaming.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty NumberLiveStreamingProperty = DependencyProperty.Register("NumberLiveStreaming", typeof(int), typeof(Toast), new PropertyMetadata(null));
         }
@@ -197,6 +198,8 @@ namespace TwitchAlert
 
         public MainWindow()
         {
+            // 
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             InitializeComponent();
             SystemEvents.DisplaySettingsChanged += async(s, e) => {
                 setToastTopAndBottomPositions();

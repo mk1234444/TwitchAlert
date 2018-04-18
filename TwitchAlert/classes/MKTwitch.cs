@@ -912,11 +912,11 @@ namespace TwitchAlert.classes
 
             string users = followedStreamers.Aggregate("", (current, u) => current + (u.Name + ","));
 
-            Log.WriteLog($"GetStreamers() Debug: users = {users}", "GetStreamersDebug.txt");
+           // Log.WriteLog($"GetStreamers() Debug: users = {users}", "GetStreamersDebug.txt");
 
             url += users.Remove(users.Length - 1);
 
-            Log.WriteLog($"GetStreamers() Debug: url = {url}", "GetStreamersDebug.txt");
+           // Log.WriteLog($"GetStreamers() Debug: url = {url}", "GetStreamersDebug.txt");
 
             string streamers = null;
 
@@ -927,7 +927,7 @@ namespace TwitchAlert.classes
 
             catch (Exception ex)
             {
-                Log.WriteLog($"GetStreamers() Debug: {ex.Message}", "GetStreamersDebug.txt");
+             //   Log.WriteLog($"GetStreamers() Debug: {ex.Message}", "GetStreamersDebug.txt");
                 throw ex;
             }
 
@@ -1007,7 +1007,8 @@ namespace TwitchAlert.classes
             catch (Exception ex)
             {
                 Console.WriteLine($"MKTwitch.GetAsync() Failed with {ex.Message}.");
-                MessageBox.Show($"MKTwitch.GetAsync() Failed with {ex.Message}.");
+            
+                //MessageBox.Show($"MKTwitch.GetAsync() Failed with {ex.Message}.");
                 throw;
             }
             return res;
@@ -1033,6 +1034,9 @@ namespace TwitchAlert.classes
 
             handlerDecodeFailed = (s2, e1) =>
             {
+                // Kludge to trigger ImageCacher constructor
+                var t = ImageCacher.DirectoryExists;
+
                 var ourImg = s2 as BitmapImage;
                 Console.WriteLine("DownloadImage() Failed to decode image {0}", ourImg.UriSource);
                 if (ourImg != null)
@@ -1042,6 +1046,9 @@ namespace TwitchAlert.classes
             };
             handlerDownloadFailed = (s3, e2) =>
             {
+                // Kludge to trigger ImageCacher constructor
+                var t = ImageCacher.DirectoryExists;
+
                 var ourImg = s3 as BitmapImage;
                 Console.WriteLine("DownloadImage() Failed to download image {0}", ourImg.UriSource);
 
@@ -1054,10 +1061,11 @@ namespace TwitchAlert.classes
             // Freeze the image in its DownloadCompleted event handler
             handlerCompleted = (s1, e) =>
             {
+
                 var ourImg = s1 as BitmapImage;
                 if (ourImg != null)
                 {
-                    Console.WriteLine("DownloadImage() Completed {0}", ourImg.UriSource);
+                   // Console.WriteLine("DownloadImage() Completed {0}", ourImg.UriSource);
                     rhd(ourImg, handlerCompleted, handlerDownloadFailed, handlerDecodeFailed);
                     if (ourImg.CanFreeze) ourImg.Freeze();
                     ImageCacher.CacheIfNotCached(ourImg, ourImg.UriSource.OriginalString);
@@ -1069,7 +1077,7 @@ namespace TwitchAlert.classes
             img.BeginInit();
                 img.CacheOption = BitmapCacheOption.OnLoad;
                 img.DecodePixelHeight = 74;
-                img.CreateOptions |= BitmapCreateOptions.IgnoreColorProfile;
+                img.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
                 img.UriSource = new Uri(imageUrl);
                 img.DownloadCompleted += handlerCompleted;
                 img.DownloadFailed += handlerDownloadFailed;
