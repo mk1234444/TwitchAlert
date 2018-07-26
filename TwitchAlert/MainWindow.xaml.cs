@@ -207,8 +207,14 @@ namespace TwitchAlert
             // Detect any screen resolution change
             SystemEvents.DisplaySettingsChanged += (s, e) => {
                 setToastTopAndBottomPositions();
-                Console.WriteLine("**** Screen Resolution Changed ****");
-                Console.WriteLine($"toast.TopPosition = {toast.TopPosition}  toast.BottomPosition = {toast.BottomPosition}  this.Top = {this.Top}");
+                var s1 = "**** Screen Resolution Changed ****";
+                var s2 = $"{nameof(toast.TopPosition)} = {toast.TopPosition} - {nameof(toast.BottomPosition)} = {toast.BottomPosition} - {nameof(this.Top)} = {this.Top}";
+                var s3 = $"{nameof(toast.LeftPosition)} = {toast.LeftPosition}";
+                Console.WriteLine(s1);
+                Console.WriteLine(s2);
+                Console.WriteLine(s3);
+                Log.WriteLog("info.txt", $"{s1}\n{s2}\n{s3}");
+
                 StartAnimationAsync(ResetToastPosition);
             };
 
@@ -444,8 +450,6 @@ namespace TwitchAlert
 
             //-----------------------
 
-
-
             // If the Left was saved previously off the left side of the screen then reset is so the full popup will be displayed at the left
             else if (Properties.Settings.Default.settingsLeft < 0)
                 toast.LeftPosition = this.Left;
@@ -461,7 +465,7 @@ namespace TwitchAlert
 
         private void window_ContentRendered(object sender, EventArgs e)
         {
-            this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
+           // this.Top = toast.BottomPosition = SystemParameters.WorkArea.Height;
             this.Top = toast.BottomPosition = SystemParameters.PrimaryScreenHeight; // DEBUG STUFF
             //Console.WriteLine($"ContentRendered - this.Top {this.Top}");
             //Console.WriteLine($"ContentRendered - TopPosition = {toast.TopPosition}");
