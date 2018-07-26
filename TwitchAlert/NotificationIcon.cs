@@ -80,7 +80,10 @@ namespace TwitchAlert
                // Process.Start("MKTwitchTimerLog.txt");
                 System.Windows.MessageBox.Show($"Timer Status = {(enabled ? "Enabled" : "Disabled")}\nLast Pull = {lastPull}", "MKTwitchTimerLog.txt");
             };
-            miNICentre.Click += (s, e) => { toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2); };
+            miNICentre.Click += (s, e) => {
+                CentreToast();
+                //    toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
+            };
 
             miShowVB.Click += miShowVB_Click;
 

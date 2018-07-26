@@ -23,8 +23,11 @@
 // FIX:  Now detects when screen resolution changes. *TEST*
 // FIX:  Twitch started to sometimes return 0 followed streams. If this happens then 
 //       UpdateFollowedUsers(Twitch.Root user) simply returns without changing anything
-// FIX:  Fixed problem of thumbnails not being downloaded anymore by forcingTls12
+// FIX:  Fixed problem of thumbnails not being downloaded anymore by forcingTls12.
 //       Article with fix https://github.com/google/google-api-dotnet-client/issues/911
+// TODO: Debug/Center doesn't work on resolutions other than 1920x1080
+// Add:  Now centres Toast on first run
+
 
 using System;
 using System.ComponentModel;
@@ -45,7 +48,6 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Microsoft.Win32;
 using System.Net;
-//using System.Windows.Forms;
 
 namespace TwitchAlert
 {
@@ -78,7 +80,6 @@ namespace TwitchAlert
             {
                 Link = "";
             }
-
 
             /// <summary>
             /// The Top position the Toast will slide up to when being displayed, ex. on a 1080 display
@@ -198,10 +199,13 @@ namespace TwitchAlert
 
         public MainWindow()
         {
-            // 
+            // Needed to allow thumbnails to be downloaded
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
             InitializeComponent();
-            SystemEvents.DisplaySettingsChanged += async(s, e) => {
+
+            // Detect any screen resolution change
+            SystemEvents.DisplaySettingsChanged += (s, e) => {
                 setToastTopAndBottomPositions();
                 Console.WriteLine("**** Screen Resolution Changed ****");
                 Console.WriteLine($"toast.TopPosition = {toast.TopPosition}  toast.BottomPosition = {toast.BottomPosition}  this.Top = {this.Top}");
@@ -373,6 +377,9 @@ namespace TwitchAlert
             }
         }
 
+        /// <summary>
+        /// Calculates the Toasts Top and Bottom positions from the Screen resolution
+        /// </summary>
         private void setToastTopAndBottomPositions()
         {
             var screens = System.Windows.Forms.Screen.AllScreens;
@@ -385,6 +392,9 @@ namespace TwitchAlert
             toast.BottomPosition = workingAreaHeight;
             toast.TopPosition = SystemParameters.WorkArea.Height - (toastBorder.Height + 15);
 
+            var s = $"{nameof(setToastTopAndBottomPositions)}: {nameof(toast.TopPosition)} = {toast.TopPosition} - {nameof(toast.BottomPosition)} = {toast.BottomPosition}";
+            Console.WriteLine(s);
+            Log.WriteLog(s, "info.txt");
         }
 
         #region Windows Events
@@ -416,13 +426,13 @@ namespace TwitchAlert
             //Console.WriteLine($"\tsettings.Left = {Properties.Settings.Default.settingsLeft}");
             //Console.WriteLine($"\tsettings.UserName = {Properties.Settings.Default.settingsUserName}");
 
-            // If this is the first time we've been run then calculate the Left position, else
-            // use the Left position that we saved the last time we ran
+            // If this is the first time we've been run then centre the toast based on the current screen width
             if (Properties.Settings.Default.settingsLeft == 0.1)
             {
-                toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
+                //toast.LeftPosition = this.Left = SystemParameters.WorkArea.Width - this.Width;
                 // Using Screens class
-                toast.LeftPosition = this.Left = workingAreaWidth - this.Width;
+                //toast.LeftPosition = this.Left = workingAreaWidth - this.Width;
+                CentreToast();
             }
             // If Left was saved previously off the right hand side of the screen then reset it so that the full popup will be displayed at the right
             else if (Properties.Settings.Default.settingsLeft > (SystemParameters.WorkArea.Width - this.Width))
@@ -648,6 +658,11 @@ namespace TwitchAlert
             toastBorder.BorderBrush = Brushes.Red;
         }
 
+        /// <summary>
+        /// Start Storyboad animation asynchronously
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <returns></returns>
         private Task StartAnimationAsync(Storyboard sb)
         {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
@@ -663,7 +678,7 @@ namespace TwitchAlert
                     // Turn off the 'Is Live' animation whenever the popup is no longer visible.
                     // Removes small but constant CPU hog
                     if (sb.Name == "SlideDown") toast.IsLive=false;
-                  //  Console.WriteLine($"{sb.Name} Animation Completed");
+                    // Console.WriteLine($"{sb.Name} Animation Completed");
                     tcs.SetResult(null);
                 };
                 sb.Completed += handler;
@@ -760,6 +775,14 @@ namespace TwitchAlert
             // text will report a larger height than the textBlock. Should work whether the
             // textBlock is single or multi-line.
             return formattedText.Width > textBlock.ActualWidth;
+        }
+
+        /// <summary>
+        /// Set the toast.LeftPosition baased on the current screen width
+        /// </summary>
+        private void CentreToast()
+        {
+            toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
         }
     }
 }
