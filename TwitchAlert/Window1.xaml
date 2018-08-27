@@ -32,7 +32,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="this.Top" Background="BlanchedAlmond" Width="auto" Padding="4,0"/>
-                <TextBlock x:Name="txtThisTop" Background="Aquamarine" Width="auto" Text="xx" Padding="5,0,0,0"/>
+                <TextBlock x:Name="txtThisTop" Background="Aquamarine" Width="auto" Text="xx" Padding="3,0,3,0"/>
+                <TextBlock Text="this.Width" Background="BlanchedAlmond" Width="auto" Padding="4,0" />
+                <TextBlock x:Name="txtThisWidth" Background="Aquamarine" Width="auto" Text="xx" Padding="3,0,3,0"/>
+                <TextBlock Text="this.Height" Background="BlanchedAlmond" Width="auto" Padding="4,0" />
+                <TextBlock x:Name="txtThisHeight" Background="Aquamarine" Width="auto" Text="xx" Padding="3,0,3,0"/>
             </StackPanel>
         </StackPanel>
     </Grid>

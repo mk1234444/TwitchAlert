@@ -30,6 +30,8 @@ namespace TwitchAlert
                   txtLeftPos.Text = toast.LeftPosition.ToString();
                   txtLastUpdate.Text = MKTwitch.LastPull.ToLongTimeString();
                   txtThisTop.Text = ((int)toastWindow.Top).ToString();
+                  txtThisWidth.Text = ((int)toastWindow.Width).ToString();
+                  txtThisHeight.Text = ((int)toastWindow.Height).ToString();
               };
             timer.Start();
         }

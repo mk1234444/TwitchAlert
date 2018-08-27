@@ -25,8 +25,9 @@
 //       UpdateFollowedUsers(Twitch.Root user) simply returns without changing anything
 // FIX:  Fixed problem of thumbnails not being downloaded anymore by forcingTls12.
 //       Article with fix https://github.com/google/google-api-dotnet-client/issues/911
-// TODO: Debug/Center doesn't work on resolutions other than 1920x1080
+// TODO: Debug/Center doesn't work on resolutions other than 1920x1080 ?? (Should this have read 1600x900??)
 // Add:  Now centres Toast on first run
+// FIX:  The CentreToast() routine not doing its job
 
 
 using System;
@@ -160,6 +161,24 @@ namespace TwitchAlert
                 set { SetValue(StatusProperty, value); }
             }
 
+            /// <summary>
+            /// The Width the of Toast the last time it was open
+            /// </summary>
+            public double LastWorkingWidth
+            {
+                get { return (double)GetValue(LastWorkingWidthProperty); }
+                set { SetValue(LastWorkingWidthProperty, value); }
+            }
+
+            /// <summary>
+            /// The Height of the Toast thelast time it was open
+            /// </summary>
+            public double LastWorkingHeight
+            {
+                get { return (double)GetValue(LastWorkingHeightProperty); }
+                set { SetValue(LastWorkingHeightProperty, value); }
+            }
+
             // Using a DependencyProperty as the backing store for Status.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty StatusProperty = DependencyProperty.Register("Status", typeof(string), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for Link.  This enables animation, styling, binding, etc...
@@ -184,6 +203,9 @@ namespace TwitchAlert
             public static readonly DependencyProperty DisplayNameProperty = DependencyProperty.Register("DisplayName", typeof(string), typeof(Toast), new PropertyMetadata(null));
             // Using a DependencyProperty as the backing store for NumberLiveStreaming.  This enables animation, styling, binding, etc...
             public static readonly DependencyProperty NumberLiveStreamingProperty = DependencyProperty.Register("NumberLiveStreaming", typeof(int), typeof(Toast), new PropertyMetadata(null));
+
+            public static readonly DependencyProperty LastWorkingWidthProperty = DependencyProperty.Register("LastWorkingWidth", typeof(double), typeof(Toast), new PropertyMetadata(0.0));
+            public static readonly DependencyProperty LastWorkingHeightProperty = DependencyProperty.Register("LastWorkingHeight", typeof(double), typeof(Toast), new PropertyMetadata(0.0));
         }
         Toast toast = new Toast();
 
@@ -626,6 +648,7 @@ namespace TwitchAlert
                 setToastTopAndBottomPositions();
             }
             await StartAnimationAsync(SlideUpStoryboard);
+            CacheToastWidthAndHeight();
             await Task.Delay(4000);
             await StartAnimationAsync(SlideDownStoryboard);
 
@@ -641,6 +664,9 @@ namespace TwitchAlert
             await StartAnimationAsync(SlideUpStoryboard);
             await StartAnimationAsync(GameOutStoryboard);
             toast.Game = newGame;
+            
+            CacheToastWidthAndHeight();
+
             await StartAnimationAsync(GameIn2Storyboard);
             PlayNewGameSound();
             await Task.Delay(3000);
@@ -655,12 +681,29 @@ namespace TwitchAlert
             await StartAnimationAsync(SlideUpStoryboard);
             await StartAnimationAsync(StatusOutStoryboard);
             toast.Status = newStatus;
+
+            CacheToastWidthAndHeight();
+
             PlayNewGameSound();
             await StartAnimationAsync(StatusInStoryboard);  
             await Task.Delay(3000);
             await StartAnimationAsync(SlideDownStoryboard);
             toastBorder.BorderBrush = Brushes.Red;
         }
+
+
+        /// <summary>
+        /// Caches the the Toasts Width and Height when it is fully open
+        /// </summary>
+        private void CacheToastWidthAndHeight()
+        {
+            // Store the Width and Height of the active Toast to use in the CentreToast() method
+            toast.LastWorkingWidth = this.Width;
+            toast.LastWorkingHeight = this.Height;
+
+        }
+
+
 
         /// <summary>
         /// Start Storyboad animation asynchronously
@@ -786,7 +829,8 @@ namespace TwitchAlert
         /// </summary>
         private void CentreToast()
         {
-            toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
+//            toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (this.Width / 2);
+            toast.LeftPosition = this.Left = (SystemParameters.WorkArea.Width / 2) - (toast.LastWorkingWidth / 2);
         }
     }
 }
